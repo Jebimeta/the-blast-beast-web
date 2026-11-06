@@ -1,0 +1,152 @@
+<app-header />
+
+<main id="contenido">
+  <section class="relative overflow-hidden border-b border-line">
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -top-40 right-0 size-[34rem] rounded-full bg-blood/10 blur-3xl"
+    ></div>
+
+    <div class="shell relative py-20 sm:py-28">
+      <p class="eyebrow">El rugido de la escena</p>
+
+      <h1 class="mt-5 max-w-3xl font-display text-5xl uppercase leading-[0.92] sm:text-7xl">
+        Noticias de<br />
+        <span class="text-blood-soft">heavy metal</span><br />
+        sin relleno.
+      </h1>
+
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-muted">
+        Lanzamientos, conciertos y rumores de la escena, contados por alguien que también
+        paga las entradas. Sin clickbait y sin relleno.
+      </p>
+
+      <div class="mt-10 flex flex-wrap items-center gap-3">
+        <a href="#estado" class="btn-primary">Ver el estado del proyecto</a>
+        <a
+          href="https://github.com/Jebimeta"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-ghost"
+        >
+          Código en GitHub
+        </a>
+      </div>
+
+      <p class="mt-8 font-mono text-xs uppercase tracking-[0.2em] text-muted">
+        M0 en construcción · El contenido llega en M1
+      </p>
+    </div>
+  </section>
+
+  <section id="estado" class="shell py-16">
+    <div class="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+      <div>
+        <p class="eyebrow">Integración en vivo</p>
+        <h2 class="mt-3 font-display text-3xl uppercase">Frontend y API, hablando</h2>
+        <p class="mt-3 max-w-xl text-muted">
+          Esta tarjeta llama a
+          <code class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-sm text-bone"
+            >GET /api/v1/ping</code
+          >
+          desde el navegador. Si la API no está levantada, lo dice sin adornos.
+        </p>
+      </div>
+
+      <div [class]="cardClass()">
+        @switch (status()) {
+          @case ('loading') {
+            <p class="flex items-center gap-2 text-sm text-muted">
+              <span class="size-2 animate-pulse rounded-full bg-muted"></span>
+              Comprobando la API…
+            </p>
+          }
+          @case ('up') {
+            <p class="flex items-center gap-2 text-sm text-emerald-400">
+              <span class="size-2 rounded-full bg-emerald-400"></span>
+              API operativa
+            </p>
+            <dl class="mt-4 space-y-2 font-mono text-xs text-muted">
+              <div class="flex justify-between gap-4">
+                <dt>servicio</dt>
+                <dd class="text-bone">{{ info()?.app }}</dd>
+              </div>
+              <div class="flex justify-between gap-4">
+                <dt>versión</dt>
+                <dd class="text-bone">{{ info()?.version }}</dd>
+              </div>
+              <div class="flex justify-between gap-4">
+                <dt>respuesta</dt>
+                <dd class="truncate text-bone">{{ info()?.timestamp }}</dd>
+              </div>
+            </dl>
+          }
+          @default {
+            <p class="flex items-center gap-2 text-sm text-blood-soft">
+              <span class="size-2 rounded-full bg-blood-soft"></span>
+              Sin conexión con la API
+            </p>
+            <p class="mt-3 text-sm text-muted">
+              Arráncala con
+              <code class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-xs text-bone"
+                >mvn spring-boot:run</code
+              >
+            </p>
+            <button type="button" class="btn-ghost mt-4 !px-3 !py-2 !text-xs" (click)="checkApi()">
+              Reintentar
+            </button>
+          }
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="shell border-t border-line py-16">
+    <p class="eyebrow">Bajo el capó</p>
+    <h2 class="mt-3 font-display text-3xl uppercase">Decisiones, no adornos</h2>
+
+    <div class="mt-8 grid gap-4 sm:grid-cols-2">
+      @for (item of features; track item.title) {
+        <article class="card">
+          <h3 class="font-display text-lg uppercase tracking-wide">{{ item.title }}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{{ item.detail }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section class="shell border-t border-line py-16">
+    <div class="flex items-end justify-between gap-4">
+      <div>
+        <p class="eyebrow">Hoja de ruta</p>
+        <h2 class="mt-3 font-display text-3xl uppercase">De cero a publicado</h2>
+      </div>
+      <span class="font-mono text-xs text-muted">1 / 6</span>
+    </div>
+
+    <ol class="mt-8 space-y-3">
+      @for (phase of roadmap; track phase.id) {
+        <li class="flex items-start gap-4 rounded-lg border border-line bg-surface/60 p-4">
+          <span
+            class="mt-0.5 font-mono text-xs"
+            [class]="phase.done ? 'text-emerald-400' : 'text-muted'"
+            >{{ phase.id }}</span
+          >
+          <div class="min-w-0">
+            <p class="font-display text-sm uppercase tracking-wide">{{ phase.title }}</p>
+            <p class="mt-1 text-sm text-muted">{{ phase.detail }}</p>
+          </div>
+          @if (phase.done) {
+            <span
+              class="ml-auto shrink-0 rounded-full bg-emerald-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-emerald-400"
+            >
+              Hecho
+            </span>
+          }
+        </li>
+      }
+    </ol>
+  </section>
+</main>
+
+<app-footer />
