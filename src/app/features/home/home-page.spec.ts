@@ -1,54 +1,80 @@
-import { provideHttpClient } from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import type { ArticleSummary } from '../../core/api/article.models';
 import { HomePage } from './home-page';
+import type { HomeData } from './home.resolver';
+
+function article(
+  id: number,
+  slug: string,
+  title: string,
+  categoryName = 'Noticias',
+): ArticleSummary {
+  return {
+    id,
+    slug,
+    title,
+    excerpt: `Entradilla de ${title}`,
+    category: { id, slug: categoryName.toLowerCase(), name: categoryName },
+    authorName: 'Redacción Blast Beast',
+    publishedAt: '2026-11-05T09:47:24Z',
+    readingMinutes: 4,
+    bands: [{ id, slug: 'metallica', name: 'Metallica' }],
+    tags: [{ id, slug: 'giras', name: 'Giras' }],
+  };
+}
+
+const data: HomeData = {
+  featured: [
+    article(1, 'portada', 'Metallica anuncia gira europea'),
+    article(2, 'segunda', 'Judas Priest entra al estudio'),
+  ],
+  latest: {
+    content: [
+      article(1, 'portada', 'Metallica anuncia gira europea'),
+      article(2, 'segunda', 'Judas Priest entra al estudio'),
+    ],
+    page: 0,
+    size: 6,
+    totalElements: 2,
+    totalPages: 1,
+    first: true,
+    last: true,
+  },
+  categories: [
+    { id: 1, slug: 'noticias', name: 'Noticias', articleCount: 2 },
+  ],
+};
 
 describe('HomePage', () => {
-  let http: HttpTestingController;
-
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HomePage],
-      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
+      providers: [provideRouter([])],
     }).compileComponents();
-
-    http = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => http.verify());
-
-  it('muestra la API como operativa cuando responde', () => {
+  it('muestra el artículo de portada y las secciones', () => {
     const fixture = TestBed.createComponent(HomePage);
+    fixture.componentRef.setInput('home', data);
     fixture.detectChanges();
 
-    const request = http.expectOne('/api/v1/ping');
-    expect(request.request.method).toBe('GET');
-
-    request.flush({
-      status: 'UP',
-      app: 'the-blast-beast-api',
-      version: '0.1.0-SNAPSHOT',
-      timestamp: '2026-11-06T12:00:00Z',
-    });
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement.textContent).toContain('API operativa');
-    expect(fixture.nativeElement.textContent).toContain('0.1.0-SNAPSHOT');
+    const text = fixture.nativeElement.textContent;
+    expect(text).toContain('Metallica anuncia gira europea');
+    expect(text).toContain('Judas Priest entra al estudio');
+    expect(text).toContain('Noticias');
+    expect(text).toContain('Leer la noticia');
   });
 
-  it('avisa cuando la API no responde', () => {
+  it('muestra un estado vacío cuando no hay contenido', () => {
     const fixture = TestBed.createComponent(HomePage);
+    fixture.componentRef.setInput('home', {
+      featured: [],
+      latest: { ...data.latest, content: [], totalElements: 0, totalPages: 0 },
+      categories: [],
+    } satisfies HomeData);
     fixture.detectChanges();
 
-    http
-      .expectOne('/api/v1/ping')
-      .flush('caído', { status: 503, statusText: 'Service Unavailable' });
-    fixture.detectChanges();
-
-    expect(fixture.nativeElement.textContent).toContain('Sin conexión con la API');
+    expect(fixture.nativeElement.textContent).toContain('Aún no hay noticias');
   });
 });

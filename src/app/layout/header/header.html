@@ -5,33 +5,88 @@
   Saltar al contenido
 </a>
 
-<header class="sticky top-0 z-40 border-b border-line bg-ink/85 backdrop-blur">
-  <div class="shell flex h-16 items-center justify-between gap-4">
-    <a routerLink="/" class="flex items-center gap-3" aria-label="The Blast Beast, inicio">
+<header class="sticky top-0 z-40 border-b border-line bg-ink/90 backdrop-blur">
+  <div class="shell flex h-16 items-center gap-4">
+    <a routerLink="/" class="flex shrink-0 items-center gap-3" aria-label="The Blast Beast, inicio">
       <span class="grid size-9 place-items-center rounded bg-blood">
         <svg viewBox="0 0 24 24" class="size-5 fill-white" aria-hidden="true">
           <path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5Z" />
         </svg>
       </span>
-      <span class="font-display text-base uppercase tracking-[0.22em] sm:text-lg">
+      <span class="hidden font-display text-base uppercase tracking-[0.22em] sm:inline sm:text-lg">
         The Blast Beast
       </span>
     </a>
 
-    <div class="flex items-center gap-3">
-      <span
-        class="hidden rounded-full border border-line px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-muted sm:inline"
-      >
-        M0 · Fundaciones
-      </span>
+    <nav aria-label="Navegación principal" class="hidden items-center gap-5 md:flex">
       <a
-        href="https://github.com/Jebimeta"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="btn-ghost !px-4 !py-2 !text-xs"
+        routerLink="/"
+        routerLinkActive="text-bone"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition hover:text-bone"
+        >Inicio</a
       >
-        GitHub
-      </a>
-    </div>
+      <a
+        routerLink="/articulos"
+        routerLinkActive="text-bone"
+        class="font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition hover:text-bone"
+        >Noticias</a
+      >
+      <a
+        routerLink="/buscar"
+        routerLinkActive="text-bone"
+        class="font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition hover:text-bone"
+        >Buscar</a
+      >
+    </nav>
+
+    <form
+      class="ml-auto flex min-w-0 items-center gap-2"
+      role="search"
+      (submit)="search($event, query.value); query.blur()"
+    >
+      <label for="header-q" class="sr-only">Buscar noticias</label>
+      <input
+        #query
+        id="header-q"
+        type="search"
+        name="q"
+        minlength="2"
+        placeholder="Buscar…"
+        class="w-28 min-w-0 rounded-md border border-line bg-surface px-3 py-2 font-mono text-xs text-bone placeholder:text-muted/70 outline-none transition focus:border-blood sm:w-44 lg:w-56"
+      />
+      <button
+        type="submit"
+        class="grid size-9 shrink-0 place-items-center rounded-md border border-line text-muted transition hover:border-muted hover:text-bone"
+        aria-label="Buscar"
+      >
+        <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+      </button>
+    </form>
   </div>
+
+  @if (store.categories().length) {
+    <div class="border-t border-line">
+      <nav aria-label="Secciones" class="shell flex h-11 items-center gap-6 overflow-x-auto">
+        @for (category of store.categories(); track category.slug) {
+          <a
+            [routerLink]="['/categorias', category.slug]"
+            routerLinkActive="text-bone"
+            class="whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.2em] text-muted transition hover:text-blood-soft"
+          >
+            {{ category.name }}
+          </a>
+        }
+        <a
+          routerLink="/articulos"
+          class="ml-auto whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.2em] text-muted transition hover:text-bone"
+        >
+          Archivo completo →
+        </a>
+      </nav>
+    </div>
+  }
 </header>

@@ -1,0 +1,93 @@
+<main id="contenido">
+  <section class="border-b border-line bg-surface/40">
+    <div class="shell py-10 sm:py-14">
+      <p class="eyebrow">Búsqueda</p>
+      <h1 class="mt-3 font-display text-4xl uppercase leading-none sm:text-5xl">
+        Buscar en el archivo
+      </h1>
+
+      <form class="mt-8 flex max-w-xl gap-2" (submit)="submit($event, input.value); input.blur()">
+        <label for="search-q" class="sr-only">Texto a buscar</label>
+        <input
+          #input
+          id="search-q"
+          type="search"
+          name="q"
+          minlength="2"
+          required
+          [value]="q()"
+          placeholder="Bandas, discos, conciertos…"
+          class="min-w-0 flex-1 rounded-md border border-line bg-ink px-4 py-3 text-sm text-bone placeholder:text-muted/70 outline-none transition focus:border-blood"
+        />
+        <button type="submit" class="btn-primary !px-5 !py-3">Buscar</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="shell py-10">
+    @if (!hasQuery()) {
+      <div class="rounded-xl border border-line bg-surface p-8">
+        <p class="font-display text-lg uppercase tracking-wide">
+          Escribe al menos dos caracteres
+        </p>
+        <p class="mt-2 text-sm text-muted">
+          La búsqueda usa el índice full-text en español de PostgreSQL, así que
+          encuentra coincidencias por palabra, no por letra suelta.
+        </p>
+      </div>
+    } @else if (hasResults()) {
+      <p class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+        {{ results().totalElements }} resultados para «{{ q() }}» · página
+        {{ pageNumber() }} de {{ totalPages() }}
+      </p>
+
+      <div class="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        @for (article of results().content; track article.id) {
+          <app-article-card [article]="article" />
+        }
+      </div>
+
+      @if (totalPages() > 1) {
+        <nav
+          aria-label="Paginación de resultados"
+          class="mt-12 flex items-center justify-between border-t border-line pt-6"
+        >
+          <button
+            type="button"
+            class="btn-ghost !px-4 !py-2 !text-xs disabled:cursor-not-allowed disabled:opacity-40"
+            [disabled]="results().first"
+            (click)="goToPage(results().page - 1)"
+          >
+            ← Anterior
+          </button>
+
+          <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+            {{ pageNumber() }} / {{ totalPages() }}
+          </span>
+
+          <button
+            type="button"
+            class="btn-ghost !px-4 !py-2 !text-xs disabled:cursor-not-allowed disabled:opacity-40"
+            [disabled]="results().last"
+            (click)="goToPage(results().page + 1)"
+          >
+            Siguiente →
+          </button>
+        </nav>
+      }
+    } @else {
+      <div class="rounded-xl border border-line bg-surface p-8">
+        <p class="font-display text-lg uppercase tracking-wide">
+          Sin resultados para «{{ q() }}»
+        </p>
+        <p class="mt-2 text-sm text-muted">
+          Prueba con el nombre de una banda, un disco o una ciudad. También puedes
+          recorrer el archivo completo.
+        </p>
+        <a routerLink="/articulos" class="btn-ghost mt-5 !px-4 !py-2 !text-xs"
+          >Ver todas las noticias</a
+        >
+      </div>
+    }
+  </section>
+</main>

@@ -1,8 +1,40 @@
 <footer class="border-t border-line">
-  <div
-    class="shell flex flex-col gap-3 py-10 text-sm text-muted sm:flex-row sm:items-center sm:justify-between"
-  >
-    <p>&copy; {{ year }} The Blast Beast. Noticias de heavy metal sin relleno.</p>
-    <p class="font-mono text-xs">Java 21 · Spring Boot 3.5 · Angular 22 · PostgreSQL</p>
+  <div class="shell flex flex-col gap-6 py-10">
+    <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+      <a routerLink="/" class="flex items-center gap-3" aria-label="The Blast Beast, inicio">
+        <span class="grid size-7 place-items-center rounded bg-blood">
+          <svg viewBox="0 0 24 24" class="size-4 fill-white" aria-hidden="true">
+            <path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5Z" />
+          </svg>
+        </span>
+        <span class="font-display text-sm uppercase tracking-[0.22em]">
+          The Blast Beast
+        </span>
+      </a>
+
+      <nav
+        aria-label="Enlaces del pie"
+        class="flex flex-wrap gap-x-6 gap-y-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+      >
+        <a routerLink="/articulos" class="transition hover:text-bone">Archivo</a>
+        <a routerLink="/buscar" class="transition hover:text-bone">Buscar</a>
+        <a
+          href="https://github.com/Jebimeta"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="transition hover:text-bone"
+          >GitHub</a
+        >
+      </nav>
+    </div>
+
+    <div
+      class="flex flex-col gap-2 border-t border-line pt-5 text-xs text-muted sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>&copy; {{ year }} The Blast Beast. Noticias de heavy metal sin relleno.</p>
+      <p class="font-mono text-[10px] uppercase tracking-[0.14em]">
+        Java 21 · Spring Boot 3.5 · Angular 22 · PostgreSQL
+      </p>
+    </div>
   </div>
 </footer>

@@ -55,4 +55,52 @@
     @apply inline-flex items-center gap-2 rounded-md border border-line px-5 py-3 font-display
       text-sm uppercase tracking-wider text-bone transition hover:border-muted hover:bg-surface-2;
   }
+
+  .article-body {
+    @apply text-[1.0625rem] leading-relaxed text-bone/85;
+  }
+
+  .article-body > * + * {
+    @apply mt-5;
+  }
+
+  .article-body h2 {
+    @apply mt-10 font-display text-2xl uppercase tracking-wide text-bone;
+  }
+
+  .article-body h3 {
+    @apply mt-8 font-display text-xl uppercase tracking-wide text-bone;
+  }
+
+  .article-body a {
+    @apply text-blood-soft underline underline-offset-4 transition hover:text-bone;
+  }
+
+  .article-body ul {
+    @apply list-disc space-y-2 pl-5;
+  }
+
+  .article-body ol {
+    @apply list-decimal space-y-2 pl-5;
+  }
+
+  .article-body blockquote {
+    @apply border-l-2 border-blood pl-5 font-display text-lg uppercase leading-snug text-bone;
+  }
+
+  .article-body strong {
+    @apply text-bone;
+  }
+
+  .article-body code {
+    @apply rounded bg-surface-2 px-1.5 py-0.5 font-mono text-sm text-bone;
+  }
+
+  .article-body img {
+    @apply rounded-lg border border-line;
+  }
+
+  .article-body hr {
+    @apply border-line;
+  }
 }
