@@ -38,7 +38,10 @@ npm run serve:ssr:the-blast-beast-web
 ```
 
 El servidor SSR escucha en `PORT` (4000 por defecto). En producción, la URL absoluta de la
-API se inyecta con `API_BASE_URL`.
+API se inyecta con `API_BASE_URL` y el host público se valida con `ALLOWED_HOSTS`.
+
+El stack completo (API + web + PostgreSQL + Caddy) se levanta desde la raíz del workspace
+con `docker compose up -d --build` y queda en http://localhost:8088.
 
 ## Tests
 
