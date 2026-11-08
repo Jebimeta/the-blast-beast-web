@@ -12,6 +12,7 @@ export interface SeoData {
   updatedAt?: string;
   author?: string;
   section?: string;
+  image?: string;
   noIndex?: boolean;
 }
 
@@ -41,6 +42,14 @@ export class SeoService {
     this.setMeta('name', 'twitter:card', 'summary_large_image');
     this.setMeta('name', 'twitter:title', data.title);
     this.setMeta('name', 'twitter:description', data.description);
+
+    if (data.image) {
+      this.setMeta('property', 'og:image', data.image);
+      this.setMeta('name', 'twitter:image', data.image);
+    } else {
+      this.meta.removeTag('property="og:image"');
+      this.meta.removeTag('name="twitter:image"');
+    }
 
     if (data.publishedAt) {
       this.setMeta('property', 'article:published_time', data.publishedAt);
@@ -80,9 +89,10 @@ export class SeoService {
     updatedAt: string;
     author: string;
     section: string;
+    image?: string;
   }): void {
     const url = `${this.siteUrl}${data.path}`;
-    const payload = {
+    const payload: Record<string, unknown> = {
       '@context': 'https://schema.org',
       '@type': 'NewsArticle',
       headline: data.title,
@@ -105,6 +115,10 @@ export class SeoService {
       url,
       inLanguage: 'es-ES',
     };
+
+    if (data.image) {
+      payload['image'] = [data.image];
+    }
 
     this.clearJsonLd();
     const script = this.document.createElement('script');

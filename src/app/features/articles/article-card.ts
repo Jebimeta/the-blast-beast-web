@@ -19,4 +19,13 @@ export class ArticleCard {
       .bands.map((band) => band.name)
       .join(', '),
   );
+
+  /** Los listados usan la variante `thumb` (480 px) para no servir el original. */
+  protected readonly coverThumb = computed(() => {
+    const cover = this.article().cover;
+    if (!cover) {
+      return null;
+    }
+    return cover.variants?.find((variant) => variant.kind === 'thumb')?.url ?? cover.url;
+  });
 }

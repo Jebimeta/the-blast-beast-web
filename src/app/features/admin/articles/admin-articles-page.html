@@ -1,0 +1,195 @@
+<section>
+  <div class="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
+    <div>
+      <p class="eyebrow">Redacción</p>
+      <h1 class="mt-2 font-display text-3xl uppercase leading-none sm:text-4xl">
+        Artículos
+      </h1>
+      <p class="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+        {{ totalElements() }} en total
+      </p>
+    </div>
+
+    <a routerLink="/admin/articulos/nuevo" class="btn-primary !px-4 !py-2.5 !text-xs">
+      + Nuevo artículo
+    </a>
+  </div>
+
+  <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+    <label class="sr-only" for="admin-search">Buscar artículos</label>
+    <input
+      id="admin-search"
+      type="search"
+      [formControl]="search"
+      placeholder="Buscar por título o slug…"
+      class="w-full rounded-md border border-line bg-ink px-4 py-2.5 text-sm text-bone outline-none transition placeholder:text-muted/70 focus:border-blood sm:max-w-xs"
+    />
+
+    <label class="sr-only" for="admin-status">Estado</label>
+    <select
+      id="admin-status"
+      [value]="status()"
+      (change)="changeStatus($event)"
+      class="rounded-md border border-line bg-ink px-4 py-2.5 font-mono text-xs text-bone outline-none transition focus:border-blood"
+    >
+      <option value="">Todos los estados</option>
+      <option value="draft">Borradores</option>
+      <option value="published">Publicados</option>
+      <option value="archived">Archivados</option>
+    </select>
+  </div>
+
+  @if (error()) {
+    <p class="mt-5 rounded-md border border-blood/40 bg-blood/10 px-4 py-3 text-sm text-blood-soft">
+      {{ error() }}
+    </p>
+  }
+  @if (notice()) {
+    <p class="mt-5 rounded-md border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+      {{ notice() }}
+    </p>
+  }
+
+  @if (loading()) {
+    <p class="mt-10 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+      Cargando artículos…
+    </p>
+  } @else if (articles().length === 0) {
+    <div class="mt-8 rounded-xl border border-line bg-surface p-8">
+      <p class="font-display text-lg uppercase tracking-wide">No hay artículos</p>
+      <p class="mt-2 text-sm text-muted">
+        Cambia los filtros o crea la primera noticia desde el botón «Nuevo artículo».
+      </p>
+    </div>
+  } @else {
+    <ul class="mt-6 divide-y divide-line border-y border-line">
+      @for (article of articles(); track article.id) {
+        <li class="py-4">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+            @if (article.cover; as cover) {
+              <img
+                [src]="coverThumb(article)"
+                [alt]="cover.altText ?? ''"
+                width="96"
+                height="64"
+                loading="lazy"
+                class="h-16 w-24 shrink-0 rounded border border-line object-cover"
+              />
+            } @else {
+              <div
+                aria-hidden="true"
+                class="grid h-16 w-24 shrink-0 place-items-center rounded border border-dashed border-line font-mono text-[9px] uppercase tracking-[0.16em] text-muted/60"
+              >
+                Sin portada
+              </div>
+            }
+
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <span
+                  class="rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em]"
+                  [class]="statusClass(article.status)"
+                >
+                  {{ statusLabel(article.status) }}
+                </span>
+                <span class="font-mono text-[9px] uppercase tracking-[0.16em] text-muted">
+                  {{ article.category.name }}
+                </span>
+                <span aria-hidden="true" class="text-line">·</span>
+                <span class="font-mono text-[9px] uppercase tracking-[0.16em] text-muted">
+                  {{ date(article.updatedAt) }}
+                </span>
+              </div>
+
+              <a
+                [routerLink]="['/admin/articulos', article.id]"
+                class="mt-1 block truncate font-display text-lg uppercase leading-tight transition hover:text-blood-soft"
+              >
+                {{ article.title }}
+              </a>
+
+              <p class="mt-1 truncate text-xs text-muted">{{ article.excerpt }}</p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <a
+                [routerLink]="['/admin/articulos', article.id]"
+                class="rounded-md border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bone transition hover:border-muted hover:bg-surface-2"
+              >
+                Editar
+              </a>
+
+              @if (article.status === 'draft') {
+                <button
+                  type="button"
+                  class="rounded-md border border-emerald-500/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-emerald-300 transition hover:bg-emerald-500/10 disabled:opacity-40"
+                  [disabled]="busyId() !== null"
+                  (click)="publish(article)"
+                >
+                  Publicar
+                </button>
+              }
+              @if (article.status === 'published') {
+                <button
+                  type="button"
+                  class="rounded-md border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted transition hover:bg-surface-2 disabled:opacity-40"
+                  [disabled]="busyId() !== null"
+                  (click)="unpublish(article)"
+                >
+                  Despublicar
+                </button>
+              }
+              @if (article.status !== 'archived') {
+                <button
+                  type="button"
+                  class="rounded-md border border-amber-500/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-amber-300 transition hover:bg-amber-500/10 disabled:opacity-40"
+                  [disabled]="busyId() !== null"
+                  (click)="archive(article)"
+                >
+                  Archivar
+                </button>
+              }
+              <button
+                type="button"
+                class="rounded-md border border-blood/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-blood-soft transition hover:bg-blood/10 disabled:opacity-40"
+                [disabled]="busyId() !== null"
+                (click)="remove(article)"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </li>
+      }
+    </ul>
+
+    @if (totalPages() > 1) {
+      <nav
+        aria-label="Paginación de artículos"
+        class="mt-8 flex items-center justify-between"
+      >
+        <button
+          type="button"
+          class="btn-ghost !px-4 !py-2 !text-xs disabled:cursor-not-allowed disabled:opacity-40"
+          [disabled]="!hasPrev()"
+          (click)="go(page() - 1)"
+        >
+          ← Anterior
+        </button>
+
+        <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+          {{ page() + 1 }} / {{ totalPages() }}
+        </span>
+
+        <button
+          type="button"
+          class="btn-ghost !px-4 !py-2 !text-xs disabled:cursor-not-allowed disabled:opacity-40"
+          [disabled]="!hasNext()"
+          (click)="go(page() + 1)"
+        >
+          Siguiente →
+        </button>
+      </nav>
+    }
+  }
+</section>

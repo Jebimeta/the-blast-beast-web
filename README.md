@@ -27,10 +27,20 @@ Frontend del portal de noticias de heavy metal **The Blast Beast**.
 | `/articulos/:slug` | Detalle de la noticia |
 | `/bandas/:slug` | Banda y sus noticias |
 | `/buscar?q=` | Búsqueda full-text |
+| `/admin/login` | Acceso a la redacción |
+| `/admin/articulos` | Listado de artículos con filtros y acciones |
+| `/admin/articulos/nuevo` | Editor de artículo nuevo |
+| `/admin/articulos/:id` | Editor con vista previa, autoguardado e historial |
+| `/admin/taxonomia` | Categorías, bandas y etiquetas |
+| `/admin/medios` | Biblioteca de imágenes |
 | `**` | 404 real (status HTTP en SSR) |
 
-Cada ruta resuelve sus datos con un `ResolveFn` y los entrega al componente mediante
+Cada ruta pública resuelve sus datos con un `ResolveFn` y los entrega al componente mediante
 `withComponentInputBinding()`. Las páginas no piden datos en `ngOnInit`.
+
+El panel (`/admin/**`) se renderiza en cliente (`RenderMode.Client`) y está protegido por
+`adminGuard`. `AuthService` mantiene el access token en memoria y restaura la sesión con la
+cookie de refresco; `authInterceptor` reintenta una vez tras refrescar.
 
 ## Desarrollo
 
@@ -85,16 +95,23 @@ npm test
 Cubren la portada (contenido y estado vacío) y el shell de la aplicación. Los tests de
 servicios y e2e llegan en M4.
 
+## Medios
+
+La API genera variantes WebP `thumb` (480 px) y `hero` (1600 px). Las tarjetas y la
+portada usan `thumb`; el detalle usa `hero`. El portal nunca descarga el original.
+
 ## Estructura
 
 ```
 src/app/
 ├── core/
-│   ├── api/           # modelos, ArticleApiService, API_BASE_URL
+│   ├── api/           # modelos, ArticleApiService, AdminApiService, AuthService, problem.ts
+│   ├── auth/          # guard e interceptor
 │   ├── seo/           # SeoService y SITE_URL
 │   ├── category-store.ts
 │   └── format.ts
 ├── features/
+│   ├── admin/         # login, layout, artículos, editor, taxonomía, medios
 │   ├── home/          # portada + resolver
 │   ├── articles/      # tarjeta, listado, detalle, resolvers
 │   ├── bands/         # ficha de banda + resolver
@@ -119,7 +136,7 @@ src/app/
 
 - [x] **M0** Fundaciones: Angular 22 + SSR, Tailwind, layout, integración con la API
 - [x] **M1** Lectura: portada, archivo, secciones, detalle, bandas, búsqueda y SEO
-- [ ] **M2** Redacción: login, editor Markdown, medios
+- [x] **M2** Redacción: login, editor Markdown con autoguardado, taxonomía y medios
 - [ ] **M3** SEO avanzado: sitemap, RSS, prerender selectivo
 - [ ] **M4** Calidad: e2e, accesibilidad, presupuesto de rendimiento
 - [ ] **M5** Producción

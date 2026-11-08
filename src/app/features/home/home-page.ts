@@ -36,6 +36,18 @@ export class HomePage {
     readingTime(this.lead()?.readingMinutes ?? 0),
   );
 
+  /** Imagen de portada del titular: variante `thumb` para no servir el original. */
+  protected readonly leadCover = computed(() => {
+    const cover = this.lead()?.cover;
+    if (!cover) {
+      return null;
+    }
+    return {
+      url: cover.variants?.find((variant) => variant.kind === 'thumb')?.url ?? cover.url,
+      altText: cover.altText ?? this.lead()?.title ?? '',
+    };
+  });
+
   constructor() {
     this.seo.apply({
       title: 'The Blast Beast — Noticias de heavy metal',

@@ -1,5 +1,18 @@
 <article class="group flex h-full flex-col border-t border-line pt-5">
   <a [routerLink]="['/articulos', article().slug]" class="flex h-full flex-col">
+    @if (article().cover; as cover) {
+      <div class="mb-4 overflow-hidden rounded-lg border border-line">
+        <img
+          [src]="coverThumb()"
+          [alt]="cover.altText ?? article().title"
+          width="480"
+          height="320"
+          loading="lazy"
+          class="aspect-[3/2] w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+        />
+      </div>
+    }
+
     <div
       class="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[10px] uppercase tracking-[0.18em]"
     >

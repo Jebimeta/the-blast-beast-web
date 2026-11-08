@@ -37,6 +37,15 @@ export class ArticleDetailPage {
     readingTime(this.article()?.readingMinutes ?? 0),
   );
 
+  /** El detalle usa la variante `hero` (1200 px) para no servir el original. */
+  protected readonly coverHero = computed(() => {
+    const cover = this.article()?.cover;
+    if (!cover) {
+      return null;
+    }
+    return cover.variants?.find((variant) => variant.kind === 'hero')?.url ?? cover.url;
+  });
+
   constructor() {
     effect(() => {
       const article = this.article();
@@ -61,6 +70,7 @@ export class ArticleDetailPage {
       const path = `/articulos/${article.slug}`;
       const title = article.seoTitle ?? `${article.title} — The Blast Beast`;
       const description = article.seoDescription ?? article.excerpt;
+      const image = this.coverHero() ?? undefined;
 
       this.seo.apply({
         title,
@@ -71,6 +81,7 @@ export class ArticleDetailPage {
         updatedAt: article.updatedAt,
         author: article.authorName,
         section: article.category.name,
+        image,
       });
 
       this.seo.applyArticleJsonLd({
@@ -81,6 +92,7 @@ export class ArticleDetailPage {
         updatedAt: article.updatedAt,
         author: article.authorName,
         section: article.category.name,
+        image,
       });
     });
   }

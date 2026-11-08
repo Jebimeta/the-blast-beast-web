@@ -1,0 +1,71 @@
+<main id="contenido" class="shell py-8 sm:py-12">
+  <div class="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
+    <div>
+      <p class="eyebrow">Redacción</p>
+      <h1 class="mt-2 font-display text-3xl uppercase leading-none sm:text-4xl">
+        Panel editorial
+      </h1>
+    </div>
+
+    <div class="flex items-center gap-4">
+      @if (user(); as user) {
+        <p class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+          {{ user.displayName }} · {{ user.role }}
+        </p>
+      }
+      <button
+        type="button"
+        class="btn-ghost px-4 py-2 text-xs"
+        (click)="logout()"
+      >
+        Salir
+      </button>
+    </div>
+  </div>
+
+  <div class="grid gap-8 lg:grid-cols-[220px_1fr]">
+    <nav aria-label="Navegación de redacción" class="lg:border-r lg:border-line lg:pr-6">
+      <ul class="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
+        <li>
+          <a
+            routerLink="/admin/articulos"
+            routerLinkActive="border-blood bg-surface-2 text-bone"
+            class="block whitespace-nowrap rounded-md border border-transparent px-4 py-3 font-display text-sm uppercase tracking-wider text-muted transition hover:border-line hover:text-bone"
+          >
+            Artículos
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/admin/taxonomia"
+            routerLinkActive="border-blood bg-surface-2 text-bone"
+            class="block whitespace-nowrap rounded-md border border-transparent px-4 py-3 font-display text-sm uppercase tracking-wider text-muted transition hover:border-line hover:text-bone"
+          >
+            Taxonomía
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/admin/medios"
+            routerLinkActive="border-blood bg-surface-2 text-bone"
+            class="block whitespace-nowrap rounded-md border border-transparent px-4 py-3 font-display text-sm uppercase tracking-wider text-muted transition hover:border-line hover:text-bone"
+          >
+            Medios
+          </a>
+        </li>
+      </ul>
+
+      <div class="mt-6 hidden border-t border-line pt-5 lg:block">
+        <a
+          routerLink="/"
+          class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted hover:text-bone"
+          >Ver el portal →</a
+        >
+      </div>
+    </nav>
+
+    <div class="min-w-0">
+      <router-outlet />
+    </div>
+  </div>
+</main>

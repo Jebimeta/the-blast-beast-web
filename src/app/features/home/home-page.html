@@ -36,6 +36,21 @@
                 >
               </h1>
 
+              @if (leadCover(); as cover) {
+                <a
+                  [routerLink]="['/articulos', article.slug]"
+                  class="mt-6 block overflow-hidden rounded-xl border border-line"
+                >
+                  <img
+                    [src]="cover.url"
+                    [alt]="cover.altText"
+                    width="480"
+                    height="300"
+                    class="aspect-[16/9] w-full object-cover transition duration-500 hover:scale-[1.02]"
+                  />
+                </a>
+              }
+
               <p class="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
                 {{ article.excerpt }}
               </p>

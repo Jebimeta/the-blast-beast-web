@@ -34,6 +34,25 @@
           {{ article.excerpt }}
         </p>
 
+        @if (article.cover; as cover) {
+          <figure class="mt-8 max-w-4xl overflow-hidden rounded-xl border border-line">
+            <img
+              [src]="coverHero()"
+              [alt]="cover.altText ?? article.title"
+              width="1200"
+              height="800"
+              class="aspect-[3/2] w-full object-cover"
+            />
+            @if (cover.credit) {
+              <figcaption
+                class="border-t border-line bg-surface px-4 py-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted"
+              >
+                {{ cover.credit }}
+              </figcaption>
+            }
+          </figure>
+        }
+
         <div
           class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line pt-5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
         >

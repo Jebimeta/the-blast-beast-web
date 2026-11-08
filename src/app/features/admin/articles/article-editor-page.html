@@ -1,0 +1,426 @@
+<section>
+  <div class="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-5">
+    <div class="min-w-0">
+      <a
+        routerLink="/admin/articulos"
+        class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted hover:text-bone"
+        >← Artículos</a
+      >
+      <div class="mt-2 flex flex-wrap items-center gap-3">
+        <h1 class="font-display text-2xl uppercase leading-none sm:text-3xl">
+          {{ isNew() ? 'Nuevo artículo' : 'Editar artículo' }}
+        </h1>
+        <span
+          class="rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em]"
+          [class]="statusClass()"
+        >
+          {{ statusLabel() }}
+        </span>
+      </div>
+    </div>
+
+    @if (publicSlug()) {
+      <a
+        [routerLink]="['/articulos', publicSlug()]"
+        target="_blank"
+        rel="noopener"
+        class="btn-ghost !px-4 !py-2 !text-xs"
+        >Ver en el portal ↗</a
+      >
+    }
+  </div>
+
+  @if (loading()) {
+    <p class="mt-10 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+      Cargando artículo…
+    </p>
+  } @else {
+    @if (error()) {
+      <p class="mt-5 rounded-md border border-blood/40 bg-blood/10 px-4 py-3 text-sm text-blood-soft">
+        {{ error() }}
+      </p>
+    }
+    @if (notice()) {
+      <p class="mt-5 rounded-md border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+        {{ notice() }}
+      </p>
+    }
+
+    <form
+      [formGroup]="form"
+      (ngSubmit)="save()"
+      class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]"
+    >
+      <div class="min-w-0 space-y-5">
+        <div>
+          <label
+            for="title"
+            class="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            >Titular</label
+          >
+          <input
+            id="title"
+            type="text"
+            formControlName="title"
+            class="w-full rounded-md border border-line bg-ink px-4 py-3 font-display text-xl uppercase text-bone outline-none transition focus:border-blood"
+          />
+          @if (form.controls.title.touched && form.controls.title.invalid) {
+            <p class="mt-2 text-xs text-blood-soft">
+              El titular debe tener entre 3 y 200 caracteres.
+            </p>
+          }
+        </div>
+
+        <div>
+          <label
+            for="slug"
+            class="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            >Slug</label
+          >
+          <input
+            id="slug"
+            type="text"
+            formControlName="slug"
+            placeholder="se-genera-desde-el-titular"
+            class="w-full rounded-md border border-line bg-ink px-4 py-2.5 font-mono text-xs text-bone outline-none transition placeholder:text-muted/60 focus:border-blood"
+          />
+          <p class="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+            @if (slug()) {
+              Actual: /articulos/{{ slug() }}
+            } @else {
+              Si lo dejas vacío se genera automáticamente.
+            }
+          </p>
+        </div>
+
+        <div>
+          <label
+            for="excerpt"
+            class="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            >Entradilla</label
+          >
+          <textarea
+            id="excerpt"
+            formControlName="excerpt"
+            rows="3"
+            class="w-full resize-y rounded-md border border-line bg-ink px-4 py-3 text-sm leading-relaxed text-bone outline-none transition focus:border-blood"
+          ></textarea>
+          @if (form.controls.excerpt.touched && form.controls.excerpt.invalid) {
+            <p class="mt-2 text-xs text-blood-soft">
+              La entradilla debe tener entre 10 y 500 caracteres.
+            </p>
+          }
+        </div>
+
+        <div>
+          <div class="mb-2 flex items-center justify-between">
+            <label
+              for="bodyMd"
+              class="font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+              >Cuerpo (Markdown)</label
+            >
+            <span class="font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+              {{ form.controls.bodyMd.value.length }} caracteres
+            </span>
+          </div>
+
+          <div class="grid gap-4 xl:grid-cols-2">
+            <textarea
+              id="bodyMd"
+              formControlName="bodyMd"
+              rows="26"
+              spellcheck="true"
+              class="w-full resize-y rounded-md border border-line bg-ink px-4 py-3 font-mono text-xs leading-relaxed text-bone outline-none transition focus:border-blood"
+            ></textarea>
+
+            <div class="min-w-0">
+              <div class="mb-2 flex items-center justify-between">
+                <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+                  >Vista previa</span
+                >
+                @if (previewLoading()) {
+                  <span class="font-mono text-[9px] uppercase tracking-[0.14em] text-muted"
+                    >Renderizando…</span
+                  >
+                }
+              </div>
+              <div
+                class="article-body min-h-[26rem] overflow-auto rounded-md border border-line bg-surface p-5"
+              >
+                @if (preview()) {
+                  <div [innerHTML]="preview()"></div>
+                } @else {
+                  <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+                    La vista previa aparecerá al escribir.
+                  </p>
+                }
+              </div>
+            </div>
+          </div>
+
+          @if (form.controls.bodyMd.touched && form.controls.bodyMd.invalid) {
+            <p class="mt-2 text-xs text-blood-soft">
+              El cuerpo es obligatorio y debe tener al menos 10 caracteres.
+            </p>
+          }
+        </div>
+      </div>
+
+      <aside class="space-y-5">
+        <div class="card !p-5">
+          <p class="font-display text-sm uppercase tracking-wider">Publicación</p>
+
+          <p class="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+            @if (saving()) {
+              Guardando…
+            } @else if (dirty()) {
+              Cambios sin guardar
+            } @else if (lastSavedLabel()) {
+              Guardado a las {{ lastSavedLabel() }}
+            } @else {
+              Sin cambios pendientes
+            }
+          </p>
+
+          <div class="mt-4 space-y-2">
+            <button
+              type="submit"
+              class="btn-primary w-full justify-center !px-4 !py-2.5 !text-xs"
+              [disabled]="saving()"
+            >
+              {{ saving() ? 'Guardando…' : 'Guardar borrador' }}
+            </button>
+
+            @if (status() !== 'published') {
+              <button
+                type="button"
+                class="w-full rounded-md border border-emerald-500/40 px-4 py-2.5 font-display text-xs uppercase tracking-wider text-emerald-300 transition hover:bg-emerald-500/10 disabled:opacity-40"
+                [disabled]="publishing()"
+                (click)="publish()"
+              >
+                {{ publishing() ? 'Publicando…' : 'Publicar' }}
+              </button>
+            } @else {
+              <button
+                type="button"
+                class="btn-ghost w-full justify-center !px-4 !py-2.5 !text-xs"
+                (click)="unpublish()"
+              >
+                Despublicar
+              </button>
+            }
+
+            @if (status() !== 'archived') {
+              <button
+                type="button"
+                class="w-full rounded-md border border-amber-500/40 px-4 py-2.5 font-display text-xs uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/10"
+                (click)="archive()"
+              >
+                Archivar
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="card !p-5">
+          <p class="font-display text-sm uppercase tracking-wider">Clasificación</p>
+
+          <label
+            for="categoryId"
+            class="mt-4 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            >Categoría</label
+          >
+          <select
+            id="categoryId"
+            formControlName="categoryId"
+            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2.5 text-sm text-bone outline-none transition focus:border-blood"
+          >
+            <option [ngValue]="0" disabled>Selecciona una categoría</option>
+            @for (category of categories(); track category.id) {
+              <option [ngValue]="category.id">{{ category.name }}</option>
+            }
+          </select>
+          @if (form.controls.categoryId.touched && form.controls.categoryId.invalid) {
+            <p class="mt-2 text-xs text-blood-soft">Selecciona una categoría.</p>
+          }
+
+          <label
+            for="bandIds"
+            class="mt-4 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            >Bandas</label
+          >
+          <select
+            id="bandIds"
+            formControlName="bandIds"
+            multiple
+            size="5"
+            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-xs text-bone outline-none transition focus:border-blood"
+          >
+            @for (band of bands(); track band.id) {
+              <option [ngValue]="band.id">{{ band.name }}</option>
+            }
+          </select>
+
+          <label
+            for="tagIds"
+            class="mt-4 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            >Etiquetas</label
+          >
+          <select
+            id="tagIds"
+            formControlName="tagIds"
+            multiple
+            size="6"
+            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-xs text-bone outline-none transition focus:border-blood"
+          >
+            @for (tag of tags(); track tag.id) {
+              <option [ngValue]="tag.id">{{ tag.name }}</option>
+            }
+          </select>
+          <p class="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+            Usa Ctrl/Cmd para seleccionar varias.
+          </p>
+        </div>
+
+        <div class="card !p-5">
+          <p class="font-display text-sm uppercase tracking-wider">Portada</p>
+
+          <select
+            formControlName="coverMediaId"
+            class="mt-3 w-full rounded-md border border-line bg-ink px-3 py-2.5 text-xs text-bone outline-none transition focus:border-blood"
+          >
+            <option [ngValue]="null">Sin portada</option>
+            @for (asset of media(); track asset.id) {
+              <option [ngValue]="asset.id">
+                {{ asset.altText || asset.credit || 'Medio #' + asset.id }}
+              </option>
+            }
+          </select>
+
+          @if (coverFor(form.controls.coverMediaId.value); as cover) {
+            <img
+              [src]="coverPreview(cover)"
+              [alt]="cover.altText ?? ''"
+              width="320"
+              height="180"
+              class="mt-3 w-full rounded border border-line object-cover"
+            />
+            @if (cover.credit) {
+              <p class="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+                {{ cover.credit }}
+              </p>
+            }
+          }
+
+          <a
+            routerLink="/admin/medios"
+            class="mt-3 inline-block font-mono text-[9px] uppercase tracking-[0.14em] text-muted hover:text-bone"
+            >Gestionar biblioteca →</a
+          >
+        </div>
+
+        <details class="card !p-5">
+          <summary
+            class="cursor-pointer font-display text-sm uppercase tracking-wider"
+          >
+            SEO y canonical
+          </summary>
+
+          <label
+            for="seoTitle"
+            class="mt-4 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            >Título SEO</label
+          >
+          <input
+            id="seoTitle"
+            type="text"
+            formControlName="seoTitle"
+            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-xs text-bone outline-none transition focus:border-blood"
+          />
+
+          <label
+            for="seoDescription"
+            class="mt-4 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            >Descripción SEO</label
+          >
+          <textarea
+            id="seoDescription"
+            formControlName="seoDescription"
+            rows="3"
+            class="mt-2 w-full resize-y rounded-md border border-line bg-ink px-3 py-2 text-xs text-bone outline-none transition focus:border-blood"
+          ></textarea>
+
+          <label
+            for="canonicalUrl"
+            class="mt-4 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            >URL canónica</label
+          >
+          <input
+            id="canonicalUrl"
+            type="url"
+            formControlName="canonicalUrl"
+            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-xs text-bone outline-none transition focus:border-blood"
+          />
+        </details>
+
+        <div class="card !p-5">
+          <div class="flex items-center justify-between">
+            <p class="font-display text-sm uppercase tracking-wider">Historial</p>
+            <button
+              type="button"
+              class="font-mono text-[9px] uppercase tracking-[0.14em] text-muted hover:text-bone"
+              (click)="toggleRevisions()"
+            >
+              {{ showRevisions() ? 'Ocultar' : 'Ver' }}
+            </button>
+          </div>
+
+          @if (showRevisions()) {
+            @if (revisionsLoading()) {
+              <p class="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+                Cargando…
+              </p>
+            } @else if (revisions().length === 0) {
+              <p class="mt-3 text-xs text-muted">
+                Todavía no hay versiones anteriores.
+              </p>
+            } @else {
+              <ul class="mt-3 space-y-2">
+                @for (revision of revisions(); track revision.id) {
+                  <li class="rounded border border-line px-3 py-2">
+                    <p class="truncate text-xs text-bone">{{ revision.title }}</p>
+                    <p class="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+                      {{ revisionDate(revision.createdAt) }} · {{ revision.editorName }}
+                    </p>
+                    <button
+                      type="button"
+                      class="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-blood-soft hover:text-bone"
+                      (click)="restore(revision)"
+                    >
+                      Restaurar
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+          }
+        </div>
+
+        @if (!isNew()) {
+          <div class="rounded-xl border border-blood/30 p-5">
+            <p class="font-display text-sm uppercase tracking-wider text-blood-soft">
+              Zona peligrosa
+            </p>
+            <button
+              type="button"
+              class="mt-3 w-full rounded-md border border-blood/40 px-4 py-2.5 font-display text-xs uppercase tracking-wider text-blood-soft transition hover:bg-blood/10"
+              (click)="remove()"
+            >
+              Eliminar artículo
+            </button>
+          </div>
+        }
+      </aside>
+    </form>
+  }
+</section>

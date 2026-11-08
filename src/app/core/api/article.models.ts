@@ -1,5 +1,28 @@
 export type ArticleSort = 'latest' | 'oldest' | 'relevance';
 
+export type MediaKind = 'original' | 'thumb' | 'hero';
+
+export interface MediaVariant {
+  kind: MediaKind;
+  url: string;
+  mimeType: string;
+  width: number;
+  height: number;
+  bytes: number;
+}
+
+export interface MediaSummary {
+  id: number;
+  kind: MediaKind;
+  url: string;
+  mimeType: string;
+  width: number;
+  height: number;
+  altText?: string | null;
+  credit?: string | null;
+  variants?: MediaVariant[] | null;
+}
+
 export interface CategorySummary {
   id: number;
   slug: string;
@@ -28,6 +51,7 @@ export interface ArticleSummary {
   authorName: string;
   publishedAt: string;
   readingMinutes: number;
+  cover?: MediaSummary | null;
   bands: BandSummary[];
   tags: TagSummary[];
 }

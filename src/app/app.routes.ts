@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { adminGuard } from './core/auth/admin.guard';
 import {
   articleDetailResolver,
   articleListResolver,
@@ -52,6 +53,65 @@ export const routes: Routes = [
     title: 'Banda — The Blast Beast',
     resolve: { band: bandResolver },
     loadComponent: () => import('./features/bands/band-page').then((m) => m.BandPage),
+  },
+  {
+    path: 'admin/login',
+    title: 'Acceso a redacción — The Blast Beast',
+    loadComponent: () =>
+      import('./features/admin/login-page').then((m) => m.AdminLoginPage),
+  },
+  {
+    path: 'admin',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./features/admin/admin-layout').then((m) => m.AdminLayout),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'articulos',
+      },
+      {
+        path: 'articulos',
+        title: 'Artículos — Redacción',
+        loadComponent: () =>
+          import('./features/admin/articles/admin-articles-page').then(
+            (m) => m.AdminArticlesPage,
+          ),
+      },
+      {
+        path: 'articulos/nuevo',
+        title: 'Nuevo artículo — Redacción',
+        loadComponent: () =>
+          import('./features/admin/articles/article-editor-page').then(
+            (m) => m.ArticleEditorPage,
+          ),
+      },
+      {
+        path: 'articulos/:id',
+        title: 'Editar artículo — Redacción',
+        loadComponent: () =>
+          import('./features/admin/articles/article-editor-page').then(
+            (m) => m.ArticleEditorPage,
+          ),
+      },
+      {
+        path: 'taxonomia',
+        title: 'Taxonomía — Redacción',
+        loadComponent: () =>
+          import('./features/admin/taxonomy/admin-taxonomy-page').then(
+            (m) => m.AdminTaxonomyPage,
+          ),
+      },
+      {
+        path: 'medios',
+        title: 'Medios — Redacción',
+        loadComponent: () =>
+          import('./features/admin/media/admin-media-page').then(
+            (m) => m.AdminMediaPage,
+          ),
+      },
+    ],
   },
   {
     path: '**',
