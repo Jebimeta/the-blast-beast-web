@@ -27,6 +27,9 @@ Frontend del portal de noticias de heavy metal **The Blast Beast**.
 | `/articulos/:slug` | Detalle de la noticia |
 | `/bandas/:slug` | Banda y sus noticias |
 | `/buscar?q=` | Búsqueda full-text |
+| `/sobre` | Sobre el medio (prerenderizada) |
+| `/contacto` | Contacto de la redacción (prerenderizada) |
+| `/privacidad` | Política de privacidad (prerenderizada) |
 | `/admin/login` | Acceso a la redacción |
 | `/admin/articulos` | Listado de artículos con filtros y acciones |
 | `/admin/articulos/nuevo` | Editor de artículo nuevo |
@@ -63,7 +66,9 @@ npm run serve:ssr:the-blast-beast-web
 ```
 
 El servidor SSR escucha en `PORT` (4000 por defecto) y renderiza cada ruta por petición:
-el contenido cambia con cada publicación, así que no hay prerender en build.
+el contenido cambia con cada publicación. La excepción son `/sobre`, `/contacto` y
+`/privacidad`, que se prerenderizan en build (`RenderMode.Prerender`) porque no dependen de
+la API. El resto sigue en `RenderMode.Server` y el panel en `RenderMode.Client`.
 
 | Variable | Uso |
 |---|---|
@@ -71,6 +76,10 @@ el contenido cambia con cada publicación, así que no hay prerender en build.
 | `SITE_BASE_URL` | Origen público para canonical y Open Graph (por defecto `http://localhost:4000`) |
 | `ALLOWED_HOSTS` | Hosts aceptados por el motor SSR, separados por comas |
 | `PORT` | Puerto del servidor Express |
+
+`SITE_BASE_URL` también se usa en **tiempo de build** para el canonical y Open Graph de las
+tres páginas prerenderizadas. El `Dockerfile` acepta `ARG SITE_BASE_URL` y Compose lo pasa
+como build arg; en producción debe apuntar al dominio real antes de construir la imagen.
 
 En el navegador las peticiones salen relativas (`/api/...`) y las resuelve el proxy de
 desarrollo o Caddy en producción.
@@ -81,8 +90,18 @@ con `docker compose up -d --build` y queda en http://localhost:8088.
 ## SEO
 
 `SeoService` gestiona por ruta `<title>`, `description`, canonical, Open Graph, Twitter Card
-y JSON-LD `NewsArticle`. Las páginas de error, la búsqueda y los 404/410 llevan
-`noindex,follow` y no publican canonical.
+y JSON-LD. Las páginas de error, la búsqueda y los 404/410 llevan `noindex,follow` y no
+publican canonical. Los listados paginados conservan `?page=N` en el canonical.
+
+JSON-LD:
+
+- Portada: `WebSite` + `Organization` con `SearchAction` a `/buscar?q=`.
+- Detalle de artículo: `NewsArticle` con autor, sección, fechas e imagen.
+- Detalle, categoría y banda: `BreadcrumbList`.
+
+El `<head>` declara `/feed.xml` como feed global; las páginas de categoría añaden su propio
+`/categorias/{slug}/feed.xml`. El sitemap, robots y feeds los genera la API y Caddy los
+publica en la raíz del dominio.
 
 Los estados 404 y 410 se devuelven de verdad en SSR con `RESPONSE_INIT`, no solo en el HTML.
 
@@ -92,8 +111,9 @@ Los estados 404 y 410 se devuelven de verdad en SSR con `RESPONSE_INIT`, no solo
 npm test
 ```
 
-Cubren la portada (contenido y estado vacío) y el shell de la aplicación. Los tests de
-servicios y e2e llegan en M4.
+Cubren la portada (contenido y estado vacío), el shell de la aplicación y `SeoService`
+(canonical, `noindex`, JSON-LD de artículo y migas, y enlace de feed). Los tests de servicios
+restantes y e2e llegan en M4.
 
 ## Medios
 
@@ -116,6 +136,7 @@ src/app/
 │   ├── articles/      # tarjeta, listado, detalle, resolvers
 │   ├── bands/         # ficha de banda + resolver
 │   ├── search/        # búsqueda + resolver
+│   ├── static/        # sobre, contacto y privacidad
 │   └── not-found/
 ├── layout/            # header, footer
 ├── app.config.ts      # providers de navegador
@@ -137,7 +158,7 @@ src/app/
 - [x] **M0** Fundaciones: Angular 22 + SSR, Tailwind, layout, integración con la API
 - [x] **M1** Lectura: portada, archivo, secciones, detalle, bandas, búsqueda y SEO
 - [x] **M2** Redacción: login, editor Markdown con autoguardado, taxonomía y medios
-- [ ] **M3** SEO avanzado: sitemap, RSS, prerender selectivo
+- [x] **M3** SEO avanzado: sitemap, robots, RSS, JSON-LD y prerender selectivo
 - [ ] **M4** Calidad: e2e, accesibilidad, presupuesto de rendimiento
 - [ ] **M5** Producción
 

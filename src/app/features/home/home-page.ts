@@ -55,5 +55,6 @@ export class HomePage {
         'Noticias de heavy metal, lanzamientos, conciertos y entrevistas. Información de la escena sin relleno ni clickbait.',
       path: '/',
     });
+    this.seo.applySiteJsonLd();
   }
 }

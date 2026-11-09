@@ -55,6 +55,24 @@ export const routes: Routes = [
     loadComponent: () => import('./features/bands/band-page').then((m) => m.BandPage),
   },
   {
+    path: 'sobre',
+    title: 'Sobre The Blast Beast — Quiénes somos',
+    loadComponent: () =>
+      import('./features/static/about-page').then((m) => m.AboutPage),
+  },
+  {
+    path: 'contacto',
+    title: 'Contacto — The Blast Beast',
+    loadComponent: () =>
+      import('./features/static/contact-page').then((m) => m.ContactPage),
+  },
+  {
+    path: 'privacidad',
+    title: 'Privacidad — The Blast Beast',
+    loadComponent: () =>
+      import('./features/static/privacy-page').then((m) => m.PrivacyPage),
+  },
+  {
     path: 'admin/login',
     title: 'Acceso a redacción — The Blast Beast',
     loadComponent: () =>

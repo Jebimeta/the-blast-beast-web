@@ -6,7 +6,9 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
-RUN npm run build
+# Origen público para canonical/OG de las rutas prerenderizadas.
+ARG SITE_BASE_URL=http://localhost:8088
+RUN SITE_BASE_URL=$SITE_BASE_URL npm run build
 
 # ---- Runtime ----
 FROM node:24-alpine AS runtime

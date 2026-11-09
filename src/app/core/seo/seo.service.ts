@@ -16,7 +16,15 @@ export interface SeoData {
   noIndex?: boolean;
 }
 
-const JSON_LD_ID = 'page-jsonld';
+export interface BreadcrumbItem {
+  name: string;
+  path: string;
+}
+
+const ARTICLE_JSON_LD_ID = 'article-jsonld';
+const BREADCRUMB_JSON_LD_ID = 'breadcrumb-jsonld';
+const SITE_JSON_LD_ID = 'site-jsonld';
+const FEED_LINK_SELECTOR = 'link[data-page-feed]';
 
 @Injectable({ providedIn: 'root' })
 export class SeoService {
@@ -33,8 +41,11 @@ export class SeoService {
     const url = `${this.siteUrl}${data.path}`;
 
     this.clearJsonLd();
+    this.clearFeed();
     this.title.setTitle(data.title);
     this.setMeta('name', 'description', data.description);
+    this.setMeta('property', 'og:site_name', 'The Blast Beast');
+    this.setMeta('property', 'og:locale', 'es_ES');
     this.setMeta('property', 'og:title', data.title);
     this.setMeta('property', 'og:description', data.description);
     this.setMeta('property', 'og:type', data.type ?? 'website');
@@ -120,12 +131,71 @@ export class SeoService {
       payload['image'] = [data.image];
     }
 
-    this.clearJsonLd();
-    const script = this.document.createElement('script');
-    script.type = 'application/ld+json';
-    script.id = JSON_LD_ID;
-    script.textContent = JSON.stringify(payload);
-    this.document.head.appendChild(script);
+    this.setJsonLd(ARTICLE_JSON_LD_ID, payload);
+  }
+
+  /** WebSite + Organization con SearchAction para la portada. */
+  applySiteJsonLd(): void {
+    const site = this.siteUrl;
+    this.setJsonLd(SITE_JSON_LD_ID, {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'WebSite',
+          '@id': `${site}/#website`,
+          url: `${site}/`,
+          name: 'The Blast Beast',
+          description:
+            'Noticias de heavy metal, lanzamientos, conciertos y entrevistas.',
+          inLanguage: 'es-ES',
+          publisher: { '@id': `${site}/#organization` },
+          potentialAction: {
+            '@type': 'SearchAction',
+            target: {
+              '@type': 'EntryPoint',
+              urlTemplate: `${site}/buscar?q={search_term_string}`,
+            },
+            'query-input': 'required name=search_term_string',
+          },
+        },
+        {
+          '@type': 'Organization',
+          '@id': `${site}/#organization`,
+          name: 'The Blast Beast',
+          url: `${site}/`,
+          email: 'redaccion@theblastbeast.com',
+        },
+      ],
+    });
+  }
+
+  applyBreadcrumbJsonLd(items: BreadcrumbItem[]): void {
+    this.setJsonLd(BREADCRUMB_JSON_LD_ID, {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: items.map((item, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item.name,
+        item: `${this.siteUrl}${item.path}`,
+      })),
+    });
+  }
+
+  /** Declara el feed RSS de la página actual sin duplicar el global. */
+  setFeed(path: string, title: string): void {
+    let link = this.document.head.querySelector<HTMLLinkElement>(FEED_LINK_SELECTOR);
+
+    if (!link) {
+      link = this.document.createElement('link');
+      link.rel = 'alternate';
+      link.type = 'application/rss+xml';
+      link.setAttribute('data-page-feed', '');
+      this.document.head.appendChild(link);
+    }
+
+    link.title = title;
+    link.href = `${this.siteUrl}${path}`;
   }
 
   private setCanonical(url: string): void {
@@ -146,7 +216,24 @@ export class SeoService {
     this.meta.updateTag({ [attribute]: key, content });
   }
 
+  private setJsonLd(id: string, payload: unknown): void {
+    this.document.getElementById(id)?.remove();
+    const script = this.document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = id;
+    script.setAttribute('data-seo-jsonld', '');
+    script.textContent = JSON.stringify(payload);
+    this.document.head.appendChild(script);
+  }
+
   private clearJsonLd(): void {
-    this.document.getElementById(JSON_LD_ID)?.remove();
+    this.document
+      .querySelectorAll('script[data-seo-jsonld]')
+      .forEach((script) => script.remove());
+    this.document.getElementById('page-jsonld')?.remove();
+  }
+
+  private clearFeed(): void {
+    this.document.head.querySelector(FEED_LINK_SELECTOR)?.remove();
   }
 }

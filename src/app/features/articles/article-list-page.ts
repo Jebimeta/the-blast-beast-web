@@ -43,7 +43,9 @@ export class ArticleListPage {
   constructor() {
     effect(() => {
       const category = this.list().category;
-      const path = category ? `/categorias/${category.slug}` : '/articulos';
+      const page = this.list().page.page;
+      const basePath = category ? `/categorias/${category.slug}` : '/articulos';
+      const path = page > 0 ? `${basePath}?page=${page}` : basePath;
       const title = category ? `${category.name} — The Blast Beast` : 'Todas las noticias — The Blast Beast';
 
       this.seo.apply({
@@ -51,6 +53,17 @@ export class ArticleListPage {
         description: this.description(),
         path,
       });
+
+      if (category) {
+        this.seo.setFeed(
+          `/categorias/${category.slug}/feed.xml`,
+          `${category.name} — The Blast Beast`,
+        );
+        this.seo.applyBreadcrumbJsonLd([
+          { name: 'Inicio', path: '/' },
+          { name: category.name, path: basePath },
+        ]);
+      }
     });
   }
 

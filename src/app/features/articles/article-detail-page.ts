@@ -94,6 +94,15 @@ export class ArticleDetailPage {
         section: article.category.name,
         image,
       });
+
+      this.seo.applyBreadcrumbJsonLd([
+        { name: 'Inicio', path: '/' },
+        {
+          name: article.category.name,
+          path: `/categorias/${article.category.slug}`,
+        },
+        { name: article.title, path },
+      ]);
     });
   }
 }

@@ -49,6 +49,10 @@ export class BandPage {
         description: `Noticias, conciertos y lanzamientos de ${band.name} en The Blast Beast.`,
         path: `/bandas/${band.slug}`,
       });
+      this.seo.applyBreadcrumbJsonLd([
+        { name: 'Inicio', path: '/' },
+        { name: band.name, path: `/bandas/${band.slug}` },
+      ]);
     });
   }
 }
