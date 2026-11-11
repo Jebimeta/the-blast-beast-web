@@ -44,6 +44,7 @@ __screenshots__/
 /test-results
 /reports
 /.lighthouseci
+*.log
 
 # System files
 .DS_Store
