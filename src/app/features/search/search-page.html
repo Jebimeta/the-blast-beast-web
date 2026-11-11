@@ -41,6 +41,10 @@
         {{ pageNumber() }} de {{ totalPages() }}
       </p>
 
+      <!-- Las tarjetas usan h3; este h2 mantiene el orden de encabezados
+           (h1 -> h2 -> h3) sin añadir ruido visual. -->
+      <h2 class="sr-only">Resultados de la búsqueda</h2>
+
       <div class="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         @for (article of results().content; track article.id) {
           <app-article-card [article]="article" />
