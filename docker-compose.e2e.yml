@@ -1,0 +1,70 @@
+# Stack mínimo para e2e: API + web + PostgreSQL + Caddy en el mismo origen.
+# Uso local (con los repos hermanos):
+#   docker compose -f docker-compose.e2e.yml up -d --build
+#   npm run e2e
+#   npm run lighthouse
+# En CI, el checkout de la API se coloca en ./the-blast-beast-api y se define
+# API_CONTEXT=./the-blast-beast-api.
+name: the-blast-beast-e2e
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: blastbeast
+      POSTGRES_USER: blastbeast
+      POSTGRES_PASSWORD: blastbeast
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U blastbeast -d blastbeast"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: ${API_CONTEXT:-../the-blast-beast-api}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/blastbeast
+      DB_USER: blastbeast
+      DB_PASSWORD: blastbeast
+      SITE_BASE_URL: http://localhost:${E2E_PORT:-8088}
+      JWT_SECRET: e2e-only-secret-change-me-please-32-chars-min
+      AUTH_COOKIE_SECURE: "false"
+      STORAGE_LOCAL_ROOT: /app/data/media
+      STORAGE_PUBLIC_BASE_URL: http://localhost:${E2E_PORT:-8088}/media
+      SPRING_PROFILES_ACTIVE: dev
+      ADMIN_EMAIL: ""
+      ADMIN_PASSWORD: ""
+    volumes:
+      - media:/app/data/media
+
+  web:
+    build:
+      context: .
+      args:
+        SITE_BASE_URL: http://localhost:${E2E_PORT:-8088}
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      API_BASE_URL: http://api:8080
+      SITE_BASE_URL: http://localhost:${E2E_PORT:-8088}
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      PORT: 4000
+
+  caddy:
+    image: caddy:2-alpine
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    ports:
+      - "${E2E_PORT:-8088}:80"
+    volumes:
+      - ./e2e/Caddyfile:/etc/caddy/Caddyfile:ro
+
+volumes:
+  media:

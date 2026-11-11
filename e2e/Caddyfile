@@ -1,0 +1,42 @@
+# Caddy del stack de e2e. Reproduce el enrutado de infra/Caddyfile sin TLS.
+{$SITE_DOMAIN:http://localhost} {
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	handle /sitemap.xml {
+		reverse_proxy api:8080
+	}
+
+	handle /robots.txt {
+		reverse_proxy api:8080
+	}
+
+	handle /feed.xml {
+		reverse_proxy api:8080
+	}
+
+	handle /categorias/*/feed.xml {
+		reverse_proxy api:8080
+	}
+
+	handle /api/* {
+		reverse_proxy api:8080
+	}
+
+	handle /media/* {
+		reverse_proxy api:8080
+	}
+
+	handle /actuator/* {
+		reverse_proxy api:8080
+	}
+
+	handle {
+		reverse_proxy web:4000
+	}
+}

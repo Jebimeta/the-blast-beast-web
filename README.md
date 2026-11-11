@@ -81,8 +81,11 @@ la API. El resto sigue en `RenderMode.Server` y el panel en `RenderMode.Client`.
 tres páginas prerenderizadas. El `Dockerfile` acepta `ARG SITE_BASE_URL` y Compose lo pasa
 como build arg; en producción debe apuntar al dominio real antes de construir la imagen.
 
-En el navegador las peticiones salen relativas (`/api/...`) y las resuelve el proxy de
-desarrollo o Caddy en producción.
+En el navegador las peticiones son same-origin contra el origen actual (`location.origin`,
+p. ej. `http://localhost:8088/api/v1/...`) y las resuelve el proxy de desarrollo o Caddy.
+La URL absoluta no cambia el destino, pero permite que la clave del *transfer cache* de
+hidratación coincida con la que usó el SSR. `HTTP_TRANSFER_CACHE_ORIGIN_MAP` (solo en el
+servidor) traduce el origen interno de la API al público.
 
 El stack completo (API + web + PostgreSQL + Caddy) se levanta desde la raíz del workspace
 con `docker compose up -d --build` y queda en http://localhost:8088.
@@ -105,15 +108,47 @@ publica en la raíz del dominio.
 
 Los estados 404 y 410 se devuelven de verdad en SSR con `RESPONSE_INIT`, no solo en el HTML.
 
-## Tests
+## Tests y calidad
 
 ```bash
-npm test
+# Unitarios (Vitest + TestBed)
+npm test -- --watch=false
+
+# E2E, accesibilidad y Lighthouse contra el stack completo
+docker compose -f docker-compose.e2e.yml up -d --build
+npm run e2e
+npm run lighthouse
 ```
 
-Cubren la portada (contenido y estado vacío), el shell de la aplicación y `SeoService`
-(canonical, `noindex`, JSON-LD de artículo y migas, y enlace de feed). Los tests de servicios
-restantes y e2e llegan en M4.
+**Unitarios** (3 ficheros, 7 tests): portada con contenido y estado vacío, shell de la
+aplicación y `SeoService` (canonical, `noindex`, JSON-LD de artículo y migas, y enlace de
+feed).
+
+**E2E** (Playwright, 12 tests) sobre Caddy + SSR + API + PostgreSQL en
+`http://localhost:8088`:
+
+| Spec | Tests | Contenido |
+|---|---|---|
+| `e2e/public.spec.ts` | 7 | Portada, detalle, archivo, búsqueda, 404 real, estáticas, sitemap/robots/feed |
+| `e2e/admin.spec.ts` | 3 | Login obligatorio, ciclo crear→publicar→verificar→borrar, filtros |
+| `e2e/a11y.spec.ts` | 2 | axe WCAG 2.1 AA en páginas públicas y panel autenticado |
+
+**Accesibilidad**: `@axe-core/playwright` con `wcag2a`, `wcag2aa`, `wcag21a` y `wcag21aa`.
+Criterio: cero violaciones.
+
+**Lighthouse** (`lighthouserc.cjs`): móvil, 4 URLs y 3 pasadas por URL con mediana. Umbrales
+0,90 rendimiento, 0,95 accesibilidad, 0,90 buenas prácticas y 0,95 SEO. Informes en
+`reports/lighthouse/`.
+
+| Variable | Uso |
+|---|---|
+| `E2E_BASE_URL` | Origen del stack para Playwright y Lighthouse (por defecto `http://localhost:8088`) |
+| `CHROME_PATH` | Binario de Chrome que usa Lighthouse CI |
+
+> En Windows, Lighthouse local debe usar el *headless shell* de Playwright
+> (`%LOCALAPPDATA%\ms-playwright\chromium_headless_shell-*\chrome-headless-shell.exe`):
+> Chrome completo añade una tarea de rasterización no atribuible que hunde el TBT. En CI
+> Ubuntu se usa `/usr/bin/google-chrome` sin problema.
 
 ## Medios
 

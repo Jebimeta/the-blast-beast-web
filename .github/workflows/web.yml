@@ -47,6 +47,78 @@ jobs:
           path: dist/the-blast-beast-web/
           retention-days: 7
 
+  e2e:
+    name: E2E, accesibilidad y Lighthouse
+    runs-on: ubuntu-latest
+    env:
+      API_CONTEXT: ./the-blast-beast-api
+      E2E_PORT: '8088'
+    steps:
+      - uses: actions/checkout@v4
+
+      # El stack e2e necesita la API y su seed de desarrollo. Si el repo es
+      # privado, define el secret API_REPO_TOKEN con permiso de lectura.
+      - name: Checkout de la API
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/the-blast-beast-api
+          path: the-blast-beast-api
+          token: ${{ secrets.API_REPO_TOKEN || github.token }}
+
+      - name: Configurar Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Instalar Chromium de Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Levantar el stack completo
+        run: docker compose -f docker-compose.e2e.yml up -d --build
+
+      - name: Esperar a que API y web respondan
+        run: |
+          for i in $(seq 1 90); do
+            if curl -fsS http://localhost:8088/api/v1/ping > /dev/null \
+              && curl -fsS http://localhost:8088/ > /dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f docker-compose.e2e.yml logs --no-color
+          exit 1
+
+      - name: Playwright (público, redacción y axe)
+        run: npm run e2e
+
+      - name: Lighthouse (rendimiento, SEO y accesibilidad)
+        run: npm run lighthouse
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+
+      - name: Publicar informes de calidad
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports
+          path: |
+            playwright-report/
+            test-results/
+            reports/lighthouse/
+          retention-days: 7
+
+      - name: Logs del stack
+        if: failure()
+        run: docker compose -f docker-compose.e2e.yml logs --no-color
+
+      - name: Parar el stack
+        if: always()
+        run: docker compose -f docker-compose.e2e.yml down -v
+
   image:
     name: Imagen Docker
     needs: build

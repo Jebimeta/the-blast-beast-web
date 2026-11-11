@@ -8,3 +8,11 @@ dist/
 .env
 .env.*
 README.md
+e2e/
+the-blast-beast-api/
+playwright.config.ts
+lighthouserc.cjs
+docker-compose.e2e.yml
+playwright-report/
+test-results/
+reports/
