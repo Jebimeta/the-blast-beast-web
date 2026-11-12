@@ -8,7 +8,7 @@ import {
   RESPONSE_INIT,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { formatDate, readingTime } from '../../core/format';
+import { formatDate, formatShortDate, readingTime } from '../../core/format';
 import { SeoService } from '../../core/seo/seo.service';
 import type { ArticleDetailData } from './article.resolvers';
 
@@ -35,6 +35,17 @@ export class ArticleDetailPage {
   );
   protected readonly minutes = computed(() =>
     readingTime(this.article()?.readingMinutes ?? 0),
+  );
+  protected readonly related = computed(() =>
+    this.detail().related.map((related) => ({
+      article: related,
+      date: formatShortDate(related.publishedAt),
+      thumb:
+        related.cover?.variants?.find((variant) => variant.kind === 'thumb')
+          ?.url ??
+        related.cover?.url ??
+        null,
+    })),
   );
 
   /** El detalle usa la variante `hero` (1200 px) para no servir el original. */

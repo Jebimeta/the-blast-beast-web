@@ -9,8 +9,10 @@ test.describe('Portal público', () => {
 
     await expect(page).toHaveTitle(/The Blast Beast/);
     await expect(page.locator('main#contenido h1')).toBeVisible();
+    const sections = page.getByRole('navigation', { name: 'Secciones' });
+    await expect(sections).toBeVisible();
     await expect(
-      page.getByRole('navigation', { name: 'Navegación principal' }),
+      sections.getByRole('link', { name: 'Inicio', exact: true }),
     ).toBeVisible();
     await expect(
       page.getByRole('link', { name: /Metallica anuncia una gira/i }).first(),
@@ -30,6 +32,12 @@ test.describe('Portal público', () => {
       'Redacción Blast Beast',
     );
     await expect(page.locator('time[datetime]').first()).toBeVisible();
+
+    const related = page.getByRole('region', {
+      name: 'Noticias anteriores',
+    });
+    await expect(related).toBeVisible();
+    await expect(related.getByRole('link').first()).toBeVisible();
   });
 
   test('el archivo lista artículos y la categoría filtra por sección', async ({
@@ -46,6 +54,13 @@ test.describe('Portal público', () => {
       page.getByRole('heading', { name: 'Conciertos', exact: true }),
     ).toBeVisible();
     expect(await page.locator('article').count()).toBeGreaterThanOrEqual(3);
+
+    // «Noticias» es el archivo completo, no solo la categoría homónima.
+    await page.goto('/categorias/noticias');
+    await expect(
+      page.getByRole('heading', { name: 'Noticias', exact: true }),
+    ).toBeVisible();
+    expect(await page.locator('article').count()).toBeGreaterThanOrEqual(6);
   });
 
   test('la búsqueda full-text devuelve resultados', async ({ page }) => {

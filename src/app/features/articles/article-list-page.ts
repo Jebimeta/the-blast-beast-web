@@ -9,6 +9,7 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SeoService } from '../../core/seo/seo.service';
 import { ArticleCard } from './article-card';
+import { GENERAL_CATEGORY_SLUG } from './article.resolvers';
 import type { ArticleListData } from './article.resolvers';
 
 @Component({
@@ -44,7 +45,14 @@ export class ArticleListPage {
     effect(() => {
       const category = this.list().category;
       const page = this.list().page.page;
-      const basePath = category ? `/categorias/${category.slug}` : '/articulos';
+      const isGeneral = category?.slug === GENERAL_CATEGORY_SLUG;
+      // «Noticias» muestra el archivo completo: canonicaliza a /articulos para
+      // no duplicar la misma lista bajo dos URLs.
+      const basePath = isGeneral
+        ? '/articulos'
+        : category
+          ? `/categorias/${category.slug}`
+          : '/articulos';
       const path = page > 0 ? `${basePath}?page=${page}` : basePath;
       const title = category ? `${category.name} — The Blast Beast` : 'Todas las noticias — The Blast Beast';
 
@@ -56,7 +64,7 @@ export class ArticleListPage {
 
       if (category) {
         this.seo.setFeed(
-          `/categorias/${category.slug}/feed.xml`,
+          isGeneral ? '/feed.xml' : `/categorias/${category.slug}/feed.xml`,
           `${category.name} — The Blast Beast`,
         );
         this.seo.applyBreadcrumbJsonLd([

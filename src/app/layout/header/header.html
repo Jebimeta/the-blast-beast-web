@@ -18,28 +18,6 @@
       </span>
     </a>
 
-    <nav aria-label="Navegación principal" class="hidden items-center gap-5 md:flex">
-      <a
-        routerLink="/"
-        routerLinkActive="text-bone"
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition hover:text-bone"
-        >Inicio</a
-      >
-      <a
-        routerLink="/articulos"
-        routerLinkActive="text-bone"
-        class="font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition hover:text-bone"
-        >Noticias</a
-      >
-      <a
-        routerLink="/buscar"
-        routerLinkActive="text-bone"
-        class="font-mono text-[11px] uppercase tracking-[0.18em] text-muted transition hover:text-bone"
-        >Buscar</a
-      >
-    </nav>
-
     <form
       class="ml-auto flex min-w-0 items-center gap-2"
       role="search"
@@ -71,6 +49,14 @@
   @if (store.categories().length) {
     <div class="border-t border-line">
       <nav aria-label="Secciones" class="shell flex h-11 items-center gap-6 overflow-x-auto">
+        <a
+          routerLink="/"
+          routerLinkActive="text-bone"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.2em] text-muted transition hover:text-blood-soft"
+        >
+          Inicio
+        </a>
         @for (category of store.categories(); track category.slug) {
           <a
             [routerLink]="['/categorias', category.slug]"
@@ -80,12 +66,6 @@
             {{ category.name }}
           </a>
         }
-        <a
-          routerLink="/articulos"
-          class="ml-auto whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.2em] text-muted transition hover:text-bone"
-        >
-          Archivo completo →
-        </a>
       </nav>
     </div>
   }

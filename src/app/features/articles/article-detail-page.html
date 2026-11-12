@@ -7,6 +7,7 @@
       ></div>
 
       <div class="shell relative py-10 sm:py-14">
+        <div class="mx-auto max-w-3xl">
         <nav
           aria-label="Migas de pan"
           class="flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
@@ -25,7 +26,7 @@
         <p class="eyebrow mt-7">{{ article.category.name }}</p>
 
         <h1
-          class="mt-4 max-w-4xl font-display text-4xl uppercase leading-[0.95] sm:text-6xl"
+          class="mt-4 max-w-3xl font-display text-4xl uppercase leading-[0.95] sm:text-6xl"
         >
           {{ article.title }}
         </h1>
@@ -35,7 +36,7 @@
         </p>
 
         @if (article.cover; as cover) {
-          <figure class="mt-8 max-w-4xl overflow-hidden rounded-xl border border-line">
+          <figure class="mt-8 max-w-3xl overflow-hidden rounded-xl border border-line">
             <img
               [src]="coverHero()"
               [alt]="cover.altText ?? article.title"
@@ -52,19 +53,6 @@
             }
           </figure>
         }
-
-        <div
-          class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-line pt-5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
-        >
-          <span class="text-bone">{{ article.authorName }}</span>
-          <span aria-hidden="true" class="text-line">·</span>
-          <time [attr.datetime]="article.publishedAt">{{ published() }}</time>
-          <span aria-hidden="true" class="text-line">·</span>
-          <span>{{ minutes() }}</span>
-          @if (article.updatedAt && updated() !== published()) {
-            <span aria-hidden="true" class="text-line">·</span>
-            <span>Actualizado el {{ updated() }}</span>
-          }
         </div>
       </div>
     </section>
@@ -74,6 +62,20 @@
         <div class="article-body" [innerHTML]="article.bodyHtml"></div>
 
         <footer class="mt-14 space-y-6 border-t border-line pt-8">
+          <div
+            class="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
+          >
+            <span class="text-bone">{{ article.authorName }}</span>
+            <span aria-hidden="true" class="text-line">·</span>
+            <time [attr.datetime]="article.publishedAt">{{ published() }}</time>
+            <span aria-hidden="true" class="text-line">·</span>
+            <span>{{ minutes() }}</span>
+            @if (article.updatedAt && updated() !== published()) {
+              <span aria-hidden="true" class="text-line">·</span>
+              <span>Actualizado el {{ updated() }}</span>
+            }
+          </div>
+
           @if (article.bands.length) {
             <div>
               <h2 class="font-display text-xs uppercase tracking-[0.3em] text-muted">
@@ -113,21 +115,55 @@
               </ul>
             </div>
           }
-
-          <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
-            <a
-              [routerLink]="['/categorias', article.category.slug]"
-              class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted hover:text-bone"
-              >← Más de {{ article.category.name }}</a
-            >
-            <a
-              routerLink="/articulos"
-              class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted hover:text-bone"
-              >Todo el archivo →</a
-            >
-          </div>
         </footer>
       </div>
+
+      @if (related().length) {
+        <section
+          aria-labelledby="related-title"
+          class="mx-auto mt-14 max-w-3xl border-t border-line pt-8"
+        >
+          <h2
+            id="related-title"
+            class="font-display text-xs uppercase tracking-[0.3em] text-muted"
+          >
+            Noticias anteriores
+          </h2>
+
+          <div class="mt-6 grid gap-6 sm:grid-cols-3">
+            @for (item of related(); track item.article.id) {
+              <a
+                [routerLink]="['/articulos', item.article.slug]"
+                class="group block"
+              >
+                @if (item.thumb) {
+                  <div class="overflow-hidden rounded-lg border border-line">
+                    <img
+                      [src]="item.thumb"
+                      [alt]="item.article.cover?.altText ?? item.article.title"
+                      width="480"
+                      height="320"
+                      loading="lazy"
+                      class="aspect-[3/2] w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                    />
+                  </div>
+                }
+
+                <p
+                  class="mt-3 font-mono text-[9px] uppercase tracking-[0.16em] text-muted"
+                >
+                  {{ item.article.category.name }} · {{ item.date }}
+                </p>
+                <h3
+                  class="mt-2 font-display text-lg uppercase leading-tight transition group-hover:text-blood-soft"
+                >
+                  {{ item.article.title }}
+                </h3>
+              </a>
+            }
+          </div>
+        </section>
+      }
     </article>
   } @else {
     <section class="shell py-20 sm:py-28">

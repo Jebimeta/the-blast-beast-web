@@ -54,7 +54,7 @@ describe('HomePage', () => {
     }).compileComponents();
   });
 
-  it('muestra el artículo de portada y las secciones', () => {
+  it('muestra el artículo de portada y las últimas noticias', () => {
     const fixture = TestBed.createComponent(HomePage);
     fixture.componentRef.setInput('home', data);
     fixture.detectChanges();

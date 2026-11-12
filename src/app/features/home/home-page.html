@@ -112,41 +112,6 @@
     </div>
   </section>
 
-  @if (home().categories.length) {
-    <section class="border-b border-line bg-surface/40">
-      <div class="shell py-8">
-        <div class="flex items-center justify-between gap-4">
-          <h2 class="font-display text-xs uppercase tracking-[0.3em] text-muted">
-            Secciones
-          </h2>
-          <a
-            routerLink="/articulos"
-            class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted hover:text-bone"
-            >Todo el archivo →</a
-          >
-        </div>
-
-        <ul class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          @for (category of home().categories; track category.slug) {
-            <li>
-              <a
-                [routerLink]="['/categorias', category.slug]"
-                class="group flex items-baseline justify-between gap-3 rounded-lg border border-line bg-ink/40 px-4 py-3 transition hover:border-blood/60 hover:bg-surface-2"
-              >
-                <span class="font-display text-base uppercase tracking-wide">{{
-                  category.name
-                }}</span>
-                <span class="font-mono text-xs text-muted">{{
-                  category.articleCount
-                }}</span>
-              </a>
-            </li>
-          }
-        </ul>
-      </div>
-    </section>
-  }
-
   <section class="shell py-12 sm:py-16">
     <div class="flex items-end justify-between gap-4 border-b border-line pb-4">
       <div>
