@@ -80,6 +80,8 @@ la API. El resto sigue en `RenderMode.Server` y el panel en `RenderMode.Client`.
 `SITE_BASE_URL` también se usa en **tiempo de build** para el canonical y Open Graph de las
 tres páginas prerenderizadas. El `Dockerfile` acepta `ARG SITE_BASE_URL` y Compose lo pasa
 como build arg; en producción debe apuntar al dominio real antes de construir la imagen.
+La workflow de CI lo recibe de la variable de repositorio `SITE_BASE_URL` (por defecto
+`https://theblastbeast.com`).
 
 En el navegador las peticiones son same-origin contra el origen actual (`location.origin`,
 p. ej. `http://localhost:8088/api/v1/...`) y las resuelve el proxy de desarrollo o Caddy.
@@ -194,8 +196,13 @@ src/app/
 - [x] **M1** Lectura: portada, archivo, secciones, detalle, bandas, búsqueda y SEO
 - [x] **M2** Redacción: login, editor Markdown con autoguardado, taxonomía y medios
 - [x] **M3** SEO avanzado: sitemap, robots, RSS, JSON-LD y prerender selectivo
-- [ ] **M4** Calidad: e2e, accesibilidad, presupuesto de rendimiento
-- [ ] **M5** Producción
+- [x] **M4** Calidad: e2e, accesibilidad, presupuesto de rendimiento
+- [ ] **M5** Producción: la imagen se publica en GHCR y se sirve detrás de Caddy con TLS;
+  el despliegue real queda pendiente del VPS y el dominio
+
+La hidratación incremental está desactivada (`withNoIncrementalHydration()`) porque la app
+no usa `@defer` y así se evitan los scripts inline de event replay, incompatibles con la CSP
+estricta de producción. Si se añaden bloques `@defer`, hay que revisar la CSP.
 
 ## Licencia
 

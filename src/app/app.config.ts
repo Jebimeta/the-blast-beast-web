@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { provideClientHydration } from '@angular/platform-browser';
+import { provideClientHydration, withNoIncrementalHydration } from '@angular/platform-browser';
 import {
   provideRouter,
   withComponentInputBinding,
@@ -26,7 +26,10 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
     ),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
-    provideClientHydration(),
+    // La app no usa bloques `@defer`. Desactivar la hidratación incremental evita
+    // que Angular emita scripts inline de event replay, incompatibles con la CSP
+    // estricta (`script-src 'self'`) que aplica Caddy en producción.
+    provideClientHydration(withNoIncrementalHydration()),
     provideAppInitializer(() => {
       const store = inject(CategoryStore);
       const load$ = store.load();

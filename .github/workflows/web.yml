@@ -150,6 +150,8 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            SITE_BASE_URL=${{ vars.SITE_BASE_URL || 'https://theblastbeast.com' }}
           tags: |
             ghcr.io/${{ steps.image.outputs.name }}:latest
             ghcr.io/${{ steps.image.outputs.name }}:${{ github.sha }}
