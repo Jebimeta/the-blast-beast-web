@@ -2,35 +2,21 @@
   <a
     [routerLink]="['/articulos', item.article.slug]"
     [attr.tabindex]="duplicate ? -1 : null"
-    class="group flex w-72 shrink-0 items-center gap-3 rounded-lg border border-line bg-ink/60 px-3 py-2 transition hover:border-blood/60 hover:bg-surface-2 sm:w-80"
+    class="group flex shrink-0 items-center gap-3 rounded-md border border-line bg-ink/60 px-3 py-1.5 transition hover:border-blood/60 hover:bg-surface-2"
   >
-    @if (item.thumb) {
-      <img
-        [src]="item.thumb"
-        alt=""
-        width="64"
-        height="48"
-        loading="lazy"
-        decoding="async"
-        class="h-12 w-16 shrink-0 rounded border border-line object-cover"
-      />
-    }
-
-    <span class="min-w-0">
-      <span
-        class="flex flex-wrap items-center gap-x-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-blood-soft"
-      >
-        {{ item.article.category.name }}
-        <span aria-hidden="true" class="text-line">/</span>
-        <time [attr.datetime]="item.article.publishedAt" class="text-muted">{{
-          item.date
-        }}</time>
-      </span>
-      <span
-        class="mt-0.5 line-clamp-2 block font-display text-sm uppercase leading-tight text-bone transition group-hover:text-blood-soft"
-      >
-        {{ item.article.title }}
-      </span>
+    <span
+      class="flex shrink-0 items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.16em]"
+    >
+      <span class="text-blood-soft">{{ item.article.category.name }}</span>
+      <span aria-hidden="true" class="text-line">/</span>
+      <time [attr.datetime]="item.article.publishedAt" class="text-muted">{{
+        item.date
+      }}</time>
+    </span>
+    <span
+      class="whitespace-nowrap font-display text-sm uppercase leading-tight text-bone transition group-hover:text-blood-soft"
+    >
+      {{ item.article.title }}
     </span>
   </a>
 </ng-template>
@@ -41,7 +27,7 @@
   (focusout)="resetScroll($event)"
 >
   <div
-    class="shell flex flex-wrap items-center justify-between gap-x-3 gap-y-2 py-2.5 sm:flex-nowrap sm:gap-5"
+    class="flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2.5 sm:flex-nowrap sm:gap-5 sm:px-6"
   >
     <div class="order-1 flex shrink-0 items-center gap-2" aria-hidden="true">
       <span class="size-2 rounded-full bg-blood ring-4 ring-blood/20"></span>

@@ -13,7 +13,6 @@ import { formatShortDate } from '../../core/format';
 interface TickerItem {
   article: ArticleSummary;
   date: string;
-  thumb: string | null;
 }
 
 @Component({
@@ -31,11 +30,6 @@ export class LatestTicker {
     this.articles().map((article) => ({
       article,
       date: formatShortDate(article.publishedAt),
-      thumb:
-        article.cover?.variants?.find((variant) => variant.kind === 'thumb')
-          ?.url ??
-        article.cover?.url ??
-        null,
     })),
   );
 
