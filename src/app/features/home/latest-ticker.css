@@ -1,0 +1,54 @@
+:host {
+  display: block;
+}
+
+.ticker-viewport {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.ticker-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-slide 50s linear infinite;
+  will-change: transform;
+}
+
+@media (hover: hover) {
+  :host(:hover) .ticker-track {
+    animation-play-state: paused;
+  }
+}
+
+:host(:focus-within) .ticker-track,
+.ticker-track.is-paused {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-slide {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-track {
+    animation: none;
+    transform: none;
+  }
+
+  .ticker-group--clone,
+  .ticker-toggle {
+    display: none;
+  }
+}

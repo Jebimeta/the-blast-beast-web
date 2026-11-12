@@ -1,0 +1,121 @@
+<ng-template #tickerCard let-item let-duplicate="duplicate">
+  <a
+    [routerLink]="['/articulos', item.article.slug]"
+    [attr.tabindex]="duplicate ? -1 : null"
+    class="group flex w-72 shrink-0 items-center gap-3 rounded-lg border border-line bg-ink/60 px-3 py-2 transition hover:border-blood/60 hover:bg-surface-2 sm:w-80"
+  >
+    @if (item.thumb) {
+      <img
+        [src]="item.thumb"
+        alt=""
+        width="64"
+        height="48"
+        loading="lazy"
+        decoding="async"
+        class="h-12 w-16 shrink-0 rounded border border-line object-cover"
+      />
+    }
+
+    <span class="min-w-0">
+      <span
+        class="flex flex-wrap items-center gap-x-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-blood-soft"
+      >
+        {{ item.article.category.name }}
+        <span aria-hidden="true" class="text-line">/</span>
+        <time [attr.datetime]="item.article.publishedAt" class="text-muted">{{
+          item.date
+        }}</time>
+      </span>
+      <span
+        class="mt-0.5 line-clamp-2 block font-display text-sm uppercase leading-tight text-bone transition group-hover:text-blood-soft"
+      >
+        {{ item.article.title }}
+      </span>
+    </span>
+  </a>
+</ng-template>
+
+<section
+  aria-label="Última hora"
+  class="border-b border-line bg-surface/50"
+  (focusout)="resetScroll($event)"
+>
+  <div
+    class="shell flex flex-wrap items-center justify-between gap-x-3 gap-y-2 py-2.5 sm:flex-nowrap sm:gap-5"
+  >
+    <div class="order-1 flex shrink-0 items-center gap-2" aria-hidden="true">
+      <span class="size-2 rounded-full bg-blood ring-4 ring-blood/20"></span>
+      <p
+        class="font-display text-[11px] uppercase tracking-[0.24em] text-blood-soft"
+      >
+        Última hora
+      </p>
+    </div>
+
+    <div class="relative order-3 w-full min-w-0 flex-1 sm:order-2 sm:w-auto">
+      <div class="ticker-viewport">
+        <div class="ticker-track" [class.is-paused]="paused()">
+          <!-- Copia decorativa para que el bucle sea continuo. -->
+          <ul
+            class="ticker-group ticker-group--clone flex shrink-0 items-stretch gap-3 pr-3"
+            aria-hidden="true"
+          >
+            @for (item of items(); track item.article.id) {
+              <li class="shrink-0">
+                <ng-container
+                  [ngTemplateOutlet]="tickerCard"
+                  [ngTemplateOutletContext]="{
+                    $implicit: item,
+                    duplicate: true,
+                  }"
+                />
+              </li>
+            }
+          </ul>
+
+          <ul class="ticker-group flex shrink-0 items-stretch gap-3 pr-3">
+            @for (item of items(); track item.article.id) {
+              <li class="shrink-0">
+                <ng-container
+                  [ngTemplateOutlet]="tickerCard"
+                  [ngTemplateOutletContext]="{ $implicit: item }"
+                />
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-[#0b0c0f] to-transparent"
+      ></div>
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-[#0b0c0f] to-transparent"
+      ></div>
+    </div>
+
+    <button
+      type="button"
+      class="ticker-toggle order-2 grid size-8 shrink-0 place-items-center rounded-md border border-line text-muted transition hover:border-muted hover:text-bone sm:order-3"
+      [attr.aria-pressed]="paused()"
+      [attr.aria-label]="
+        paused()
+          ? 'Reanudar el desplazamiento de últimas noticias'
+          : 'Pausar el desplazamiento de últimas noticias'
+      "
+      (click)="togglePause()"
+    >
+      @if (paused()) {
+        <svg viewBox="0 0 24 24" class="size-4 fill-current" aria-hidden="true">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+      } @else {
+        <svg viewBox="0 0 24 24" class="size-4 fill-current" aria-hidden="true">
+          <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
+        </svg>
+      }
+    </button>
+  </div>
+</section>

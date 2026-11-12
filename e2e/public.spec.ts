@@ -9,6 +9,13 @@ test.describe('Portal público', () => {
 
     await expect(page).toHaveTitle(/The Blast Beast/);
     await expect(page.locator('main#contenido h1')).toBeVisible();
+
+    const ticker = page.getByRole('region', { name: 'Última hora' });
+    await expect(ticker).toBeVisible();
+    await expect(ticker.getByRole('link')).toHaveCount(5);
+    await ticker.getByRole('button', { name: /Pausar/ }).click();
+    await expect(ticker.getByRole('button', { name: /Reanudar/ })).toBeVisible();
+
     const sections = page.getByRole('navigation', { name: 'Secciones' });
     await expect(sections).toBeVisible();
     await expect(
@@ -17,6 +24,22 @@ test.describe('Portal público', () => {
     await expect(
       page.getByRole('link', { name: /Metallica anuncia una gira/i }).first(),
     ).toBeVisible();
+  });
+
+  test('la cinta de última hora respeta prefers-reduced-motion', async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/');
+
+    const ticker = page.getByRole('region', { name: 'Última hora' });
+    await expect(ticker).toBeVisible();
+    await expect(ticker.locator('.ticker-track')).toHaveCSS(
+      'animation-name',
+      'none',
+    );
+    await expect(ticker.locator('.ticker-group--clone')).toBeHidden();
+    await expect(ticker.locator('.ticker-toggle')).toBeHidden();
   });
 
   test('el detalle de un artículo muestra cuerpo, autor y fecha', async ({

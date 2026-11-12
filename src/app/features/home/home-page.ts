@@ -9,11 +9,12 @@ import { RouterLink } from '@angular/router';
 import { formatDate, readingTime } from '../../core/format';
 import { SeoService } from '../../core/seo/seo.service';
 import { ArticleCard } from '../articles/article-card';
+import { LatestTicker } from './latest-ticker';
 import type { HomeData } from './home.resolver';
 
 @Component({
   selector: 'app-home-page',
-  imports: [RouterLink, ArticleCard],
+  imports: [RouterLink, ArticleCard, LatestTicker],
   templateUrl: './home-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -25,6 +26,9 @@ export class HomePage {
   protected readonly lead = computed(() => this.home().featured[0] ?? null);
   protected readonly secondary = computed(() => this.home().featured.slice(1));
   protected readonly latest = computed(() => this.home().latest.content);
+  protected readonly ticker = computed(() =>
+    this.home().latest.content.slice(0, 5),
+  );
   protected readonly isEmpty = computed(
     () => !this.lead() && this.latest().length === 0,
   );
