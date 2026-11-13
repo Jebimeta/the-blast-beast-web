@@ -5,5 +5,6 @@
  */
 .card-deferred {
   content-visibility: auto;
-  contain-intrinsic-size: auto 600px;
+  /* Solo la altura: fijar también el ancho intrínseco ensancha la rejilla móvil. */
+  contain-intrinsic-height: auto 600px;
 }
