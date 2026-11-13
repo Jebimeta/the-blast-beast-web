@@ -22,7 +22,7 @@ Frontend del portal de noticias de heavy metal **The Blast Beast**.
 | Ruta | Contenido |
 |---|---|
 | `/` | Portada: destacados, secciones y últimas noticias |
-| `/articulos` | Archivo completo con orden y paginación |
+| `/articulos` | Archivo completo con orden fijo y 9 noticias por página |
 | `/categorias/:slug` | Sección con filtro por categoría |
 | `/articulos/:slug` | Detalle de la noticia |
 | `/bandas/:slug` | Banda y sus noticias |
@@ -122,16 +122,16 @@ npm run e2e
 npm run lighthouse
 ```
 
-**Unitarios** (3 ficheros, 7 tests): portada con contenido y estado vacío, shell de la
-aplicación y `SeoService` (canonical, `noindex`, JSON-LD de artículo y migas, y enlace de
-feed).
+**Unitarios** (4 ficheros, 8 tests): portada con contenido y estado vacío, shell de la
+aplicación, cinta de última hora y `SeoService` (canonical, `noindex`, JSON-LD de artículo
+y migas, y enlace de feed).
 
-**E2E** (Playwright, 12 tests) sobre Caddy + SSR + API + PostgreSQL en
+**E2E** (Playwright, 13 tests) sobre Caddy + SSR + API + PostgreSQL en
 `http://localhost:8088`:
 
 | Spec | Tests | Contenido |
 |---|---|---|
-| `e2e/public.spec.ts` | 7 | Portada, detalle, archivo, búsqueda, 404 real, estáticas, sitemap/robots/feed |
+| `e2e/public.spec.ts` | 8 | Portada, cinta, detalle, archivo, búsqueda, 404 real, estáticas, sitemap/robots/feed |
 | `e2e/admin.spec.ts` | 3 | Login obligatorio, ciclo crear→publicar→verificar→borrar, filtros |
 | `e2e/a11y.spec.ts` | 2 | axe WCAG 2.1 AA en páginas públicas y panel autenticado |
 
@@ -155,7 +155,9 @@ Criterio: cero violaciones.
 ## Medios
 
 La API genera variantes WebP `thumb` (480 px) y `hero` (1600 px). Las tarjetas y la
-portada usan `thumb`; el detalle usa `hero`. El portal nunca descarga el original.
+portada usan `thumb`; el detalle sirve `thumb` en móvil y `hero` en escritorio mediante
+`<picture>`. El portal nunca descarga el original. En desarrollo, la API asigna portadas
+de ejemplo (JPG de Wikimedia Commons con crédito y licencia) a las noticias del seed.
 
 ## Estructura
 
