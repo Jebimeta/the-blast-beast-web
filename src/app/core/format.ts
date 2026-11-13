@@ -25,7 +25,3 @@ export function formatShortDate(value: string | null | undefined): string {
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : shortDateFormatter.format(date);
 }
-
-export function readingTime(minutes: number): string {
-  return minutes === 1 ? '1 min de lectura' : `${minutes} min de lectura`;
-}

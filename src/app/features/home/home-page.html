@@ -6,7 +6,7 @@
   <section class="relative overflow-hidden border-b border-line">
     <div
       aria-hidden="true"
-      class="pointer-events-none absolute -top-40 right-0 size-[34rem] rounded-full bg-blood/10 blur-3xl"
+      class="pointer-events-none absolute -top-40 right-0 size-[34rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(200,16,46,0.14),transparent_70%)]"
     ></div>
 
     <div class="shell relative py-12 sm:py-20">
@@ -25,9 +25,11 @@
                   >{{ article.category.name }}</a
                 >
                 <span aria-hidden="true" class="text-line">/</span>
-                <time [attr.datetime]="article.publishedAt" class="text-muted">{{
-                  leadDate()
-                }}</time>
+                <time
+                  [attr.datetime]="article.publishedAt"
+                  class="text-muted"
+                  >{{ leadDate() }}</time
+                >
               </div>
 
               <h1
@@ -50,6 +52,8 @@
                     [alt]="cover.altText"
                     width="480"
                     height="300"
+                    fetchpriority="high"
+                    decoding="async"
                     class="aspect-[16/9] w-full object-cover transition duration-500 hover:scale-[1.02]"
                   />
                 </a>
@@ -60,30 +64,41 @@
               </p>
 
               <div class="mt-8 flex flex-wrap items-center gap-5">
-                <a [routerLink]="['/articulos', article.slug]" class="btn-primary">
+                <a
+                  [routerLink]="['/articulos', article.slug]"
+                  class="btn-primary"
+                >
                   Leer la noticia
                 </a>
-                <p class="font-mono text-xs uppercase tracking-[0.16em] text-muted">
-                  {{ article.authorName }} · {{ leadMinutes() }}
+                <p
+                  class="font-mono text-xs uppercase tracking-[0.16em] text-muted"
+                >
+                  {{ article.authorName }}
                 </p>
               </div>
             </article>
           } @else {
             <div class="mt-6 border-t border-line pt-6">
-              <h1 class="font-display text-4xl uppercase leading-none sm:text-5xl">
+              <h1
+                class="font-display text-4xl uppercase leading-none sm:text-5xl"
+              >
                 El rugido de la escena
               </h1>
               <p class="mt-4 max-w-xl text-muted">
-                No hay artículos publicados todavía. En cuanto la redacción publique el
-                primero, aparecerá aquí.
+                No hay artículos publicados todavía. En cuanto la redacción
+                publique el primero, aparecerá aquí.
               </p>
             </div>
           }
         </div>
 
         @if (secondary().length) {
-          <div class="border-t border-line pt-6 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0">
-            <p class="font-display text-xs uppercase tracking-[0.3em] text-muted">
+          <div
+            class="border-t border-line pt-6 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0"
+          >
+            <p
+              class="font-display text-xs uppercase tracking-[0.3em] text-muted"
+            >
               También en portada
             </p>
 
@@ -103,8 +118,10 @@
                     >
                       {{ article.title }}
                     </h2>
-                    <p class="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
-                      {{ article.authorName }} · {{ article.readingMinutes }} min
+                    <p
+                      class="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted"
+                    >
+                      {{ article.authorName }}
                     </p>
                   </a>
                 </li>
@@ -134,7 +151,7 @@
     @if (latest().length) {
       <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         @for (article of latest(); track article.id) {
-          <app-article-card [article]="article" />
+          <app-article-card [article]="article" ngSkipHydration />
         }
       </div>
 
@@ -150,7 +167,8 @@
         </p>
         <p class="mt-2 text-sm text-muted">
           El archivo está vacío. Si estás en local, arranca la API con el perfil
-          <code class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-xs text-bone"
+          <code
+            class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-xs text-bone"
             >dev</code
           >
           para cargar el contenido de ejemplo.

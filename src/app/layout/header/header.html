@@ -5,21 +5,36 @@
   Saltar al contenido
 </a>
 
-<header class="sticky top-0 z-40 border-b border-line bg-ink/90 backdrop-blur">
-  <div class="shell flex h-16 items-center gap-4">
-    <a routerLink="/" class="flex shrink-0 items-center gap-3" aria-label="The Blast Beast, inicio">
-      <span class="grid size-9 place-items-center rounded bg-blood">
-        <svg viewBox="0 0 24 24" class="size-5 fill-white" aria-hidden="true">
+<header
+  class="sticky top-0 z-40 border-b border-line bg-ink/90 backdrop-blur"
+  (keydown.escape)="closeMenu()"
+>
+  <div class="shell flex h-20 items-center gap-3 sm:gap-4">
+    <a
+      routerLink="/"
+      class="flex min-w-0 shrink-0 items-center gap-2.5 sm:gap-3"
+      aria-label="The Blast Beast, inicio"
+    >
+      <span
+        class="grid size-10 shrink-0 place-items-center rounded bg-blood sm:size-11"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          class="size-5 fill-white sm:size-6"
+          aria-hidden="true"
+        >
           <path d="M13 2 4.5 13.5H11l-1 8.5 8.5-11.5H12l1-8.5Z" />
         </svg>
       </span>
-      <span class="hidden font-display text-base uppercase tracking-[0.22em] sm:inline sm:text-lg">
+      <span
+        class="whitespace-nowrap font-display text-lg uppercase leading-none tracking-[0.16em] text-bone sm:text-xl lg:text-2xl lg:tracking-[0.2em]"
+      >
         The Blast Beast
       </span>
     </a>
 
     <form
-      class="ml-auto flex min-w-0 items-center gap-2"
+      class="ml-auto hidden min-w-0 items-center gap-2 lg:flex"
       role="search"
       (submit)="search($event, query.value); query.blur()"
     >
@@ -31,42 +46,150 @@
         name="q"
         minlength="2"
         placeholder="Buscar…"
-        class="w-28 min-w-0 rounded-md border border-line bg-surface px-3 py-2 font-mono text-xs text-bone placeholder:text-muted/70 outline-none transition focus:border-blood sm:w-44 lg:w-56"
+        class="w-44 min-w-0 rounded-md border border-line bg-surface px-3 py-2 font-mono text-xs text-bone placeholder:text-muted/70 outline-none transition focus:border-blood xl:w-56"
       />
       <button
         type="submit"
         class="grid size-9 shrink-0 place-items-center rounded-md border border-line text-muted transition hover:border-muted hover:text-bone"
         aria-label="Buscar"
       >
-        <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          class="size-4"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
           <circle cx="11" cy="11" r="7" />
           <path d="m20 20-3.5-3.5" />
         </svg>
       </button>
     </form>
+
+    <button
+      type="button"
+      class="ml-auto grid size-10 shrink-0 place-items-center rounded-md border border-line text-muted transition hover:border-muted hover:text-bone lg:hidden"
+      [attr.aria-expanded]="menuOpen()"
+      aria-controls="mobile-menu"
+      [attr.aria-label]="menuOpen() ? 'Cerrar menú' : 'Abrir menú'"
+      (click)="toggleMenu()"
+    >
+      @if (menuOpen()) {
+        <svg
+          viewBox="0 0 24 24"
+          class="size-5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
+      } @else {
+        <svg
+          viewBox="0 0 24 24"
+          class="size-5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      }
+    </button>
   </div>
 
   @if (store.categories().length) {
-    <div class="border-t border-line">
-      <nav aria-label="Secciones" class="shell flex h-11 items-center gap-6 overflow-x-auto">
+    <div class="hidden border-t border-line lg:block">
+      <nav aria-label="Secciones" class="shell flex h-12 items-center gap-7">
         <a
           routerLink="/"
-          routerLinkActive="text-bone"
+          routerLinkActive="text-bone after:scale-x-100"
           [routerLinkActiveOptions]="{ exact: true }"
-          class="whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.2em] text-muted transition hover:text-blood-soft"
+          class="relative whitespace-nowrap py-1 font-display text-sm uppercase tracking-[0.18em] text-muted transition-colors duration-200 after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-blood-soft after:transition-transform after:duration-200 hover:text-bone hover:after:scale-x-100"
         >
           Inicio
         </a>
         @for (category of store.categories(); track category.slug) {
           <a
             [routerLink]="['/categorias', category.slug]"
-            routerLinkActive="text-bone"
-            class="whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.2em] text-muted transition hover:text-blood-soft"
+            routerLinkActive="text-bone after:scale-x-100"
+            class="relative whitespace-nowrap py-1 font-display text-sm uppercase tracking-[0.18em] text-muted transition-colors duration-200 after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-blood-soft after:transition-transform after:duration-200 hover:text-bone hover:after:scale-x-100"
           >
             {{ category.name }}
           </a>
         }
       </nav>
+    </div>
+  }
+
+  @if (menuOpen()) {
+    <div id="mobile-menu" class="border-t border-line bg-ink lg:hidden">
+      <div class="shell space-y-5 py-5">
+        <form
+          class="flex items-center gap-2"
+          role="search"
+          (submit)="
+            search($event, mobileQuery.value); mobileQuery.blur(); closeMenu()
+          "
+        >
+          <label for="header-q-mobile" class="sr-only">Buscar noticias</label>
+          <input
+            #mobileQuery
+            id="header-q-mobile"
+            type="search"
+            name="q"
+            minlength="2"
+            placeholder="Buscar…"
+            class="min-w-0 flex-1 rounded-md border border-line bg-surface px-3 py-2.5 font-mono text-sm text-bone placeholder:text-muted/70 outline-none transition focus:border-blood"
+          />
+          <button
+            type="submit"
+            class="grid size-10 shrink-0 place-items-center rounded-md border border-line text-muted transition hover:border-muted hover:text-bone"
+            aria-label="Buscar"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              class="size-4"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-3.5-3.5" />
+            </svg>
+          </button>
+        </form>
+
+        @if (store.categories().length) {
+          <nav aria-label="Secciones" class="flex flex-col">
+            <a
+              routerLink="/"
+              routerLinkActive="text-bone"
+              [routerLinkActiveOptions]="{ exact: true }"
+              class="flex items-center justify-between border-b border-line py-3 font-display text-base uppercase tracking-[0.16em] text-muted transition duration-200 hover:translate-x-1 hover:text-bone"
+              (click)="closeMenu()"
+            >
+              Inicio
+              <span aria-hidden="true">→</span>
+            </a>
+            @for (category of store.categories(); track category.slug) {
+              <a
+                [routerLink]="['/categorias', category.slug]"
+                routerLinkActive="text-bone"
+                class="flex items-center justify-between border-b border-line py-3 font-display text-base uppercase tracking-[0.16em] text-muted transition duration-200 last:border-b-0 hover:translate-x-1 hover:text-bone"
+                (click)="closeMenu()"
+              >
+                {{ category.name }}
+                <span aria-hidden="true">→</span>
+              </a>
+            }
+          </nav>
+        }
+      </div>
     </div>
   }
 </header>

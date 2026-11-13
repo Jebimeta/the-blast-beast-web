@@ -2,11 +2,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
   input,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { formatDate, readingTime } from '../../core/format';
+import { formatDate } from '../../core/format';
 import { SeoService } from '../../core/seo/seo.service';
 import { ArticleCard } from '../articles/article-card';
 import { LatestTicker } from './latest-ticker';
@@ -36,9 +37,6 @@ export class HomePage {
   protected readonly leadDate = computed(() =>
     formatDate(this.lead()?.publishedAt),
   );
-  protected readonly leadMinutes = computed(() =>
-    readingTime(this.lead()?.readingMinutes ?? 0),
-  );
 
   /** Imagen de portada del titular: variante `thumb` para no servir el original. */
   protected readonly leadCover = computed(() => {
@@ -47,7 +45,9 @@ export class HomePage {
       return null;
     }
     return {
-      url: cover.variants?.find((variant) => variant.kind === 'thumb')?.url ?? cover.url,
+      url:
+        cover.variants?.find((variant) => variant.kind === 'thumb')?.url ??
+        cover.url,
       altText: cover.altText ?? this.lead()?.title ?? '',
     };
   });
@@ -60,5 +60,12 @@ export class HomePage {
       path: '/',
     });
     this.seo.applySiteJsonLd();
+
+    effect(() => {
+      const cover = this.leadCover();
+      if (cover) {
+        this.seo.preloadImage({ href: cover.url });
+      }
+    });
   }
 }

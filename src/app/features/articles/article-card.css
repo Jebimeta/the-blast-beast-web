@@ -1,0 +1,9 @@
+/*
+ * Las tarjetas fuera del pliegue no se maquetan ni pintan hasta que se
+ * acercan al viewport. La primera fila queda excluida porque contiene la
+ * imagen LCP y debe pintarse de inmediato.
+ */
+.card-deferred {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}

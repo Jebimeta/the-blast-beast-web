@@ -1,7 +1,10 @@
 <main id="contenido">
   <section class="border-b border-line bg-surface/40">
     <div class="shell py-10 sm:py-14">
-      <nav aria-label="Migas de pan" class="font-mono text-[10px] uppercase tracking-[0.18em] text-muted">
+      <nav
+        aria-label="Migas de pan"
+        class="font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+      >
         <a routerLink="/" class="hover:text-bone">Inicio</a>
         <span aria-hidden="true" class="mx-2 text-line">/</span>
         <span class="text-bone">{{ title() }}</span>
@@ -18,38 +21,33 @@
   </section>
 
   <section class="shell py-8 sm:py-10">
-    <div class="flex items-center justify-end border-b border-line pb-6">
-      <div class="flex items-center gap-2">
-        <label
-          for="sort"
-          class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
-          >Orden</label
-        >
-        <select
-          id="sort"
-          [value]="list().sort"
-          (change)="changeSort($any($event.target).value)"
-          class="rounded-md border border-line bg-surface px-3 py-2 font-mono text-xs text-bone outline-none transition focus:border-blood"
-        >
-          <option value="latest">Más recientes</option>
-          <option value="oldest">Más antiguas</option>
-        </select>
-      </div>
-    </div>
-
     @if (hasResults()) {
-      <p class="mt-6 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
-        {{ list().page.totalElements }} noticias · página {{ pageNumber() }} de
-        {{ totalPages() }}
-      </p>
+      <div
+        class="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-6 font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
+      >
+        <p>
+          {{ list().page.totalElements }} noticias · página
+          {{ pageNumber() }} de
+          {{ totalPages() }}
+        </p>
+        <p>Orden: más recientes</p>
+      </div>
 
       <!-- Las tarjetas usan h3; este h2 mantiene el orden de encabezados
            (h1 -> h2 -> h3) sin añadir ruido visual. -->
       <h2 class="sr-only">Listado de noticias</h2>
 
       <div class="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        @for (article of list().page.content; track article.id) {
-          <app-article-card [article]="article" />
+        @for (
+          article of list().page.content;
+          track article.id;
+          let i = $index
+        ) {
+          <app-article-card
+            [article]="article"
+            [priority]="i === 0"
+            ngSkipHydration
+          />
         }
       </div>
 
@@ -67,7 +65,9 @@
             ← Anterior
           </button>
 
-          <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+          <span
+            class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
+          >
             {{ pageNumber() }} / {{ totalPages() }}
           </span>
 

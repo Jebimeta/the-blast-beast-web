@@ -5,14 +5,12 @@ import { ArticleApiService } from '../../core/api/article-api.service';
 import type {
   ArticleDetail,
   ArticlePage,
-  ArticleSort,
   ArticleSummary,
   CategoryResponse,
 } from '../../core/api/article.models';
 import { emptyArticlePage } from '../home/home.resolver';
 
-const PAGE_SIZE = 6;
-const VALID_SORTS: readonly ArticleSort[] = ['latest', 'oldest', 'relevance'];
+const PAGE_SIZE = 9;
 
 /**
  * «Noticias» es la portada del archivo: muestra todas las publicadas y el
@@ -24,7 +22,6 @@ export interface ArticleListData {
   page: ArticlePage;
   categories: CategoryResponse[];
   category: CategoryResponse | null;
-  sort: ArticleSort;
 }
 
 export interface ArticleDetailData {
@@ -34,7 +31,10 @@ export interface ArticleDetailData {
 }
 
 /** Prioriza banda (3), etiquetas (2) y sección (1) para ordenar las relacionadas. */
-function relatedScore(candidate: ArticleSummary, article: ArticleDetail): number {
+function relatedScore(
+  candidate: ArticleSummary,
+  article: ArticleDetail,
+): number {
   const bandSlugs = new Set(article.bands.map((band) => band.slug));
   const tagSlugs = new Set(article.tags.map((tag) => tag.slug));
   let score = 0;
@@ -60,12 +60,6 @@ function parsePage(value: string | null): number {
   return Number.isInteger(page) && page > 0 ? page : 0;
 }
 
-function parseSort(value: string | null): ArticleSort {
-  return VALID_SORTS.includes(value as ArticleSort)
-    ? (value as ArticleSort)
-    : 'latest';
-}
-
 export const articleListResolver: ResolveFn<ArticleListData> = (
   route: ActivatedRouteSnapshot,
 ) => {
@@ -73,12 +67,16 @@ export const articleListResolver: ResolveFn<ArticleListData> = (
   const categorySlug = route.paramMap.get('slug') ?? undefined;
   const categoryFilter =
     categorySlug === GENERAL_CATEGORY_SLUG ? undefined : categorySlug;
-  const sort = parseSort(route.queryParamMap.get('sort'));
   const page = parsePage(route.queryParamMap.get('page'));
 
   return forkJoin({
     page: api
-      .listArticles({ category: categoryFilter, page, size: PAGE_SIZE, sort })
+      .listArticles({
+        category: categoryFilter,
+        page,
+        size: PAGE_SIZE,
+        sort: 'latest',
+      })
       .pipe(catchError(() => of(emptyArticlePage))),
     categories: api.listCategories().pipe(catchError(() => of([]))),
   }).pipe(
@@ -87,7 +85,6 @@ export const articleListResolver: ResolveFn<ArticleListData> = (
       categories,
       category:
         categories.find((category) => category.slug === categorySlug) ?? null,
-      sort,
     })),
   );
 };

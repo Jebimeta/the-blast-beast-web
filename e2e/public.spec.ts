@@ -13,8 +13,7 @@ test.describe('Portal público', () => {
     const ticker = page.getByRole('region', { name: 'Última hora' });
     await expect(ticker).toBeVisible();
     await expect(ticker.getByRole('link')).toHaveCount(5);
-    await ticker.getByRole('button', { name: /Pausar/ }).click();
-    await expect(ticker.getByRole('button', { name: /Reanudar/ })).toBeVisible();
+    await expect(ticker.getByRole('button')).toHaveCount(0);
 
     const sections = page.getByRole('navigation', { name: 'Secciones' });
     await expect(sections).toBeVisible();
@@ -39,7 +38,6 @@ test.describe('Portal público', () => {
       'none',
     );
     await expect(ticker.locator('.ticker-group--clone')).toBeHidden();
-    await expect(ticker.locator('.ticker-toggle')).toBeHidden();
   });
 
   test('el detalle de un artículo muestra cuerpo, autor y fecha', async ({

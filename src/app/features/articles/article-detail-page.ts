@@ -8,7 +8,7 @@ import {
   RESPONSE_INIT,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { formatDate, formatShortDate, readingTime } from '../../core/format';
+import { formatDate, formatShortDate } from '../../core/format';
 import { SeoService } from '../../core/seo/seo.service';
 import type { ArticleDetailData } from './article.resolvers';
 
@@ -33,9 +33,6 @@ export class ArticleDetailPage {
   protected readonly updated = computed(() =>
     formatDate(this.article()?.updatedAt),
   );
-  protected readonly minutes = computed(() =>
-    readingTime(this.article()?.readingMinutes ?? 0),
-  );
   protected readonly related = computed(() =>
     this.detail().related.map((related) => ({
       article: related,
@@ -48,13 +45,26 @@ export class ArticleDetailPage {
     })),
   );
 
-  /** El detalle usa la variante `hero` (1200 px) para no servir el original. */
+  /** El detalle usa `thumb` en móvil y `hero` en pantallas grandes. */
+  protected readonly coverThumb = computed(() => {
+    const cover = this.article()?.cover;
+    if (!cover) {
+      return null;
+    }
+    return (
+      cover.variants?.find((variant) => variant.kind === 'thumb')?.url ??
+      cover.url
+    );
+  });
   protected readonly coverHero = computed(() => {
     const cover = this.article()?.cover;
     if (!cover) {
       return null;
     }
-    return cover.variants?.find((variant) => variant.kind === 'hero')?.url ?? cover.url;
+    return (
+      cover.variants?.find((variant) => variant.kind === 'hero')?.url ??
+      cover.url
+    );
   });
 
   constructor() {
@@ -82,6 +92,22 @@ export class ArticleDetailPage {
       const title = article.seoTitle ?? `${article.title} — The Blast Beast`;
       const description = article.seoDescription ?? article.excerpt;
       const image = this.coverHero() ?? undefined;
+
+      const thumb = this.coverThumb();
+      if (image) {
+        if (thumb && thumb !== image) {
+          this.seo.preloadImage({
+            href: thumb,
+            media: '(max-width: 767px)',
+          });
+          this.seo.preloadImage({
+            href: image,
+            media: '(min-width: 768px)',
+          });
+        } else {
+          this.seo.preloadImage({ href: image });
+        }
+      }
 
       this.seo.apply({
         title,

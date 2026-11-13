@@ -26,7 +26,7 @@ describe('LatestTicker', () => {
     }).compileComponents();
   });
 
-  it('duplica las noticias para el bucle y permite pausar el movimiento', () => {
+  it('duplica las noticias para que el bucle sea continuo', () => {
     const fixture = TestBed.createComponent(LatestTicker);
     fixture.componentRef.setInput(
       'articles',
@@ -39,14 +39,6 @@ describe('LatestTicker', () => {
     expect(
       element.querySelectorAll('ul[aria-hidden="true"] a[tabindex="-1"]'),
     ).toHaveLength(5);
-
-    const button = element.querySelector('button') as HTMLButtonElement;
-    expect(button.getAttribute('aria-pressed')).toBe('false');
-
-    button.click();
-    fixture.detectChanges();
-
-    expect(button.getAttribute('aria-pressed')).toBe('true');
-    expect(button.getAttribute('aria-label')).toContain('Reanudar');
+    expect(element.querySelector('button')).toBeNull();
   });
 });

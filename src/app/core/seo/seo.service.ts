@@ -1,5 +1,5 @@
-import { DOCUMENT } from '@angular/common';
-import { DestroyRef, Injectable, inject } from '@angular/core';
+import { DOCUMENT, isPlatformServer } from '@angular/common';
+import { DestroyRef, Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { SITE_URL } from './site-url';
 
@@ -32,6 +32,7 @@ export class SeoService {
   private readonly meta = inject(Meta);
   private readonly document = inject(DOCUMENT);
   private readonly siteUrl = inject(SITE_URL);
+  private readonly isServer = isPlatformServer(inject(PLATFORM_ID));
 
   constructor() {
     inject(DestroyRef).onDestroy(() => this.clearJsonLd());
@@ -182,9 +183,55 @@ export class SeoService {
     });
   }
 
+  /**
+   * Precarga la imagen LCP desde el `<head>` del HTML renderizado en servidor.
+   *
+   * <p>Sin esta pista, el navegador descubre la portada al parsear el cuerpo y
+   * Lighthouse lo penaliza como retraso de carga. Solo se emite en SSR: en el
+   * cliente la imagen ya viaja en el HTML hidratado.
+   */
+  preloadImage(data: {
+    href: string;
+    srcset?: string;
+    sizes?: string;
+    media?: string;
+  }): void {
+    if (!this.isServer) {
+      return;
+    }
+
+    const selector = data.media
+      ? `link[data-lcp-preload][media="${data.media}"]`
+      : 'link[data-lcp-preload]:not([media])';
+    this.document.head.querySelector(selector)?.remove();
+    const link = this.document.createElement('link');
+    link.rel = 'preload';
+    link.setAttribute('as', 'image');
+    link.href = data.href;
+    link.setAttribute('fetchpriority', 'high');
+    link.setAttribute('data-lcp-preload', '');
+    if (data.media) {
+      link.setAttribute('media', data.media);
+    }
+    if (data.srcset) {
+      link.setAttribute('imagesrcset', data.srcset);
+    }
+    if (data.sizes) {
+      link.setAttribute('imagesizes', data.sizes);
+    }
+    // Antes del CSS crítico: el escáner de precarga lo ve cuanto antes.
+    const criticalStyle = this.document.head.querySelector('style');
+    if (criticalStyle) {
+      this.document.head.insertBefore(link, criticalStyle);
+    } else {
+      this.document.head.appendChild(link);
+    }
+  }
+
   /** Declara el feed RSS de la página actual sin duplicar el global. */
   setFeed(path: string, title: string): void {
-    let link = this.document.head.querySelector<HTMLLinkElement>(FEED_LINK_SELECTOR);
+    let link =
+      this.document.head.querySelector<HTMLLinkElement>(FEED_LINK_SELECTOR);
 
     if (!link) {
       link = this.document.createElement('link');
@@ -212,7 +259,11 @@ export class SeoService {
     link.href = url;
   }
 
-  private setMeta(attribute: 'name' | 'property', key: string, content: string): void {
+  private setMeta(
+    attribute: 'name' | 'property',
+    key: string,
+    content: string,
+  ): void {
     this.meta.updateTag({ [attribute]: key, content });
   }
 

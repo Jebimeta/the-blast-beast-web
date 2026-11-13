@@ -27,7 +27,7 @@
   (focusout)="resetScroll($event)"
 >
   <div
-    class="flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-2 px-4 py-2.5 sm:flex-nowrap sm:gap-5 sm:px-6"
+    class="flex w-full flex-wrap items-center gap-x-3 gap-y-2 px-4 py-2.5 sm:flex-nowrap sm:gap-5 sm:px-6"
   >
     <div class="order-1 flex shrink-0 items-center gap-2" aria-hidden="true">
       <span class="size-2 rounded-full bg-blood ring-4 ring-blood/20"></span>
@@ -38,9 +38,9 @@
       </p>
     </div>
 
-    <div class="relative order-3 w-full min-w-0 flex-1 sm:order-2 sm:w-auto">
+    <div class="relative order-2 w-full min-w-0 flex-1 sm:w-auto">
       <div class="ticker-viewport">
-        <div class="ticker-track" [class.is-paused]="paused()">
+        <div class="ticker-track">
           <!-- Copia decorativa para que el bucle sea continuo. -->
           <ul
             class="ticker-group ticker-group--clone flex shrink-0 items-stretch gap-3 pr-3"
@@ -81,27 +81,5 @@
         class="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-[#0b0c0f] to-transparent"
       ></div>
     </div>
-
-    <button
-      type="button"
-      class="ticker-toggle order-2 grid size-8 shrink-0 place-items-center rounded-md border border-line text-muted transition hover:border-muted hover:text-bone sm:order-3"
-      [attr.aria-pressed]="paused()"
-      [attr.aria-label]="
-        paused()
-          ? 'Reanudar el desplazamiento de últimas noticias'
-          : 'Pausar el desplazamiento de últimas noticias'
-      "
-      (click)="togglePause()"
-    >
-      @if (paused()) {
-        <svg viewBox="0 0 24 24" class="size-4 fill-current" aria-hidden="true">
-          <path d="M8 5v14l11-7z" />
-        </svg>
-      } @else {
-        <svg viewBox="0 0 24 24" class="size-4 fill-current" aria-hidden="true">
-          <path d="M6 5h4v14H6zM14 5h4v14h-4z" />
-        </svg>
-      }
-    </button>
   </div>
 </section>

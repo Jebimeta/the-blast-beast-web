@@ -54,13 +54,23 @@ export class ArticleListPage {
           ? `/categorias/${category.slug}`
           : '/articulos';
       const path = page > 0 ? `${basePath}?page=${page}` : basePath;
-      const title = category ? `${category.name} — The Blast Beast` : 'Todas las noticias — The Blast Beast';
+      const title = category
+        ? `${category.name} — The Blast Beast`
+        : 'Todas las noticias — The Blast Beast';
 
       this.seo.apply({
         title,
         description: this.description(),
         path,
       });
+
+      const firstCover = this.list().page.content[0]?.cover;
+      const firstThumb =
+        firstCover?.variants?.find((variant) => variant.kind === 'thumb')
+          ?.url ?? firstCover?.url;
+      if (firstThumb) {
+        this.seo.preloadImage({ href: firstThumb });
+      }
 
       if (category) {
         this.seo.setFeed(
@@ -72,13 +82,6 @@ export class ArticleListPage {
           { name: category.name, path: basePath },
         ]);
       }
-    });
-  }
-
-  protected changeSort(value: string): void {
-    void this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { sort: value, page: null },
     });
   }
 

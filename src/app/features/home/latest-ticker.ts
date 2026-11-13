@@ -4,7 +4,6 @@ import {
   Component,
   computed,
   input,
-  signal,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { ArticleSummary } from '../../core/api/article.models';
@@ -25,17 +24,12 @@ interface TickerItem {
 export class LatestTicker {
   readonly articles = input.required<ArticleSummary[]>();
 
-  protected readonly paused = signal(false);
   protected readonly items = computed<TickerItem[]>(() =>
     this.articles().map((article) => ({
       article,
       date: formatShortDate(article.publishedAt),
     })),
   );
-
-  protected togglePause(): void {
-    this.paused.update((paused) => !paused);
-  }
 
   /**
    * Si el foco sale de la cinta, devolvemos el scroll horizontal al inicio

@@ -26,18 +26,17 @@
   }
 }
 
-:host(:focus-within) .ticker-track,
-.ticker-track.is-paused {
+:host(:focus-within) .ticker-track {
   animation-play-state: paused;
 }
 
 @keyframes ticker-slide {
   from {
-    transform: translate3d(-50%, 0, 0);
+    transform: translate3d(0, 0, 0);
   }
 
   to {
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(-50%, 0, 0);
   }
 }
 
@@ -47,8 +46,7 @@
     transform: none;
   }
 
-  .ticker-group--clone,
-  .ticker-toggle {
+  .ticker-group--clone {
     display: none;
   }
 }
