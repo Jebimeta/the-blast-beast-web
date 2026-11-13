@@ -1,5 +1,7 @@
 :host {
   display: block;
+  height: 52.5px;
+  overflow: hidden;
 }
 
 .ticker-viewport {

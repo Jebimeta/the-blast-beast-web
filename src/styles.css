@@ -4,7 +4,35 @@
  * Fuentes autoalojadas (subconjunto latino, variable). Evitamos depender de
  * Google Fonts en tiempo de ejecución: menos conexiones externas, mejor LCP y
  * sin transferencia de IPs de lectores a un tercero.
+ *
+ * `font-display: swap` con fallbacks de métricas ajustadas: el primer pintado
+ * usa el fallback local (instantáneo) y, cuando llega la fuente real, el ancho
+ * y el alto de línea coinciden, así que no hay saltos de layout.
  */
+@font-face {
+  font-family: "Inter Fallback";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: optional;
+  src: local("Arial"), local("Liberation Sans");
+  size-adjust: 106.77%;
+  ascent-override: 88.45%;
+  descent-override: 20.81%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Oswald Fallback";
+  font-style: normal;
+  font-weight: 500 700;
+  font-display: optional;
+  src: local("Arial"), local("Liberation Sans");
+  size-adjust: 79.57%;
+  ascent-override: 150.11%;
+  descent-override: 34.91%;
+  line-gap-override: 0%;
+}
+
 @font-face {
   font-family: "Inter";
   font-style: normal;
@@ -37,8 +65,8 @@
   --color-blood: #c8102e;
   --color-blood-soft: #ff2247;
 
-  --font-display: "Oswald", ui-sans-serif, system-ui, sans-serif;
-  --font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Oswald", "Oswald Fallback", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
