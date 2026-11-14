@@ -26,17 +26,6 @@
 
   <section class="shell py-8 sm:py-10">
     @if (hasResults()) {
-      <div
-        class="flex flex-wrap items-center justify-between gap-2 border-b border-line pb-6 font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
-      >
-        <p>
-          {{ list().page.totalElements }} noticias · página
-          {{ pageNumber() }} de
-          {{ totalPages() }}
-        </p>
-        <p>Orden: más recientes</p>
-      </div>
-
       <!-- Las tarjetas usan h3; este h2 mantiene el orden de encabezados
            (h1 -> h2 -> h3) sin añadir ruido visual. -->
       <h2 class="sr-only">Listado de noticias</h2>
