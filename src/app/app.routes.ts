@@ -7,6 +7,7 @@ import {
 import { bandResolver } from './features/bands/band.resolver';
 import { homeResolver } from './features/home/home.resolver';
 import { searchResolver } from './features/search/search.resolver';
+import { latestTickerResolver } from './layout/latest-ticker/latest-ticker.resolver';
 
 export const routes: Routes = [
   {
@@ -18,7 +19,7 @@ export const routes: Routes = [
   {
     path: 'articulos',
     title: 'Todas las noticias — The Blast Beast',
-    resolve: { list: articleListResolver },
+    resolve: { list: articleListResolver, ticker: latestTickerResolver },
     runGuardsAndResolvers: 'paramsOrQueryParamsChange',
     loadComponent: () =>
       import('./features/articles/article-list-page').then((m) => m.ArticleListPage),
@@ -26,7 +27,7 @@ export const routes: Routes = [
   {
     path: 'articulos/:slug',
     title: 'Noticia — The Blast Beast',
-    resolve: { detail: articleDetailResolver },
+    resolve: { detail: articleDetailResolver, ticker: latestTickerResolver },
     loadComponent: () =>
       import('./features/articles/article-detail-page').then(
         (m) => m.ArticleDetailPage,
@@ -35,7 +36,7 @@ export const routes: Routes = [
   {
     path: 'categorias/:slug',
     title: 'Sección — The Blast Beast',
-    resolve: { list: articleListResolver },
+    resolve: { list: articleListResolver, ticker: latestTickerResolver },
     runGuardsAndResolvers: 'paramsOrQueryParamsChange',
     loadComponent: () =>
       import('./features/articles/article-list-page').then((m) => m.ArticleListPage),
@@ -43,7 +44,7 @@ export const routes: Routes = [
   {
     path: 'buscar',
     title: 'Buscar — The Blast Beast',
-    resolve: { search: searchResolver },
+    resolve: { search: searchResolver, ticker: latestTickerResolver },
     runGuardsAndResolvers: 'paramsOrQueryParamsChange',
     loadComponent: () =>
       import('./features/search/search-page').then((m) => m.SearchPage),
@@ -51,7 +52,7 @@ export const routes: Routes = [
   {
     path: 'bandas/:slug',
     title: 'Banda — The Blast Beast',
-    resolve: { band: bandResolver },
+    resolve: { band: bandResolver, ticker: latestTickerResolver },
     loadComponent: () => import('./features/bands/band-page').then((m) => m.BandPage),
   },
   {

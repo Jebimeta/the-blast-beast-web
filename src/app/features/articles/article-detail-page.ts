@@ -8,18 +8,21 @@ import {
   RESPONSE_INIT,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import type { ArticleSummary } from '../../core/api/article.models';
 import { formatDate, formatShortDate } from '../../core/format';
 import { SeoService } from '../../core/seo/seo.service';
+import { LatestTicker } from '../../layout/latest-ticker/latest-ticker';
 import type { ArticleDetailData } from './article.resolvers';
 
 @Component({
   selector: 'app-article-detail-page',
-  imports: [RouterLink],
+  imports: [RouterLink, LatestTicker],
   templateUrl: './article-detail-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ArticleDetailPage {
   readonly detail = input.required<ArticleDetailData>();
+  readonly ticker = input.required<ArticleSummary[]>();
 
   private readonly seo = inject(SeoService);
   private readonly router = inject(Router);

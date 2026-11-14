@@ -1,5 +1,9 @@
 <main id="contenido">
   @if (article(); as article) {
+    @if (ticker().length) {
+      <app-latest-ticker [articles]="ticker()" />
+    }
+
     <section class="relative overflow-hidden border-b border-line">
       <div
         aria-hidden="true"

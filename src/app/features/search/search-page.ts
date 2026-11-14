@@ -7,18 +7,21 @@ import {
   input,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import type { ArticleSummary } from '../../core/api/article.models';
 import { SeoService } from '../../core/seo/seo.service';
+import { LatestTicker } from '../../layout/latest-ticker/latest-ticker';
 import { ArticleCard } from '../articles/article-card';
 import type { SearchData } from './search.resolver';
 
 @Component({
   selector: 'app-search-page',
-  imports: [RouterLink, ArticleCard],
+  imports: [RouterLink, ArticleCard, LatestTicker],
   templateUrl: './search-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchPage {
   readonly search = input.required<SearchData>();
+  readonly ticker = input.required<ArticleSummary[]>();
 
   private readonly router = inject(Router);
   private readonly seo = inject(SeoService);

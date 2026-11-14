@@ -8,18 +8,21 @@ import {
   RESPONSE_INIT,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import type { ArticleSummary } from '../../core/api/article.models';
 import { SeoService } from '../../core/seo/seo.service';
+import { LatestTicker } from '../../layout/latest-ticker/latest-ticker';
 import { ArticleCard } from '../articles/article-card';
 import type { BandData } from './band.resolver';
 
 @Component({
   selector: 'app-band-page',
-  imports: [RouterLink, ArticleCard],
+  imports: [RouterLink, ArticleCard, LatestTicker],
   templateUrl: './band-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BandPage {
   readonly band = input.required<BandData>();
+  readonly ticker = input.required<ArticleSummary[]>();
 
   private readonly seo = inject(SeoService);
   private readonly router = inject(Router);

@@ -7,19 +7,22 @@ import {
   input,
 } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import type { ArticleSummary } from '../../core/api/article.models';
 import { SeoService } from '../../core/seo/seo.service';
+import { LatestTicker } from '../../layout/latest-ticker/latest-ticker';
 import { ArticleCard } from './article-card';
 import { GENERAL_CATEGORY_SLUG } from './article.resolvers';
 import type { ArticleListData } from './article.resolvers';
 
 @Component({
   selector: 'app-article-list-page',
-  imports: [RouterLink, ArticleCard],
+  imports: [RouterLink, ArticleCard, LatestTicker],
   templateUrl: './article-list-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ArticleListPage {
   readonly list = input.required<ArticleListData>();
+  readonly ticker = input.required<ArticleSummary[]>();
 
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);

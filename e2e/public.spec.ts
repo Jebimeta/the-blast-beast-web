@@ -40,6 +40,23 @@ test.describe('Portal público', () => {
     await expect(ticker.locator('.ticker-group--clone')).toBeHidden();
   });
 
+  test('la cinta de última hora aparece en las secciones', async ({ page }) => {
+    const paths = [
+      '/articulos',
+      '/categorias/conciertos',
+      `/articulos/${SEED_ARTICLE}`,
+      '/buscar?q=metallica',
+      '/bandas/metallica',
+    ];
+
+    for (const path of paths) {
+      await page.goto(path);
+      const ticker = page.getByRole('region', { name: 'Última hora' });
+      await expect(ticker, `cinta en ${path}`).toBeVisible();
+      await expect(ticker.getByRole('link')).toHaveCount(5);
+    }
+  });
+
   test('el detalle de un artículo muestra cuerpo, autor y fecha', async ({
     page,
   }) => {

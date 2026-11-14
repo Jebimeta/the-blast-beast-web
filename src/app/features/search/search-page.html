@@ -1,4 +1,8 @@
 <main id="contenido">
+  @if (ticker().length) {
+    <app-latest-ticker [articles]="ticker()" />
+  }
+
   <section class="border-b border-line bg-surface/40">
     <div class="shell py-10 sm:py-14">
       <p class="eyebrow">Búsqueda</p>

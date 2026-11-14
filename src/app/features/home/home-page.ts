@@ -9,8 +9,8 @@ import {
 import { RouterLink } from '@angular/router';
 import { formatDate } from '../../core/format';
 import { SeoService } from '../../core/seo/seo.service';
+import { LatestTicker } from '../../layout/latest-ticker/latest-ticker';
 import { ArticleCard } from '../articles/article-card';
-import { LatestTicker } from './latest-ticker';
 import type { HomeData } from './home.resolver';
 
 @Component({
