@@ -126,12 +126,12 @@ npm run lighthouse
 aplicación, cinta de última hora y `SeoService` (canonical, `noindex`, JSON-LD de artículo
 y migas, y enlace de feed).
 
-**E2E** (Playwright, 13 tests) sobre Caddy + SSR + API + PostgreSQL en
+**E2E** (Playwright, 14 tests) sobre Caddy + SSR + API + PostgreSQL en
 `http://localhost:8088`:
 
 | Spec | Tests | Contenido |
 |---|---|---|
-| `e2e/public.spec.ts` | 8 | Portada, cinta, detalle, archivo, búsqueda, 404 real, estáticas, sitemap/robots/feed |
+| `e2e/public.spec.ts` | 9 | Portada, cinta en portada y secciones, detalle, archivo, búsqueda, 404 real, estáticas, sitemap/robots/feed |
 | `e2e/admin.spec.ts` | 3 | Login obligatorio, ciclo crear→publicar→verificar→borrar, filtros |
 | `e2e/a11y.spec.ts` | 2 | axe WCAG 2.1 AA en páginas públicas y panel autenticado |
 
