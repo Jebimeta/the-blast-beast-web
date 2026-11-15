@@ -112,6 +112,13 @@
         >
           Inicio
         </a>
+        <a
+          routerLink="/radar"
+          routerLinkActive="text-bone after:scale-x-100"
+          class="relative whitespace-nowrap py-1 font-display text-sm uppercase tracking-[0.18em] text-muted transition-colors duration-200 after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-blood-soft after:transition-transform after:duration-200 hover:text-bone hover:after:scale-x-100"
+        >
+          Radar
+        </a>
         @for (category of store.categories(); track category.slug) {
           <a
             [routerLink]="['/categorias', category.slug]"
@@ -174,6 +181,15 @@
               (click)="closeMenu()"
             >
               Inicio
+              <span aria-hidden="true">→</span>
+            </a>
+            <a
+              routerLink="/radar"
+              routerLinkActive="text-bone"
+              class="flex items-center justify-between border-b border-line py-3 font-display text-base uppercase tracking-[0.16em] text-muted transition duration-200 hover:translate-x-1 hover:text-bone"
+              (click)="closeMenu()"
+            >
+              Radar de lanzamientos
               <span aria-hidden="true">→</span>
             </a>
             @for (category of store.categories(); track category.slug) {

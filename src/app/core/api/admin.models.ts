@@ -149,3 +149,9 @@ export interface MediaUpdateRequest {
   altText?: string | null;
   credit?: string | null;
 }
+
+export type {
+  ReleaseAdmin,
+  ReleaseKind,
+  ReleaseWriteRequest,
+} from './release.models';

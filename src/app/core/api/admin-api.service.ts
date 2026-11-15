@@ -16,6 +16,8 @@ import type {
   MediaAsset,
   MediaPage,
   MediaUpdateRequest,
+  ReleaseAdmin,
+  ReleaseWriteRequest,
   TagResponse,
   TagWriteRequest,
 } from './admin.models';
@@ -206,6 +208,43 @@ export class AdminApiService {
 
   deleteTag(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/api/v1/admin/tags/${id}`);
+  }
+
+  // Radar de lanzamientos ---------------------------------------------
+  listReleases(q = '', month = ''): Observable<ReleaseAdmin[]> {
+    let params = new HttpParams();
+    if (q) {
+      params = params.set('q', q);
+    }
+    if (month) {
+      params = params.set('month', month);
+    }
+    return this.http.get<ReleaseAdmin[]>(`${this.baseUrl}/api/v1/admin/releases`, {
+      params,
+    });
+  }
+
+  createRelease(request: ReleaseWriteRequest): Observable<ReleaseAdmin> {
+    return this.http.post<ReleaseAdmin>(
+      `${this.baseUrl}/api/v1/admin/releases`,
+      request,
+    );
+  }
+
+  updateRelease(
+    id: number,
+    request: ReleaseWriteRequest,
+  ): Observable<ReleaseAdmin> {
+    return this.http.put<ReleaseAdmin>(
+      `${this.baseUrl}/api/v1/admin/releases/${id}`,
+      request,
+    );
+  }
+
+  deleteRelease(id: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.baseUrl}/api/v1/admin/releases/${id}`,
+    );
   }
 
   // Medios ------------------------------------------------------------

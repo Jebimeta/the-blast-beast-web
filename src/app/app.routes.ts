@@ -6,6 +6,7 @@ import {
 } from './features/articles/article.resolvers';
 import { bandResolver } from './features/bands/band.resolver';
 import { homeResolver } from './features/home/home.resolver';
+import { radarResolver } from './features/radar/radar.resolver';
 import { searchResolver } from './features/search/search.resolver';
 import { latestTickerResolver } from './layout/latest-ticker/latest-ticker.resolver';
 
@@ -32,6 +33,14 @@ export const routes: Routes = [
       import('./features/articles/article-detail-page').then(
         (m) => m.ArticleDetailPage,
       ),
+  },
+  {
+    path: 'radar',
+    title: 'Radar de lanzamientos — The Blast Beast',
+    resolve: { radar: radarResolver },
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+    loadComponent: () =>
+      import('./features/radar/radar-page').then((m) => m.RadarPage),
   },
   {
     path: 'categorias/:slug',
@@ -120,6 +129,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/taxonomy/admin-taxonomy-page').then(
             (m) => m.AdminTaxonomyPage,
+          ),
+      },
+      {
+        path: 'radar',
+        title: 'Radar de lanzamientos — Redacción',
+        loadComponent: () =>
+          import('./features/admin/releases/admin-release-page').then(
+            (m) => m.AdminReleasePage,
           ),
       },
       {

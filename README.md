@@ -24,6 +24,7 @@ Frontend del portal de noticias de heavy metal **The Blast Beast**.
 | `/` | Portada: destacados, secciones y últimas noticias |
 | `/articulos` | Archivo completo con orden fijo y 9 noticias por página |
 | `/categorias/:slug` | Sección con filtro por categoría |
+| `/radar` | Radar de lanzamientos por mes, con filtros y calendario `.ics` |
 | `/articulos/:slug` | Detalle de la noticia |
 | `/bandas/:slug` | Banda y sus noticias |
 | `/buscar?q=` | Búsqueda full-text |
@@ -34,6 +35,7 @@ Frontend del portal de noticias de heavy metal **The Blast Beast**.
 | `/admin/articulos` | Listado de artículos con filtros y acciones |
 | `/admin/articulos/nuevo` | Editor de artículo nuevo |
 | `/admin/articulos/:id` | Editor con vista previa, autoguardado e historial |
+| `/admin/radar` | Radar de lanzamientos: CRUD editorial |
 | `/admin/taxonomia` | Categorías, bandas y etiquetas |
 | `/admin/medios` | Biblioteca de imágenes |
 | `**` | 404 real (status HTTP en SSR) |
@@ -44,6 +46,15 @@ Cada ruta pública resuelve sus datos con un `ResolveFn` y los entrega al compon
 La agenda de conciertos está implementada de punta a punta (sincronización con Ticketmaster,
 filtros y ficha de evento), pero de momento no se publica: no tiene rutas ni enlaces en el
 portal. Se activará más adelante.
+
+El **radar de lanzamientos** es editorial: solo muestra fechas confirmadas por la banda, el
+sello o la promotora. La API expone el mes con facetas de género y formato, y un calendario
+`.ics` con los próximos seis meses. La redacción gestiona las entradas desde `/admin/radar`;
+no hay sincronización automática con MusicBrainz ni otras fuentes externas.
+
+El detalle de artículo incluye una barra de progreso de lectura y las transiciones entre
+páginas usan la View Transitions API, desactivadas con `prefers-reduced-motion`. El 404
+mantiene el status real en SSR y añade buscador y un botón de noticia aleatoria.
 
 El panel (`/admin/**`) se renderiza en cliente (`RenderMode.Client`) y está protegido por
 `adminGuard`. `AuthService` mantiene el access token en memoria y restaura la sesión con la
@@ -126,23 +137,24 @@ npm run e2e
 npm run lighthouse
 ```
 
-**Unitarios** (5 ficheros, 10 tests): portada con contenido y estado vacío, shell de la
-aplicación, cinta de última hora, botón de volver arriba y `SeoService` (canonical, `noindex`,
+**Unitarios** (9 ficheros, 23 tests): portada con contenido y estado vacío, shell de la
+aplicación, cinta de última hora, botón de volver arriba, progreso de lectura, utilidades y
+página del radar, 404 con buscador y noticia aleatoria, y `SeoService` (canonical, `noindex`,
 JSON-LD de artículo, evento e `ItemList`, migas y enlace de feed).
 
-**E2E** (Playwright, 15 tests) sobre Caddy + SSR + API + PostgreSQL en
+**E2E** (Playwright, 18 tests) sobre Caddy + SSR + API + PostgreSQL en
 `http://localhost:8088`:
 
 | Spec | Tests | Contenido |
 |---|---|---|
-| `e2e/public.spec.ts` | 10 | Portada, cinta en portada y secciones, volver arriba, detalle, archivo, búsqueda, 404 real, estáticas, sitemap/robots/feed |
-| `e2e/admin.spec.ts` | 3 | Login obligatorio, ciclo crear→publicar→verificar→borrar, filtros |
-| `e2e/a11y.spec.ts` | 2 | axe WCAG 2.1 AA en páginas públicas y panel autenticado |
+| `e2e/public.spec.ts` | 12 | Portada, cinta en portada y secciones, volver arriba, detalle, archivo, radar, búsqueda, 404 real y 404 con buscador/aleatorio, estáticas, sitemap/robots/feed |
+| `e2e/admin.spec.ts` | 4 | Login obligatorio, ciclo crear→publicar→verificar→borrar, CRUD del radar, filtros |
+| `e2e/a11y.spec.ts` | 2 | axe WCAG 2.1 AA en páginas públicas (incluido `/radar`) y panel autenticado |
 
 **Accesibilidad**: `@axe-core/playwright` con `wcag2a`, `wcag2aa`, `wcag21a` y `wcag21aa`.
 Criterio: cero violaciones.
 
-**Lighthouse** (`lighthouserc.cjs`): móvil, 4 URLs y 3 pasadas por URL con mediana. Umbrales
+**Lighthouse** (`lighthouserc.cjs`): móvil, 5 URLs y 3 pasadas por URL con mediana. Umbrales
 0,90 rendimiento, 0,95 accesibilidad, 0,90 buenas prácticas y 0,95 SEO. Informes en
 `reports/lighthouse/`.
 
@@ -174,14 +186,15 @@ src/app/
 │   ├── category-store.ts
 │   └── format.ts
 ├── features/
-│   ├── admin/         # login, layout, artículos, editor, taxonomía, medios
+│   ├── admin/         # login, layout, artículos, editor, radar, taxonomía, medios
 │   ├── home/          # portada + resolver
 │   ├── articles/      # tarjeta, listado, detalle, resolvers
+│   ├── radar/         # radar de lanzamientos + utilidades y resolver
 │   ├── bands/         # ficha de banda + resolver
 │   ├── search/        # búsqueda + resolver
 │   ├── static/        # sobre, contacto y privacidad
 │   └── not-found/
-├── layout/            # header, footer
+├── layout/            # header, footer, cinta, volver arriba, progreso de lectura
 ├── app.config.ts      # providers de navegador
 ├── app.config.server.ts
 ├── app.routes.ts

@@ -12,11 +12,12 @@ import type { ArticleSummary } from '../../core/api/article.models';
 import { formatDate, formatShortDate } from '../../core/format';
 import { SeoService } from '../../core/seo/seo.service';
 import { LatestTicker } from '../../layout/latest-ticker/latest-ticker';
+import { ReadingProgress } from '../../layout/reading-progress/reading-progress';
 import type { ArticleDetailData } from './article.resolvers';
 
 @Component({
   selector: 'app-article-detail-page',
-  imports: [RouterLink, LatestTicker],
+  imports: [RouterLink, LatestTicker, ReadingProgress],
   templateUrl: './article-detail-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

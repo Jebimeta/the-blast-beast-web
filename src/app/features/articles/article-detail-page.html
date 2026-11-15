@@ -1,5 +1,7 @@
 <main id="contenido">
   @if (article(); as article) {
+    <app-reading-progress />
+
     @if (ticker().length) {
       <app-latest-ticker [articles]="ticker()" />
     }

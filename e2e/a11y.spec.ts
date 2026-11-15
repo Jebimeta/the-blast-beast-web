@@ -6,6 +6,7 @@ const PUBLIC_PAGES = [
   { path: '/articulos', label: 'archivo' },
   { path: `/articulos/${SEED_ARTICLE}`, label: 'detalle de artículo' },
   { path: '/categorias/conciertos', label: 'categoría' },
+  { path: '/radar', label: 'radar de lanzamientos' },
   { path: '/buscar?q=metallica', label: 'búsqueda' },
   { path: '/sobre', label: 'sobre' },
   { path: '/contacto', label: 'contacto' },
@@ -34,6 +35,7 @@ test.describe('Accesibilidad WCAG 2.1 AA', () => {
     const adminPages = [
       { path: '/admin/articulos', label: 'listado editorial' },
       { path: '/admin/articulos/nuevo', label: 'editor de artículo' },
+      { path: '/admin/radar', label: 'radar editorial' },
       { path: '/admin/taxonomia', label: 'taxonomía' },
       { path: '/admin/medios', label: 'medios' },
     ];

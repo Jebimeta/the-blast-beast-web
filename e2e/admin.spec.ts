@@ -59,6 +59,53 @@ test.describe('Redacción', () => {
     await expect(page.getByText(title)).toHaveCount(0);
   });
 
+  test('crear y eliminar un lanzamiento desde el radar editorial', async ({
+    page,
+  }) => {
+    await loginAsAdmin(page);
+    await page.goto('/admin/radar');
+
+    await expect(
+      page.getByRole('heading', { name: 'Radar de lanzamientos' }),
+    ).toBeVisible();
+
+    const now = new Date();
+    const month = `${now.getUTCFullYear()}-${String(
+      now.getUTCMonth() + 1,
+    ).padStart(2, '0')}`;
+    const stamp = Date.now();
+    const title = `Prueba radar ${stamp}`;
+    const artist = `Artista e2e ${stamp}`;
+
+    await page.getByLabel('Título').fill(title);
+    await page.getByLabel('Artista').fill(artist);
+    await page.getByLabel('Fecha').fill(`${month}-15`);
+    await page.getByLabel('Género').fill('Heavy metal');
+    await page.getByLabel('Sello').fill('Sello e2e');
+    await page.getByRole('button', { name: 'Crear', exact: true }).click();
+
+    await expect(
+      page.getByText(`Lanzamiento «${title}» creado.`),
+    ).toBeVisible();
+    await expect(page.getByText(title).first()).toBeVisible();
+
+    await page.goto(`/radar?mes=${month}`);
+    await expect(page.locator('main#contenido')).toContainText(title);
+    await expect(page.locator('main#contenido')).toContainText(artist);
+
+    await page.goto('/admin/radar');
+    await page.getByLabel('Buscar lanzamientos').fill(title);
+    const row = page.locator('li', { hasText: title });
+    await expect(row).toBeVisible();
+
+    page.once('dialog', (dialog) => dialog.accept());
+    await row.getByRole('button', { name: 'Eliminar' }).click();
+    await expect(
+      page.getByText(`Lanzamiento «${title}» eliminado.`),
+    ).toBeVisible();
+    await expect(page.locator('li', { hasText: title })).toHaveCount(0);
+  });
+
   test('el listado editorial filtra por estado y texto', async ({ page }) => {
     await loginAsAdmin(page);
 

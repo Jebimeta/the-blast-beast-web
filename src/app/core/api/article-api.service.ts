@@ -50,6 +50,12 @@ export class ArticleApiService {
     );
   }
 
+  getRandomArticle(): Observable<ArticleSummary> {
+    return this.http.get<ArticleSummary>(
+      `${this.baseUrl}/api/v1/articles/random`,
+    );
+  }
+
   getArticle(slug: string): Observable<ArticleDetail> {
     return this.http.get<ArticleDetail>(
       `${this.baseUrl}/api/v1/articles/${encodeURIComponent(slug)}`,

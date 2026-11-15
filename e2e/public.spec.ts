@@ -134,6 +134,36 @@ test.describe('Portal público', () => {
     ).toBeVisible();
   });
 
+  test('el radar muestra los lanzamientos del mes y filtra por formato', async ({
+    page,
+    request,
+  }) => {
+    await page.goto('/radar');
+
+    await expect(
+      page.getByRole('heading', { name: /Radar de lanzamientos/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: /Suscribirse al calendario/i }),
+    ).toBeVisible();
+
+    expect(
+      await page.locator('main#contenido ol > li').count(),
+    ).toBeGreaterThan(0);
+
+    await page.getByRole('button', { name: /Álbum/ }).first().click();
+    await expect(page).toHaveURL(/tipo=album/);
+    expect(
+      await page.locator('main#contenido ol > li').count(),
+    ).toBeGreaterThan(0);
+
+    const calendar = await request.get(
+      '/api/v1/releases/calendar.ics?months=6',
+    );
+    expect(calendar.status()).toBe(200);
+    expect(await calendar.text()).toContain('BEGIN:VCALENDAR');
+  });
+
   test('las páginas institucionales se prerenderizan', async ({ page }) => {
     for (const path of ['/sobre', '/contacto', '/privacidad']) {
       const response = await page.goto(path);
@@ -147,12 +177,30 @@ test.describe('Portal público', () => {
 
     expect(response?.status()).toBe(404);
     await expect(
-      page.getByRole('heading', { name: /Te has salido/i }),
+      page.getByRole('heading', { name: /Esta página se cayó/i }),
     ).toBeVisible();
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
       'content',
       /noindex/,
     );
+  });
+
+  test('el 404 ofrece buscador y noticia aleatoria', async ({ page }) => {
+    await page.goto('/esta-ruta-no-existe');
+
+    const search = page
+      .locator('main#contenido')
+      .getByLabel('Buscar noticias');
+    await search.fill('Opeth');
+    await search.press('Enter');
+    await expect(page).toHaveURL(/\/buscar\?q=Opeth/);
+
+    await page.goto('/esta-ruta-no-existe');
+    await page
+      .getByRole('button', { name: /Sorpréndeme con una noticia/i })
+      .click();
+    await expect(page).toHaveURL(/\/articulos\/[a-z0-9-]+$/);
+    await expect(page.locator('main#contenido h1')).toBeVisible();
   });
 
   test('sitemap, robots y feed responden desde la raíz del dominio', async ({

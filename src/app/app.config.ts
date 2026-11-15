@@ -12,6 +12,7 @@ import {
   provideRouter,
   withComponentInputBinding,
   withInMemoryScrolling,
+  withViewTransitions,
 } from '@angular/router';
 import { CategoryStore } from './core/category-store';
 import { authInterceptor } from './core/api/auth.interceptor';
@@ -24,6 +25,7 @@ export const appConfig: ApplicationConfig = {
       routes,
       withComponentInputBinding(),
       withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
+      withViewTransitions(),
     ),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     // La app no usa bloques `@defer`. Desactivar la hidratación incremental evita
