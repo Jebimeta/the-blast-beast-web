@@ -27,8 +27,6 @@ Frontend del portal de noticias de heavy metal **The Blast Beast**.
 | `/articulos/:slug` | Detalle de la noticia |
 | `/bandas/:slug` | Banda y sus noticias |
 | `/buscar?q=` | Búsqueda full-text |
-| `/agenda` | Agenda de conciertos con filtros por género, ciudad, banda y fecha |
-| `/agenda/:slug` | Detalle del concierto con cartel, sala y entradas |
 | `/sobre` | Sobre el medio (prerenderizada) |
 | `/contacto` | Contacto de la redacción (prerenderizada) |
 | `/privacidad` | Política de privacidad (prerenderizada) |
@@ -43,9 +41,9 @@ Frontend del portal de noticias de heavy metal **The Blast Beast**.
 Cada ruta pública resuelve sus datos con un `ResolveFn` y los entrega al componente mediante
 `withComponentInputBinding()`. Las páginas no piden datos en `ngOnInit`.
 
-La agenda se alimenta de la API, que sincroniza la cartelera de Ticketmaster en España. Sin
-`TICKETMASTER_API_KEY`, la API mantiene la sincronización desactivada y, en desarrollo, sirve
-los conciertos de demostración del seed para poder probar filtros y fichas.
+La agenda de conciertos está implementada de punta a punta (sincronización con Ticketmaster,
+filtros y ficha de evento), pero de momento no se publica: no tiene rutas ni enlaces en el
+portal. Se activará más adelante.
 
 El panel (`/admin/**`) se renderiza en cliente (`RenderMode.Client`) y está protegido por
 `adminGuard`. `AuthService` mantiene el access token en memoria y restaura la sesión con la
@@ -108,9 +106,7 @@ JSON-LD:
 
 - Portada: `WebSite` + `Organization` con `SearchAction` a `/buscar?q=`.
 - Detalle de artículo: `NewsArticle` con autor, sección, fechas e imagen.
-- Agenda: `ItemList` con los conciertos de la página actual.
-- Detalle de concierto: `MusicEvent` con fecha, sala, cartel y oferta de entradas.
-- Detalle, categoría, banda y concierto: `BreadcrumbList`.
+- Detalle, categoría y banda: `BreadcrumbList`.
 
 El `<head>` declara `/feed.xml` como feed global; las páginas de categoría añaden su propio
 `/categorias/{slug}/feed.xml`. El sitemap, robots y feeds los genera la API y Caddy los
@@ -134,19 +130,19 @@ npm run lighthouse
 aplicación, cinta de última hora y `SeoService` (canonical, `noindex`, JSON-LD de artículo,
 evento e `ItemList`, migas y enlace de feed).
 
-**E2E** (Playwright, 16 tests) sobre Caddy + SSR + API + PostgreSQL en
+**E2E** (Playwright, 14 tests) sobre Caddy + SSR + API + PostgreSQL en
 `http://localhost:8088`:
 
 | Spec | Tests | Contenido |
 |---|---|---|
-| `e2e/public.spec.ts` | 11 | Portada, cinta en portada y secciones, detalle, archivo, agenda, ficha de concierto, búsqueda, 404 real, estáticas, sitemap/robots/feed |
+| `e2e/public.spec.ts` | 9 | Portada, cinta en portada y secciones, detalle, archivo, búsqueda, 404 real, estáticas, sitemap/robots/feed |
 | `e2e/admin.spec.ts` | 3 | Login obligatorio, ciclo crear→publicar→verificar→borrar, filtros |
 | `e2e/a11y.spec.ts` | 2 | axe WCAG 2.1 AA en páginas públicas y panel autenticado |
 
 **Accesibilidad**: `@axe-core/playwright` con `wcag2a`, `wcag2aa`, `wcag21a` y `wcag21aa`.
 Criterio: cero violaciones.
 
-**Lighthouse** (`lighthouserc.cjs`): móvil, 6 URLs y 3 pasadas por URL con mediana. Umbrales
+**Lighthouse** (`lighthouserc.cjs`): móvil, 4 URLs y 3 pasadas por URL con mediana. Umbrales
 0,90 rendimiento, 0,95 accesibilidad, 0,90 buenas prácticas y 0,95 SEO. Informes en
 `reports/lighthouse/`.
 

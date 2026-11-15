@@ -7,8 +7,6 @@ const PUBLIC_PAGES = [
   { path: `/articulos/${SEED_ARTICLE}`, label: 'detalle de artículo' },
   { path: '/categorias/conciertos', label: 'categoría' },
   { path: '/buscar?q=metallica', label: 'búsqueda' },
-  { path: '/agenda', label: 'agenda' },
-  { path: '/agenda/demo-metallica-madrid', label: 'detalle de concierto' },
   { path: '/sobre', label: 'sobre' },
   { path: '/contacto', label: 'contacto' },
   { path: '/privacidad', label: 'privacidad' },
