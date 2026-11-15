@@ -61,6 +61,7 @@ test.describe('Redacción', () => {
 
   test('crear y eliminar un lanzamiento desde el radar editorial', async ({
     page,
+    request,
   }) => {
     await loginAsAdmin(page);
     await page.goto('/admin/radar');
@@ -89,9 +90,18 @@ test.describe('Redacción', () => {
     ).toBeVisible();
     await expect(page.getByText(title).first()).toBeVisible();
 
-    await page.goto(`/radar?mes=${month}`);
-    await expect(page.locator('main#contenido')).toContainText(title);
-    await expect(page.locator('main#contenido')).toContainText(artist);
+    const publicList = await request.get(
+      `/api/v1/releases?month=${month}&size=100`,
+    );
+    expect(publicList.status()).toBe(200);
+    const body = (await publicList.json()) as {
+      content: { title: string; artistName: string }[];
+    };
+    expect(
+      body.content.some(
+        (release) => release.title === title && release.artistName === artist,
+      ),
+    ).toBe(true);
 
     await page.goto('/admin/radar');
     await page.getByLabel('Buscar lanzamientos').fill(title);

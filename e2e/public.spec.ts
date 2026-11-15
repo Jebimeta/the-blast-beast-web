@@ -134,34 +134,15 @@ test.describe('Portal público', () => {
     ).toBeVisible();
   });
 
-  test('el radar muestra los lanzamientos del mes y filtra por formato', async ({
+  test('el radar público permanece oculto hasta su lanzamiento', async ({
     page,
-    request,
   }) => {
-    await page.goto('/radar');
+    const response = await page.goto('/radar');
 
+    expect(response?.status()).toBe(404);
     await expect(
-      page.getByRole('heading', { name: /Radar de lanzamientos/i }),
+      page.getByRole('heading', { name: /Esta página se cayó/i }),
     ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: /Suscribirse al calendario/i }),
-    ).toBeVisible();
-
-    expect(
-      await page.locator('main#contenido ol > li').count(),
-    ).toBeGreaterThan(0);
-
-    await page.getByRole('button', { name: /Álbum/ }).first().click();
-    await expect(page).toHaveURL(/tipo=album/);
-    expect(
-      await page.locator('main#contenido ol > li').count(),
-    ).toBeGreaterThan(0);
-
-    const calendar = await request.get(
-      '/api/v1/releases/calendar.ics?months=6',
-    );
-    expect(calendar.status()).toBe(200);
-    expect(await calendar.text()).toContain('BEGIN:VCALENDAR');
   });
 
   test('las páginas institucionales se prerenderizan', async ({ page }) => {

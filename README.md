@@ -24,7 +24,6 @@ Frontend del portal de noticias de heavy metal **The Blast Beast**.
 | `/` | Portada: destacados, secciones y últimas noticias |
 | `/articulos` | Archivo completo con orden fijo y 9 noticias por página |
 | `/categorias/:slug` | Sección con filtro por categoría |
-| `/radar` | Radar de lanzamientos por mes, con filtros y calendario `.ics` |
 | `/articulos/:slug` | Detalle de la noticia |
 | `/bandas/:slug` | Banda y sus noticias |
 | `/buscar?q=` | Búsqueda full-text |
@@ -47,10 +46,10 @@ La agenda de conciertos está implementada de punta a punta (sincronización con
 filtros y ficha de evento), pero de momento no se publica: no tiene rutas ni enlaces en el
 portal. Se activará más adelante.
 
-El **radar de lanzamientos** es editorial: solo muestra fechas confirmadas por la banda, el
-sello o la promotora. La API expone el mes con facetas de género y formato, y un calendario
-`.ics` con los próximos seis meses. La redacción gestiona las entradas desde `/admin/radar`;
-no hay sincronización automática con MusicBrainz ni otras fuentes externas.
+El **radar de lanzamientos** está implementado de punta a punta (API, CRUD editorial y
+página pública), pero de momento no se publica: no tiene ruta ni enlaces en el portal. Se
+activará más adelante. Los datos son editoriales: solo entran fechas confirmadas por la
+banda, el sello o la promotora; no hay sincronización automática con MusicBrainz.
 
 El detalle de artículo incluye una barra de progreso de lectura y las transiciones entre
 páginas usan la View Transitions API, desactivadas con `prefers-reduced-motion`. El 404
@@ -139,22 +138,23 @@ npm run lighthouse
 
 **Unitarios** (9 ficheros, 23 tests): portada con contenido y estado vacío, shell de la
 aplicación, cinta de última hora, botón de volver arriba, progreso de lectura, utilidades y
-página del radar, 404 con buscador y noticia aleatoria, y `SeoService` (canonical, `noindex`,
-JSON-LD de artículo, evento e `ItemList`, migas y enlace de feed).
+página del radar (conservadas para su futura publicación), 404 con buscador y noticia
+aleatoria, y `SeoService` (canonical, `noindex`, JSON-LD de artículo, evento e `ItemList`,
+migas y enlace de feed).
 
 **E2E** (Playwright, 18 tests) sobre Caddy + SSR + API + PostgreSQL en
 `http://localhost:8088`:
 
 | Spec | Tests | Contenido |
 |---|---|---|
-| `e2e/public.spec.ts` | 12 | Portada, cinta en portada y secciones, volver arriba, detalle, archivo, radar, búsqueda, 404 real y 404 con buscador/aleatorio, estáticas, sitemap/robots/feed |
+| `e2e/public.spec.ts` | 12 | Portada, cinta en portada y secciones, volver arriba, detalle, archivo, radar oculto (404), búsqueda, 404 real y 404 con buscador/aleatorio, estáticas, sitemap/robots/feed |
 | `e2e/admin.spec.ts` | 4 | Login obligatorio, ciclo crear→publicar→verificar→borrar, CRUD del radar, filtros |
-| `e2e/a11y.spec.ts` | 2 | axe WCAG 2.1 AA en páginas públicas (incluido `/radar`) y panel autenticado |
+| `e2e/a11y.spec.ts` | 2 | axe WCAG 2.1 AA en páginas públicas y panel autenticado |
 
 **Accesibilidad**: `@axe-core/playwright` con `wcag2a`, `wcag2aa`, `wcag21a` y `wcag21aa`.
 Criterio: cero violaciones.
 
-**Lighthouse** (`lighthouserc.cjs`): móvil, 5 URLs y 5 pasadas por URL con mediana. Umbrales
+**Lighthouse** (`lighthouserc.cjs`): móvil, 4 URLs y 5 pasadas por URL con mediana. Umbrales
 0,90 rendimiento, 0,95 accesibilidad, 0,90 buenas prácticas y 0,95 SEO. Informes en
 `reports/lighthouse/`.
 

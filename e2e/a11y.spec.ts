@@ -6,7 +6,6 @@ const PUBLIC_PAGES = [
   { path: '/articulos', label: 'archivo' },
   { path: `/articulos/${SEED_ARTICLE}`, label: 'detalle de artículo' },
   { path: '/categorias/conciertos', label: 'categoría' },
-  { path: '/radar', label: 'radar de lanzamientos' },
   { path: '/buscar?q=metallica', label: 'búsqueda' },
   { path: '/sobre', label: 'sobre' },
   { path: '/contacto', label: 'contacto' },

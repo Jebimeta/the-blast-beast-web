@@ -8,7 +8,6 @@ module.exports = {
         `${baseUrl}/`,
         `${baseUrl}/articulos`,
         `${baseUrl}/articulos/${article}`,
-        `${baseUrl}/radar`,
         `${baseUrl}/sobre`,
       ],
       // Lighthouse tiene mucha varianza entre ejecuciones (arranque en frío de

@@ -7,7 +7,6 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { AdminApiService } from '../../../core/api/admin-api.service';
 import type {
   BandResponse,
@@ -24,7 +23,7 @@ import {
 
 @Component({
   selector: 'app-admin-release-page',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule],
   templateUrl: './admin-release-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
