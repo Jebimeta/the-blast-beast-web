@@ -154,7 +154,7 @@ JSON-LD de artículo, evento e `ItemList`, migas y enlace de feed).
 **Accesibilidad**: `@axe-core/playwright` con `wcag2a`, `wcag2aa`, `wcag21a` y `wcag21aa`.
 Criterio: cero violaciones.
 
-**Lighthouse** (`lighthouserc.cjs`): móvil, 5 URLs y 3 pasadas por URL con mediana. Umbrales
+**Lighthouse** (`lighthouserc.cjs`): móvil, 5 URLs y 5 pasadas por URL con mediana. Umbrales
 0,90 rendimiento, 0,95 accesibilidad, 0,90 buenas prácticas y 0,95 SEO. Informes en
 `reports/lighthouse/`.
 

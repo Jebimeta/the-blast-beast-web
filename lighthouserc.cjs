@@ -12,9 +12,9 @@ module.exports = {
         `${baseUrl}/sobre`,
       ],
       // Lighthouse tiene mucha varianza entre ejecuciones (arranque en frío de
-      // SSR, API y cachés). Con 3 pasadas y mediana evitamos que un pico
+      // SSR, API y cachés). Con 5 pasadas y mediana evitamos que un pico
       // puntual decida el resultado sin maquillar una regresión real.
-      numberOfRuns: 3,
+      numberOfRuns: 5,
       settings: {
         // Emulación móvil con throttling simulado (4G), como Lighthouse por defecto.
         formFactor: 'mobile',
