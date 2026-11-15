@@ -1,6 +1,7 @@
 import { DOCUMENT, isPlatformServer } from '@angular/common';
 import { DestroyRef, Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
+import type { ConcertStatus } from '../api/concert.models';
 import { SITE_URL } from './site-url';
 
 export interface SeoData {
@@ -24,7 +25,17 @@ export interface BreadcrumbItem {
 const ARTICLE_JSON_LD_ID = 'article-jsonld';
 const BREADCRUMB_JSON_LD_ID = 'breadcrumb-jsonld';
 const SITE_JSON_LD_ID = 'site-jsonld';
+const EVENT_JSON_LD_ID = 'event-jsonld';
+const ITEM_LIST_JSON_LD_ID = 'itemlist-jsonld';
 const FEED_LINK_SELECTOR = 'link[data-page-feed]';
+
+const EVENT_STATUS: Record<ConcertStatus, string> = {
+  ON_SALE: 'https://schema.org/EventScheduled',
+  OFF_SALE: 'https://schema.org/EventScheduled',
+  POSTPONED: 'https://schema.org/EventPostponed',
+  RESCHEDULED: 'https://schema.org/EventRescheduled',
+  CANCELLED: 'https://schema.org/EventCancelled',
+};
 
 @Injectable({ providedIn: 'root' })
 export class SeoService {
@@ -179,6 +190,103 @@ export class SeoService {
         position: index + 1,
         name: item.name,
         item: `${this.siteUrl}${item.path}`,
+      })),
+    });
+  }
+
+  /**
+   * Evento musical para la agenda. Solo se emite en la ficha del concierto:
+   * los listados usan `ItemList` para no duplicar eventos en cada página.
+   */
+  applyEventJsonLd(data: {
+    name: string;
+    description?: string | null;
+    path: string;
+    startDate: string;
+    endDate?: string | null;
+    status: ConcertStatus;
+    venueName: string;
+    address?: string | null;
+    city: string;
+    region?: string | null;
+    image?: string | null;
+    ticketUrl?: string | null;
+    priceMin?: number | null;
+    priceMax?: number | null;
+    currency?: string | null;
+    performers: string[];
+  }): void {
+    const url = `${this.siteUrl}${data.path}`;
+    const payload: Record<string, unknown> = {
+      '@context': 'https://schema.org',
+      '@type': 'MusicEvent',
+      name: data.name,
+      startDate: data.startDate,
+      eventStatus: EVENT_STATUS[data.status],
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      location: {
+        '@type': 'MusicVenue',
+        name: data.venueName,
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: data.city,
+          addressRegion: data.region ?? 'España',
+          addressCountry: 'ES',
+          ...(data.address ? { streetAddress: data.address } : {}),
+        },
+      },
+      url,
+      inLanguage: 'es-ES',
+    };
+
+    if (data.description) {
+      payload['description'] = data.description;
+    }
+    if (data.endDate) {
+      payload['endDate'] = data.endDate;
+    }
+    if (data.image) {
+      payload['image'] = [data.image];
+    }
+    if (data.performers.length) {
+      payload['performer'] = data.performers.map((name) => ({
+        '@type': 'MusicGroup',
+        name,
+      }));
+    }
+
+    const price = data.priceMin ?? data.priceMax;
+    if (data.ticketUrl && price != null) {
+      payload['offers'] = {
+        '@type': 'Offer',
+        url: data.ticketUrl,
+        price,
+        priceCurrency: data.currency ?? 'EUR',
+        availability:
+          data.status === 'ON_SALE'
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/SoldOut',
+      };
+    }
+
+    this.setJsonLd(EVENT_JSON_LD_ID, payload);
+  }
+
+  /** Listado de conciertos de la página actual de la agenda. */
+  applyItemListJsonLd(data: {
+    name: string;
+    items: { name: string; path: string }[];
+  }): void {
+    this.setJsonLd(ITEM_LIST_JSON_LD_ID, {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: data.name,
+      numberOfItems: data.items.length,
+      itemListElement: data.items.map((item, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: `${this.siteUrl}${item.path}`,
+        name: item.name,
       })),
     });
   }

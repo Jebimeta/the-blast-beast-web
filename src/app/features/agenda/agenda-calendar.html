@@ -1,0 +1,81 @@
+<section class="card" aria-labelledby="agenda-calendar-title">
+  <div class="flex items-start justify-between gap-3">
+    <div>
+      <h2
+        id="agenda-calendar-title"
+        class="font-display text-xs uppercase tracking-[0.3em] text-muted"
+      >
+        Calendario
+      </h2>
+      <p class="mt-1 font-display text-lg uppercase text-bone" aria-live="polite">
+        {{ monthLabel() }}
+      </p>
+    </div>
+    <div class="flex gap-1">
+      <button
+        type="button"
+        class="grid size-8 place-items-center rounded-md border border-line text-muted transition hover:border-muted hover:text-bone disabled:cursor-not-allowed disabled:opacity-40"
+        [disabled]="!canGoPrev()"
+        (click)="moveMonth(-1)"
+        aria-label="Mes anterior"
+      >
+        ←
+      </button>
+      <button
+        type="button"
+        class="grid size-8 place-items-center rounded-md border border-line text-muted transition hover:border-muted hover:text-bone disabled:cursor-not-allowed disabled:opacity-40"
+        [disabled]="!canGoNext()"
+        (click)="moveMonth(1)"
+        aria-label="Mes siguiente"
+      >
+        →
+      </button>
+    </div>
+  </div>
+
+  <div
+    class="mt-4 grid grid-cols-7 gap-1 text-center"
+    role="group"
+    [attr.aria-label]="'Calendario de ' + monthLabel()"
+  >
+    @for (weekday of weekdays; track weekday.short) {
+      <span
+        class="py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-muted"
+        [attr.title]="weekday.long"
+        aria-hidden="true"
+      >
+        {{ weekday.short }}
+      </span>
+    }
+
+    @for (cell of cells(); track $index) {
+      @if (cell.date) {
+        <button
+          type="button"
+          class="relative flex h-10 flex-col items-center justify-center rounded-md border border-transparent text-xs text-bone transition hover:border-line hover:bg-surface-2 data-[selected=true]:border-blood data-[selected=true]:bg-blood data-[selected=true]:text-white data-[today=true]:ring-1 data-[today=true]:ring-inset data-[today=true]:ring-blood-soft/60"
+          [attr.data-selected]="cell.isSelected ? 'true' : null"
+          [attr.data-today]="cell.isToday ? 'true' : null"
+          [attr.aria-pressed]="cell.isSelected"
+          [attr.aria-label]="cellLabel(cell)"
+          (click)="select(cell.date)"
+        >
+          <span aria-hidden="true">{{ cell.day }}</span>
+          @if (cell.count) {
+            <span class="mt-0.5 flex items-center gap-0.5 leading-none" aria-hidden="true">
+              @for (dot of dots(cell.count); track $index) {
+                <span class="size-1 rounded-full bg-blood-soft"></span>
+              }
+            </span>
+          }
+        </button>
+      } @else {
+        <span aria-hidden="true"></span>
+      }
+    }
+  </div>
+
+  <p class="mt-4 text-xs leading-relaxed text-muted">
+    Cada punto indica un concierto, hasta un máximo de tres. Pulsa una fecha para filtrar la agenda;
+    vuelve a pulsarla para quitarla.
+  </p>
+</section>

@@ -47,6 +47,8 @@ test.describe('Portal público', () => {
       `/articulos/${SEED_ARTICLE}`,
       '/buscar?q=metallica',
       '/bandas/metallica',
+      '/agenda',
+      '/agenda/demo-metallica-madrid',
     ];
 
     for (const path of paths) {
@@ -99,6 +101,51 @@ test.describe('Portal público', () => {
       page.getByRole('heading', { name: 'Noticias', exact: true }),
     ).toBeVisible();
     expect(await page.locator('article').count()).toBeGreaterThanOrEqual(6);
+  });
+
+  test('la agenda lista conciertos y filtra por ciudad', async ({ page }) => {
+    await page.goto('/agenda');
+
+    await expect(page).toHaveTitle(/Agenda de conciertos/);
+    await expect(
+      page.getByRole('heading', { name: 'Conciertos en España', level: 1 }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /Metallica: M72 World Tour/i }),
+    ).toBeVisible();
+
+    const calendar = page.getByRole('region', { name: 'Calendario' });
+    await expect(calendar).toBeVisible();
+
+    await page.getByLabel('Ciudad').selectOption('madrid');
+    await page.getByRole('button', { name: 'Aplicar filtros' }).click();
+
+    await expect(page).toHaveURL(/city=madrid/);
+    await expect(
+      page.getByRole('button', { name: /Quitar filtro Ciudad: Madrid/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /Metallica: M72 World Tour/i }),
+    ).toBeVisible();
+  });
+
+  test('la ficha del concierto muestra fecha, sala y entradas', async ({
+    page,
+  }) => {
+    await page.goto('/agenda/demo-metallica-madrid');
+
+    await expect(
+      page.getByRole('heading', {
+        name: /Metallica: M72 World Tour/i,
+        level: 1,
+      }),
+    ).toBeVisible();
+    await expect(page.locator('main#contenido')).toContainText('Movistar Arena');
+    await expect(page.locator('main#contenido')).toContainText('Madrid');
+    await expect(
+      page.getByRole('link', { name: /Comprar entradas/i }),
+    ).toBeVisible();
+    await expect(page.locator('script#event-jsonld')).toHaveCount(1);
   });
 
   test('la búsqueda full-text devuelve resultados', async ({ page }) => {

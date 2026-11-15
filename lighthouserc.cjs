@@ -1,5 +1,6 @@
 const baseUrl = process.env.E2E_BASE_URL ?? 'http://localhost:8088';
 const article = 'metallica-anuncia-gira-europea-2027';
+const concert = 'demo-metallica-madrid';
 
 module.exports = {
   ci: {
@@ -8,6 +9,8 @@ module.exports = {
         `${baseUrl}/`,
         `${baseUrl}/articulos`,
         `${baseUrl}/articulos/${article}`,
+        `${baseUrl}/agenda`,
+        `${baseUrl}/agenda/${concert}`,
         `${baseUrl}/sobre`,
       ],
       // Lighthouse tiene mucha varianza entre ejecuciones (arranque en frío de

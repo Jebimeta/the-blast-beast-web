@@ -1,0 +1,219 @@
+<main id="contenido">
+  @if (concert(); as concert) {
+    @if (ticker().length) {
+      <app-latest-ticker [articles]="ticker()" />
+    }
+
+    <section class="relative overflow-hidden border-b border-line">
+      <div
+        aria-hidden="true"
+        class="pointer-events-none absolute -top-32 left-1/2 size-[30rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(200,16,46,0.14),transparent_70%)]"
+      ></div>
+
+      <div class="shell relative py-10 sm:py-14">
+        <div class="mx-auto max-w-4xl">
+          <nav
+            aria-label="Migas de pan"
+            class="flex flex-wrap items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+          >
+            <a routerLink="/" class="hover:text-bone">Inicio</a>
+            <span aria-hidden="true" class="text-line">/</span>
+            <a routerLink="/agenda" class="hover:text-bone">Agenda</a>
+            <span aria-hidden="true" class="text-line">/</span>
+            <span class="text-bone">{{ concert.title }}</span>
+          </nav>
+
+          <p class="eyebrow mt-7">{{ concert.genreLabel }}</p>
+
+          <h1 class="mt-4 max-w-3xl font-display text-4xl uppercase leading-[0.95] sm:text-6xl">
+            {{ concert.title }}
+          </h1>
+
+          <div class="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+            <p class="text-lg text-bone">
+              <time [attr.datetime]="concert.startAt">{{ dateLabel() }}</time>
+            </p>
+            <span aria-hidden="true" class="text-line">·</span>
+            <p class="text-lg text-muted">{{ timeLabel() }}</p>
+          </div>
+
+          <p class="mt-2 text-muted">
+            {{ concert.venue.name }}
+            <span aria-hidden="true" class="mx-1 text-line">·</span>
+            <a
+              [routerLink]="['/agenda']"
+              [queryParams]="{ city: concert.venue.citySlug }"
+              class="transition hover:text-bone"
+              >{{ concert.venue.city }}</a
+            >
+          </p>
+
+          @if (statusNotice()) {
+            <p
+              role="status"
+              class="mt-6 flex max-w-2xl items-start gap-3 rounded-lg border border-blood/50 bg-blood/10 px-4 py-3 text-sm text-bone"
+            >
+              <span
+                aria-hidden="true"
+                class="mt-1 size-2 shrink-0 rounded-full bg-blood-soft"
+              ></span>
+              <span>{{ statusNotice() }}</span>
+            </p>
+          }
+
+          <div class="mt-8 flex flex-wrap gap-3">
+            @if (hasTickets()) {
+              <a
+                [href]="concert.ticketUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn-primary"
+              >
+                Comprar entradas
+                <span class="sr-only">(se abre en una pestaña nueva)</span>
+              </a>
+            }
+            <a routerLink="/agenda" class="btn-ghost">Volver a la agenda</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="shell py-10 sm:py-14">
+      <div class="mx-auto grid max-w-4xl gap-10 lg:grid-cols-[1.5fr_1fr]">
+        <div>
+          <h2 class="font-display text-xs uppercase tracking-[0.3em] text-muted">
+            Sobre el concierto
+          </h2>
+          <p class="mt-4 whitespace-pre-line text-[1.0625rem] leading-relaxed text-bone/85">
+            {{ description() }}
+          </p>
+
+          @if (performers().length) {
+            <h2 class="mt-10 font-display text-xs uppercase tracking-[0.3em] text-muted">Cartel</h2>
+            <ul class="mt-4 flex flex-wrap gap-2">
+              @for (artist of performers(); track artist.slug) {
+                <li>
+                  @if (artist.bandSlug) {
+                    <a
+                      [routerLink]="['/bandas', artist.bandSlug]"
+                      class="inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-bone transition hover:border-blood hover:text-blood-soft"
+                    >
+                      {{ artist.name }}
+                    </a>
+                  } @else {
+                    <a
+                      [routerLink]="['/agenda']"
+                      [queryParams]="{ band: artist.slug }"
+                      class="inline-flex items-center gap-2 rounded-full border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] text-bone transition hover:border-blood hover:text-blood-soft"
+                    >
+                      {{ artist.name }}
+                    </a>
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </div>
+
+        <aside class="card h-fit" aria-labelledby="concert-info-title">
+          <h2
+            id="concert-info-title"
+            class="font-display text-xs uppercase tracking-[0.3em] text-muted"
+          >
+            Información
+          </h2>
+
+          <dl class="mt-4 space-y-4 text-sm">
+            <div>
+              <dt class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Fecha</dt>
+              <dd class="mt-1 text-bone">
+                <time [attr.datetime]="concert.startAt">{{ dateLabel() }}</time>
+              </dd>
+            </div>
+            <div>
+              <dt class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Hora</dt>
+              <dd class="mt-1 text-bone">{{ timeLabel() }}</dd>
+            </div>
+            <div>
+              <dt class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Sala</dt>
+              <dd class="mt-1 text-bone">{{ concert.venue.name }}</dd>
+              @if (concert.venue.address) {
+                <dd class="mt-0.5 text-muted">{{ concert.venue.address }}</dd>
+              }
+            </div>
+            <div>
+              <dt class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Ciudad</dt>
+              <dd class="mt-1">
+                <a
+                  [routerLink]="['/agenda']"
+                  [queryParams]="{ city: concert.venue.citySlug }"
+                  class="text-bone underline decoration-line underline-offset-4 transition hover:text-blood-soft"
+                  >{{ concert.venue.city }}</a
+                >
+              </dd>
+            </div>
+            <div>
+              <dt class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Género</dt>
+              <dd class="mt-1">
+                <a
+                  [routerLink]="['/agenda']"
+                  [queryParams]="{ genre: concert.genre }"
+                  class="text-bone underline decoration-line underline-offset-4 transition hover:text-blood-soft"
+                  >{{ concert.genreLabel }}</a
+                >
+              </dd>
+            </div>
+            <div>
+              <dt class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Precio</dt>
+              <dd class="mt-1 text-bone">
+                {{ priceLabel() || 'Consulta en la web de venta' }}
+              </dd>
+            </div>
+            <div>
+              <dt class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Estado</dt>
+              <dd class="mt-1 text-bone">{{ statusLabel() }}</dd>
+            </div>
+          </dl>
+
+          @if (sourceLabel()) {
+            <p
+              class="mt-6 border-t border-line pt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-muted"
+            >
+              Datos del evento:
+              @if (showSourceLink()) {
+                <a
+                  [href]="concert.sourceUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-bone underline underline-offset-4 transition hover:text-blood-soft"
+                >
+                  {{ sourceLabel() }}
+                  <span class="sr-only">(se abre en una pestaña nueva)</span>
+                </a>
+              } @else {
+                <span class="text-bone">{{ sourceLabel() }}</span>
+              }
+            </p>
+          }
+        </aside>
+      </div>
+    </section>
+  } @else {
+    <section class="shell py-20 sm:py-28">
+      <p class="eyebrow">Error 404</p>
+      <h1 class="mt-4 font-display text-5xl uppercase leading-none sm:text-7xl">
+        Concierto<br />
+        <span class="text-blood-soft">no encontrado</span>
+      </h1>
+      <p class="mt-6 max-w-xl text-lg text-muted">
+        Este concierto no existe o ya no está en la agenda. Puede que el enlace esté mal escrito o
+        que la fecha se haya retirado.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a routerLink="/agenda" class="btn-primary">Ver la agenda</a>
+        <a routerLink="/" class="btn-ghost">Volver a la portada</a>
+      </div>
+    </section>
+  }
+</main>

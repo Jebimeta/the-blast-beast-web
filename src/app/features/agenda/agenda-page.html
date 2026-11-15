@@ -1,0 +1,237 @@
+<main id="contenido">
+  @if (ticker().length) {
+    <app-latest-ticker [articles]="ticker()" />
+  }
+
+  <section class="border-b border-line bg-surface/40">
+    <div class="shell py-10 sm:py-14">
+      <nav
+        aria-label="Migas de pan"
+        class="font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+      >
+        <a routerLink="/" class="hover:text-bone">Inicio</a>
+        <span aria-hidden="true" class="mx-2 text-line">/</span>
+        <span class="text-bone">Agenda</span>
+      </nav>
+
+      <p class="eyebrow mt-6">Agenda</p>
+      <h1 class="mt-3 font-display text-4xl uppercase leading-none sm:text-5xl">
+        Conciertos en España
+      </h1>
+      <p class="mt-4 max-w-2xl text-muted">
+        Cartelera actualizada automáticamente con las próximas fechas en salas y festivales. Filtra
+        por género, ciudad, banda o día.
+      </p>
+    </div>
+  </section>
+
+  <section class="shell py-8 sm:py-10">
+    <div class="grid gap-8 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-10">
+      <aside class="space-y-6" aria-label="Filtros de la agenda">
+        <app-agenda-calendar
+          [days]="facets().days"
+          [selected]="selectedDay()"
+          [earliest]="facets().earliest ?? null"
+          [latest]="facets().latest ?? null"
+          (dateSelected)="onDateSelected($event)"
+        />
+
+        <form class="card" (submit)="applyFilters($event)">
+          <h2 class="font-display text-xs uppercase tracking-[0.3em] text-muted">Filtros</h2>
+
+          <div class="mt-4 space-y-4">
+            <div>
+              <label
+                for="agenda-genre"
+                class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
+                >Género</label
+              >
+              <select
+                id="agenda-genre"
+                name="genre"
+                class="mt-1.5 w-full rounded-md border border-line bg-ink px-3 py-2.5 text-sm text-bone outline-none transition focus:border-blood"
+              >
+                <option value="">Todos los géneros</option>
+                @for (genre of facets().genres; track genre.value) {
+                  <option [value]="genre.value" [selected]="genre.value === filters().genre">
+                    {{ genre.label }} ({{ genre.count }})
+                  </option>
+                }
+              </select>
+            </div>
+
+            <div>
+              <label
+                for="agenda-city"
+                class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
+                >Ciudad</label
+              >
+              <select
+                id="agenda-city"
+                name="city"
+                class="mt-1.5 w-full rounded-md border border-line bg-ink px-3 py-2.5 text-sm text-bone outline-none transition focus:border-blood"
+              >
+                <option value="">Todas las ciudades</option>
+                @for (city of facets().cities; track city.value) {
+                  <option [value]="city.value" [selected]="city.value === filters().city">
+                    {{ city.label }} ({{ city.count }})
+                  </option>
+                }
+              </select>
+            </div>
+
+            <div>
+              <label
+                for="agenda-band"
+                class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
+                >Banda</label
+              >
+              <input
+                id="agenda-band"
+                name="band"
+                type="search"
+                list="agenda-band-options"
+                autocomplete="off"
+                placeholder="Nombre o slug"
+                [value]="filters().band ?? ''"
+                class="mt-1.5 w-full rounded-md border border-line bg-ink px-3 py-2.5 text-sm text-bone placeholder:text-muted/70 outline-none transition focus:border-blood"
+              />
+              <datalist id="agenda-band-options">
+                @for (artist of facets().artists; track artist.value) {
+                  <option [value]="artist.value">{{ artist.label }}</option>
+                }
+              </datalist>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label
+                  for="agenda-from"
+                  class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
+                  >Desde</label
+                >
+                <input
+                  id="agenda-from"
+                  name="from"
+                  type="date"
+                  [value]="filters().from ?? ''"
+                  class="mt-1.5 w-full rounded-md border border-line bg-ink px-3 py-2.5 text-sm text-bone outline-none transition focus:border-blood"
+                />
+              </div>
+              <div>
+                <label
+                  for="agenda-to"
+                  class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
+                  >Hasta</label
+                >
+                <input
+                  id="agenda-to"
+                  name="to"
+                  type="date"
+                  [value]="filters().to ?? ''"
+                  class="mt-1.5 w-full rounded-md border border-line bg-ink px-3 py-2.5 text-sm text-bone outline-none transition focus:border-blood"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-5 flex flex-wrap gap-2">
+            <button type="submit" class="btn-primary !px-4 !py-2 !text-xs">Aplicar filtros</button>
+            <button type="button" class="btn-ghost !px-4 !py-2 !text-xs" (click)="clearFilters()">
+              Limpiar
+            </button>
+          </div>
+        </form>
+      </aside>
+
+      <div>
+        @if (chips().length) {
+          <div class="mb-6">
+            <h2 class="sr-only">Filtros activos</h2>
+            <ul class="flex flex-wrap gap-2">
+              @for (chip of chips(); track chip.id) {
+                <li>
+                  <button
+                    type="button"
+                    class="inline-flex min-h-6 items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bone transition hover:border-blood hover:text-blood-soft"
+                    [attr.aria-label]="'Quitar filtro ' + chip.label"
+                    (click)="removeFilter(chip)"
+                  >
+                    {{ chip.label }}
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+
+        <div
+          class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line pb-4"
+        >
+          <h2 class="font-display text-lg uppercase tracking-wide">Próximos conciertos</h2>
+          <p
+            class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
+            aria-live="polite"
+          >
+            {{ totalLabel() }}
+          </p>
+        </div>
+
+        @if (hasResults()) {
+          <div class="mt-2">
+            @for (concert of page().content; track concert.id) {
+              <app-concert-card [concert]="concert" />
+            }
+          </div>
+
+          @if (totalPages() > 1) {
+            <nav
+              aria-label="Paginación"
+              class="mt-10 flex items-center justify-between border-t border-line pt-6"
+            >
+              <button
+                type="button"
+                class="btn-ghost !px-4 !py-2 !text-xs disabled:cursor-not-allowed disabled:opacity-40"
+                [disabled]="page().first"
+                (click)="goToPage(page().page - 1)"
+              >
+                ← Anterior
+              </button>
+
+              <span class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+                {{ pageNumber() }} / {{ totalPages() }}
+              </span>
+
+              <button
+                type="button"
+                class="btn-ghost !px-4 !py-2 !text-xs disabled:cursor-not-allowed disabled:opacity-40"
+                [disabled]="page().last"
+                (click)="goToPage(page().page + 1)"
+              >
+                Siguiente →
+              </button>
+            </nav>
+          }
+        } @else {
+          <div class="mt-6 rounded-xl border border-line bg-surface p-8">
+            <p class="font-display text-lg uppercase tracking-wide">
+              No hay conciertos con estos filtros
+            </p>
+            <p class="mt-2 text-sm text-muted">
+              Prueba con otro género, ciudad o rango de fechas. La agenda se actualiza
+              automáticamente cada pocas horas.
+            </p>
+            <button
+              type="button"
+              class="btn-ghost mt-5 !px-4 !py-2 !text-xs"
+              (click)="clearFilters()"
+            >
+              Ver toda la agenda
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+</main>

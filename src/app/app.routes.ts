@@ -1,6 +1,10 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './core/auth/admin.guard';
 import {
+  agendaResolver,
+  concertDetailResolver,
+} from './features/agenda/agenda.resolvers';
+import {
   articleDetailResolver,
   articleListResolver,
 } from './features/articles/article.resolvers';
@@ -31,6 +35,23 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/articles/article-detail-page').then(
         (m) => m.ArticleDetailPage,
+      ),
+  },
+  {
+    path: 'agenda',
+    title: 'Agenda de conciertos — The Blast Beast',
+    resolve: { agenda: agendaResolver, ticker: latestTickerResolver },
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+    loadComponent: () =>
+      import('./features/agenda/agenda-page').then((m) => m.AgendaPage),
+  },
+  {
+    path: 'agenda/:slug',
+    title: 'Concierto — The Blast Beast',
+    resolve: { detail: concertDetailResolver, ticker: latestTickerResolver },
+    loadComponent: () =>
+      import('./features/agenda/concert-detail-page').then(
+        (m) => m.ConcertDetailPage,
       ),
   },
   {
