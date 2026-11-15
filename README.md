@@ -126,16 +126,16 @@ npm run e2e
 npm run lighthouse
 ```
 
-**Unitarios** (4 ficheros, 9 tests): portada con contenido y estado vacío, shell de la
-aplicación, cinta de última hora y `SeoService` (canonical, `noindex`, JSON-LD de artículo,
-evento e `ItemList`, migas y enlace de feed).
+**Unitarios** (5 ficheros, 10 tests): portada con contenido y estado vacío, shell de la
+aplicación, cinta de última hora, botón de volver arriba y `SeoService` (canonical, `noindex`,
+JSON-LD de artículo, evento e `ItemList`, migas y enlace de feed).
 
-**E2E** (Playwright, 14 tests) sobre Caddy + SSR + API + PostgreSQL en
+**E2E** (Playwright, 15 tests) sobre Caddy + SSR + API + PostgreSQL en
 `http://localhost:8088`:
 
 | Spec | Tests | Contenido |
 |---|---|---|
-| `e2e/public.spec.ts` | 9 | Portada, cinta en portada y secciones, detalle, archivo, búsqueda, 404 real, estáticas, sitemap/robots/feed |
+| `e2e/public.spec.ts` | 10 | Portada, cinta en portada y secciones, volver arriba, detalle, archivo, búsqueda, 404 real, estáticas, sitemap/robots/feed |
 | `e2e/admin.spec.ts` | 3 | Login obligatorio, ciclo crear→publicar→verificar→borrar, filtros |
 | `e2e/a11y.spec.ts` | 2 | axe WCAG 2.1 AA en páginas públicas y panel autenticado |
 

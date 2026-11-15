@@ -1,0 +1,24 @@
+@if (visible()) {
+  <button
+    type="button"
+    class="fixed bottom-5 right-5 z-30 grid size-11 place-items-center rounded-full border border-line bg-surface/95 text-bone shadow-lg backdrop-blur transition hover:border-blood hover:text-blood-soft motion-reduce:transition-none sm:bottom-8 sm:right-8"
+    aria-label="Volver arriba"
+    title="Volver arriba"
+    (click)="toTop()"
+  >
+    <svg
+      viewBox="0 0 24 24"
+      class="size-5"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 19V5M5 12l7-7 7 7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </button>
+}

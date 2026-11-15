@@ -57,6 +57,25 @@ test.describe('Portal público', () => {
     }
   });
 
+  test('el botón de volver arriba aparece al bajar y regresa al inicio', async ({
+    page,
+  }) => {
+    await page.goto('/articulos');
+
+    const button = page.getByRole('button', { name: 'Volver arriba' });
+    await expect(button).toBeHidden();
+
+    await page.evaluate(() => {
+      document.documentElement.scrollTop = document.documentElement.scrollHeight;
+    });
+    await expect(button).toBeVisible();
+
+    await button.click();
+    await expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBeLessThan(50);
+  });
+
   test('el detalle de un artículo muestra cuerpo, autor y fecha', async ({
     page,
   }) => {
