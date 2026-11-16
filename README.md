@@ -33,7 +33,7 @@ Frontend del portal de noticias de heavy metal **The Blast Beast**.
 | `/admin/login` | Acceso a la redacción |
 | `/admin/articulos` | Listado de artículos con filtros y acciones |
 | `/admin/articulos/nuevo` | Editor de artículo nuevo |
-| `/admin/articulos/:id` | Editor con vista previa, autoguardado e historial |
+| `/admin/articulos/:id` | Editor con vista previa, autoguardado, historial y difusión en redes |
 | `/admin/radar` | Radar de lanzamientos: CRUD editorial |
 | `/admin/taxonomia` | Categorías, bandas y etiquetas |
 | `/admin/medios` | Biblioteca de imágenes |
@@ -58,6 +58,12 @@ mantiene el status real en SSR y añade buscador y un botón de noticia aleatori
 El panel (`/admin/**`) se renderiza en cliente (`RenderMode.Client`) y está protegido por
 `adminGuard`. `AuthService` mantiene el access token en memoria y restaura la sesión con la
 cookie de refresco; `authInterceptor` reintenta una vez tras refrescar.
+
+El editor incluye un panel de **difusión en redes** que genera, bajo demanda, variantes
+editables para X, Facebook, Instagram y WhatsApp. La API usa un proveedor compatible con
+OpenAI si está configurado y, si no, una plantilla local; el panel indica el origen y permite
+copiar o compartir cada texto. Nada se publica automáticamente: la revisión y la publicación
+siguen siendo manuales.
 
 ## Desarrollo
 
@@ -149,7 +155,7 @@ categoría en el resto), y `SeoService` (canonical, `noindex`, JSON-LD de artíc
 | Spec | Tests | Contenido |
 |---|---|---|
 | `e2e/public.spec.ts` | 12 | Portada, cinta en portada y secciones, volver arriba, detalle, archivo, Noticias por etiqueta, radar oculto (404), búsqueda, 404 real y 404 con buscador/aleatorio, estáticas, sitemap/robots/feed |
-| `e2e/admin.spec.ts` | 4 | Login obligatorio, ciclo crear→publicar→verificar→borrar, CRUD del radar, filtros |
+| `e2e/admin.spec.ts` | 4 | Login obligatorio, ciclo crear→publicar→generar difusión→verificar→borrar, CRUD del radar, filtros |
 | `e2e/a11y.spec.ts` | 11 | axe WCAG 2.1 AA: un test por página pública (incluida Noticias) y panel autenticado |
 
 **Accesibilidad**: `@axe-core/playwright` con `wcag2a`, `wcag2aa`, `wcag21a` y `wcag21aa`.

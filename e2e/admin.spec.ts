@@ -28,6 +28,10 @@ test.describe('Redacción', () => {
     await page.getByLabel('Cuerpo (Markdown)').fill(body);
     await page.locator('#categoryId').selectOption({ label: 'Noticias' });
 
+    await expect(
+      page.getByText('Guarda el borrador para generar los textos.'),
+    ).toBeVisible();
+
     await page.getByRole('button', { name: 'Guardar borrador' }).click();
     await expect(page).toHaveURL(/\/admin\/articulos\/\d+$/);
     await expect(page.getByLabel('Slug')).toHaveValue(
@@ -40,6 +44,15 @@ test.describe('Redacción', () => {
       page.getByText('Artículo publicado', { exact: true }),
     ).toBeVisible();
     await expect(page.getByText('Publicado', { exact: true })).toBeVisible();
+
+    // Sin AI_API_KEY el resumen usa la plantilla local, pero sigue siendo útil.
+    await page.getByRole('button', { name: 'Generar textos' }).click();
+    await expect(page.getByText('Plantilla', { exact: true })).toBeVisible();
+    for (const platform of ['X', 'Facebook', 'Instagram', 'WhatsApp']) {
+      const variant = page.getByLabel(platform, { exact: true });
+      await expect(variant).toHaveValue(new RegExp(title));
+      await expect(variant).toHaveValue(/\/articulos\//);
+    }
 
     const publicLink = page.getByRole('link', { name: /Ver en el portal/ });
     const href = await publicLink.getAttribute('href');

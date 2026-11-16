@@ -29,6 +29,22 @@ export interface LoginRequest {
 
 export type AdminArticleStatus = 'draft' | 'published' | 'archived';
 
+export type SocialSummarySource = 'ai' | 'template';
+
+export type SocialSummaryPlatform = 'x' | 'facebook' | 'instagram' | 'whatsapp';
+
+export interface SocialSummaryVariants {
+  x: string;
+  facebook: string;
+  instagram: string;
+  whatsapp: string;
+}
+
+export interface SocialSummaryResponse {
+  source: SocialSummarySource;
+  variants: SocialSummaryVariants;
+}
+
 export interface AdminArticleSummary {
   id: number;
   slug: string;

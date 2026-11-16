@@ -223,6 +223,125 @@
         </div>
 
         <div class="card !p-5">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="font-display text-sm uppercase tracking-wider">
+                Difusión en redes
+              </p>
+              <p class="mt-1 text-xs text-muted">
+                Textos editables para copiar y publicar manualmente.
+              </p>
+            </div>
+            @if (socialSource(); as source) {
+              <span
+                class="rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em]"
+                [class]="
+                  source === 'ai'
+                    ? 'border-blood/40 bg-blood/10 text-blood-soft'
+                    : 'border-line bg-surface-2 text-muted'
+                "
+              >
+                {{ source === 'ai' ? 'IA' : 'Plantilla' }}
+              </span>
+            }
+          </div>
+
+          @if (isNew()) {
+            <p class="mt-4 rounded-md border border-line px-3 py-2 text-xs text-muted">
+              Guarda el borrador para generar los textos.
+            </p>
+          } @else {
+            <button
+              type="button"
+              class="mt-4 w-full rounded-md border border-line px-4 py-2.5 font-display text-xs uppercase tracking-wider text-bone transition hover:border-blood hover:bg-blood/10 disabled:opacity-40"
+              [disabled]="socialLoading()"
+              (click)="generateSocialSummary()"
+            >
+              {{
+                socialLoading()
+                  ? 'Generando…'
+                  : socialSource()
+                    ? 'Regenerar textos'
+                    : 'Generar textos'
+              }}
+            </button>
+            <p class="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+              Usa la última versión guardada. Nada se publica automáticamente.
+            </p>
+
+            @if (socialError()) {
+              <p class="mt-3 text-xs text-blood-soft" role="alert">
+                {{ socialError() }}
+              </p>
+            }
+
+            @if (socialSource(); as source) {
+              <p class="mt-3 text-xs text-muted">
+                @if (source === 'ai') {
+                  Generado con IA: revisa datos, cifras y tono antes de publicar.
+                } @else {
+                  Plantilla local: no se ha contactado con ningún proveedor de IA.
+                }
+              </p>
+
+              <div class="mt-4 space-y-4">
+                @for (platform of socialPlatforms; track platform.key) {
+                  <div class="rounded-lg border border-line p-3">
+                    <div class="flex items-center justify-between gap-2">
+                      <label
+                        [for]="'social-' + platform.key"
+                        class="font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+                        >{{ platform.label }}</label
+                      >
+                      <span class="font-mono text-[9px] tracking-[0.14em] text-muted">
+                        {{ socialText(platform.key).length }}/{{ platform.limit }}
+                      </span>
+                    </div>
+                    <textarea
+                      [id]="'social-' + platform.key"
+                      rows="4"
+                      [attr.maxlength]="platform.limit"
+                      [value]="socialText(platform.key)"
+                      (input)="updateSocialText(platform.key, $event)"
+                      class="mt-2 w-full resize-y rounded-md border border-line bg-ink px-3 py-2 text-xs text-bone outline-none transition focus:border-blood"
+                    ></textarea>
+                    <div class="mt-2 flex flex-wrap items-center justify-between gap-2">
+                      <button
+                        type="button"
+                        class="rounded-md border border-line px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-muted transition hover:border-blood hover:text-bone disabled:opacity-40"
+                        [attr.aria-label]="'Copiar texto para ' + platform.label"
+                        [disabled]="!socialText(platform.key).trim()"
+                        (click)="copySocialText(platform.key)"
+                      >
+                        {{ copiedPlatform() === platform.key ? 'Copiado' : 'Copiar' }}
+                      </button>
+                      @if (platform.key !== 'instagram') {
+                        <a
+                          [href]="socialShareUrl(platform.key)"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="font-mono text-[9px] uppercase tracking-[0.14em] text-muted transition hover:text-bone"
+                          >Compartir en {{ platform.label }} ↗</a
+                        >
+                      } @else {
+                        <span
+                          class="font-mono text-[9px] uppercase tracking-[0.14em] text-muted"
+                        >
+                          Pega el texto en la app
+                        </span>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+              <p class="sr-only" role="status">
+                {{ copiedPlatform() ? 'Texto copiado al portapapeles' : '' }}
+              </p>
+            }
+          }
+        </div>
+
+        <div class="card !p-5">
           <p class="font-display text-sm uppercase tracking-wider">Clasificación</p>
 
           <label

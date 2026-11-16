@@ -18,6 +18,7 @@ import type {
   MediaUpdateRequest,
   ReleaseAdmin,
   ReleaseWriteRequest,
+  SocialSummaryResponse,
   TagResponse,
   TagWriteRequest,
 } from './admin.models';
@@ -119,6 +120,13 @@ export class AdminApiService {
     return this.http.post<MarkdownPreviewResponse>(
       `${this.baseUrl}/api/v1/admin/articles/preview`,
       { bodyMd },
+    );
+  }
+
+  generateSocialSummary(id: number): Observable<SocialSummaryResponse> {
+    return this.http.post<SocialSummaryResponse>(
+      `${this.baseUrl}/api/v1/admin/articles/${id}/social-summary`,
+      {},
     );
   }
 

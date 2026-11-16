@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -20,6 +21,8 @@ import type {
   BandResponse,
   CategoryAdmin,
   MediaAsset,
+  SocialSummaryPlatform,
+  SocialSummarySource,
   TagResponse,
 } from '../../../core/api/admin.models';
 import { problemMessage } from '../../../core/api/problem';
@@ -36,6 +39,26 @@ const STATUS_CLASSES: Record<AdminArticleStatus, string> = {
   archived: 'border-amber-500/40 bg-amber-500/10 text-amber-300',
 };
 
+interface SocialPlatformConfig {
+  key: SocialSummaryPlatform;
+  label: string;
+  limit: number;
+}
+
+const SOCIAL_PLATFORMS: readonly SocialPlatformConfig[] = [
+  { key: 'x', label: 'X', limit: 280 },
+  { key: 'facebook', label: 'Facebook', limit: 600 },
+  { key: 'instagram', label: 'Instagram', limit: 800 },
+  { key: 'whatsapp', label: 'WhatsApp', limit: 400 },
+];
+
+const EMPTY_SOCIAL_TEXTS: Record<SocialSummaryPlatform, string> = {
+  x: '',
+  facebook: '',
+  instagram: '',
+  whatsapp: '',
+};
+
 @Component({
   selector: 'app-article-editor-page',
   imports: [ReactiveFormsModule, RouterLink],
@@ -48,6 +71,7 @@ export class ArticleEditorPage implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly formBuilder = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly document = inject(DOCUMENT);
 
   protected readonly articleId = signal<number | null>(null);
   protected readonly loading = signal(true);
@@ -69,6 +93,14 @@ export class ArticleEditorPage implements OnInit {
   protected readonly publicSlug = signal('');
   protected readonly lastSavedAt = signal<Date | null>(null);
   protected readonly dirty = signal(false);
+  protected readonly socialSource = signal<SocialSummarySource | null>(null);
+  protected readonly socialTexts = signal<Record<SocialSummaryPlatform, string>>({
+    ...EMPTY_SOCIAL_TEXTS,
+  });
+  protected readonly socialLoading = signal(false);
+  protected readonly socialError = signal<string | null>(null);
+  protected readonly copiedPlatform = signal<SocialSummaryPlatform | null>(null);
+  protected readonly socialPlatforms = SOCIAL_PLATFORMS;
 
   private suppressDirty = false;
 
@@ -294,11 +326,104 @@ export class ArticleEditorPage implements OnInit {
     });
   }
 
+  protected generateSocialSummary(): void {
+    const id = this.articleId();
+    if (id === null || this.socialLoading()) {
+      return;
+    }
+
+    this.socialLoading.set(true);
+    this.socialError.set(null);
+    this.copiedPlatform.set(null);
+    this.api.generateSocialSummary(id).subscribe({
+      next: (response) => {
+        this.socialLoading.set(false);
+        this.socialSource.set(response.source);
+        this.socialTexts.set({ ...response.variants });
+      },
+      error: (error: unknown) => {
+        this.socialLoading.set(false);
+        this.socialError.set(problemMessage(error, 'No se pudo generar el resumen'));
+      },
+    });
+  }
+
+  protected socialText(platform: SocialSummaryPlatform): string {
+    return this.socialTexts()[platform];
+  }
+
+  protected updateSocialText(platform: SocialSummaryPlatform, event: Event): void {
+    const value = (event.target as HTMLTextAreaElement).value;
+    this.socialTexts.update((texts) => ({ ...texts, [platform]: value }));
+  }
+
+  protected copySocialText(platform: SocialSummaryPlatform): void {
+    const text = this.socialText(platform).trim();
+    if (!text) {
+      return;
+    }
+    if (!navigator.clipboard) {
+      this.socialError.set('Este navegador no permite copiar al portapapeles');
+      return;
+    }
+    navigator.clipboard
+      .writeText(text)
+      .then(() => {
+        this.socialError.set(null);
+        this.copiedPlatform.set(platform);
+        setTimeout(() => {
+          if (this.copiedPlatform() === platform) {
+            this.copiedPlatform.set(null);
+          }
+        }, 2000);
+      })
+      .catch(() => this.socialError.set('No se pudo copiar el texto'));
+  }
+
+  protected socialShareUrl(platform: SocialSummaryPlatform): string {
+    const text = this.socialText(platform).trim();
+    if (!text || platform === 'instagram') {
+      return '';
+    }
+    if (platform === 'facebook') {
+      const url = this.shareArticleUrl();
+      return url
+        ? `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
+        : '';
+    }
+    if (platform === 'x') {
+      return `https://x.com/intent/post?text=${encodeURIComponent(text)}`;
+    }
+    return `https://wa.me/?text=${encodeURIComponent(text)}`;
+  }
+
+  private shareArticleUrl(): string {
+    const canonical = this.form.controls.canonicalUrl.value.trim();
+    if (canonical) {
+      return canonical;
+    }
+    const slug = this.publicSlug() || this.form.controls.slug.value.trim();
+    if (!slug) {
+      return '';
+    }
+    const origin = this.document.location?.origin ?? '';
+    return `${origin}/articulos/${slug}`;
+  }
+
+  private resetSocialSummary(): void {
+    this.socialSource.set(null);
+    this.socialTexts.set({ ...EMPTY_SOCIAL_TEXTS });
+    this.socialLoading.set(false);
+    this.socialError.set(null);
+    this.copiedPlatform.set(null);
+  }
+
   private initialize(id: number | null): void {
     this.articleId.set(id);
     this.loading.set(true);
     this.error.set(null);
     this.notice.set(null);
+    this.resetSocialSummary();
 
     forkJoin({
       categories: this.api.listCategories(),
