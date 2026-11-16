@@ -100,7 +100,7 @@ jobs:
       # un arranque que no representa al visitante real.
       - name: Calentar SSR y cachés
         run: |
-          for url in / /articulos /articulos/metallica-anuncia-gira-europea-2027 /radar /sobre; do
+          for url in / /articulos /articulos/metallica-anuncia-gira-europea-2027 /sobre; do
             for i in 1 2 3; do
               curl -fsS "http://localhost:8088$url" > /dev/null
             done
