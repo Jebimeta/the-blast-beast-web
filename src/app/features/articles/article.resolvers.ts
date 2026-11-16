@@ -13,10 +13,10 @@ import { emptyArticlePage } from '../home/home.resolver';
 const PAGE_SIZE = 9;
 
 /**
- * «Noticias» es la portada del archivo: muestra todas las publicadas y el
- * resto de secciones (Conciertos, Lanzamientos, Entrevistas) actúan como filtro.
+ * «Noticias» es la sección de actualidad: solo muestra artículos marcados con
+ * la etiqueta `noticias`. El resto de secciones filtra por su categoría.
  */
-export const GENERAL_CATEGORY_SLUG = 'noticias';
+export const NEWS_CATEGORY_SLUG = 'noticias';
 
 export interface ArticleListData {
   page: ArticlePage;
@@ -65,14 +65,14 @@ export const articleListResolver: ResolveFn<ArticleListData> = (
 ) => {
   const api = inject(ArticleApiService);
   const categorySlug = route.paramMap.get('slug') ?? undefined;
-  const categoryFilter =
-    categorySlug === GENERAL_CATEGORY_SLUG ? undefined : categorySlug;
+  const isNews = categorySlug === NEWS_CATEGORY_SLUG;
   const page = parsePage(route.queryParamMap.get('page'));
 
   return forkJoin({
     page: api
       .listArticles({
-        category: categoryFilter,
+        category: isNews ? undefined : categorySlug,
+        tag: isNews ? NEWS_CATEGORY_SLUG : undefined,
         page,
         size: PAGE_SIZE,
         sort: 'latest',

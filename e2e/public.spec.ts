@@ -112,12 +112,19 @@ test.describe('Portal público', () => {
     ).toBeVisible();
     expect(await page.locator('article').count()).toBeGreaterThanOrEqual(3);
 
-    // «Noticias» es el archivo completo, no solo la categoría homónima.
+    // «Noticias» solo muestra los artículos marcados con la etiqueta homónima.
     await page.goto('/categorias/noticias');
     await expect(
       page.getByRole('heading', { name: 'Noticias', exact: true }),
     ).toBeVisible();
-    expect(await page.locator('article').count()).toBeGreaterThanOrEqual(6);
+    expect(await page.locator('article').count()).toBe(1);
+    await expect(page.locator('main#contenido')).toContainText(
+      'Nightwish anuncia un parón indefinido',
+    );
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/categorias\/noticias$/,
+    );
   });
 
   test('la búsqueda full-text devuelve resultados', async ({ page }) => {
@@ -199,5 +206,11 @@ test.describe('Portal público', () => {
     const feed = await request.get('/feed.xml');
     expect(feed.status()).toBe(200);
     expect(await feed.text()).toContain('<rss');
+
+    const newsFeed = await request.get('/categorias/noticias/feed.xml');
+    expect(newsFeed.status()).toBe(200);
+    const newsXml = await newsFeed.text();
+    expect(newsXml).toContain('Nightwish anuncia un parón indefinido');
+    expect(newsXml).not.toContain('Metallica anuncia una gira europea');
   });
 });

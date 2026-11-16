@@ -23,7 +23,7 @@ Frontend del portal de noticias de heavy metal **The Blast Beast**.
 |---|---|
 | `/` | Portada: destacados, secciones y últimas noticias |
 | `/articulos` | Archivo completo con orden fijo y 9 noticias por página |
-| `/categorias/:slug` | Sección con filtro por categoría |
+| `/categorias/:slug` | Sección con filtro por categoría; `/categorias/noticias` filtra por la etiqueta `noticias` |
 | `/articulos/:slug` | Detalle de la noticia |
 | `/bandas/:slug` | Banda y sus noticias |
 | `/buscar?q=` | Búsqueda full-text |
@@ -136,20 +136,21 @@ npm run e2e
 npm run lighthouse
 ```
 
-**Unitarios** (9 ficheros, 23 tests): portada con contenido y estado vacío, shell de la
-aplicación, cinta de última hora, botón de volver arriba, progreso de lectura, utilidades y
-página del radar (conservadas para su futura publicación), 404 con buscador y noticia
-aleatoria, y `SeoService` (canonical, `noindex`, JSON-LD de artículo, evento e `ItemList`,
-migas y enlace de feed).
+**Unitarios** (11 ficheros, 26 tests): portada con contenido y estado vacío, shell de la
+aplicación, pie con enlaces sociales, cinta de última hora, botón de volver arriba, progreso
+de lectura, utilidades y página del radar (conservadas para su futura publicación), 404 con
+buscador y noticia aleatoria, resolver del listado (filtro por etiqueta en Noticias y por
+categoría en el resto), y `SeoService` (canonical, `noindex`, JSON-LD de artículo, evento e
+`ItemList`, migas y enlace de feed).
 
-**E2E** (Playwright, 18 tests) sobre Caddy + SSR + API + PostgreSQL en
+**E2E** (Playwright, 27 tests) sobre Caddy + SSR + API + PostgreSQL en
 `http://localhost:8088`:
 
 | Spec | Tests | Contenido |
 |---|---|---|
-| `e2e/public.spec.ts` | 12 | Portada, cinta en portada y secciones, volver arriba, detalle, archivo, radar oculto (404), búsqueda, 404 real y 404 con buscador/aleatorio, estáticas, sitemap/robots/feed |
+| `e2e/public.spec.ts` | 12 | Portada, cinta en portada y secciones, volver arriba, detalle, archivo, Noticias por etiqueta, radar oculto (404), búsqueda, 404 real y 404 con buscador/aleatorio, estáticas, sitemap/robots/feed |
 | `e2e/admin.spec.ts` | 4 | Login obligatorio, ciclo crear→publicar→verificar→borrar, CRUD del radar, filtros |
-| `e2e/a11y.spec.ts` | 2 | axe WCAG 2.1 AA en páginas públicas y panel autenticado |
+| `e2e/a11y.spec.ts` | 11 | axe WCAG 2.1 AA: un test por página pública (incluida Noticias) y panel autenticado |
 
 **Accesibilidad**: `@axe-core/playwright` con `wcag2a`, `wcag2aa`, `wcag21a` y `wcag21aa`.
 Criterio: cero violaciones.
