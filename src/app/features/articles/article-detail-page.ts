@@ -60,16 +60,17 @@ export class ArticleDetailPage {
       cover.url
     );
   });
-  protected readonly coverHero = computed(() => {
+  protected readonly coverHeroMeta = computed(() => {
     const cover = this.article()?.cover;
     if (!cover) {
       return null;
     }
-    return (
-      cover.variants?.find((variant) => variant.kind === 'hero')?.url ??
-      cover.url
-    );
+    const hero = cover.variants?.find((variant) => variant.kind === 'hero');
+    return hero ?? cover;
   });
+  protected readonly coverHero = computed(
+    () => this.coverHeroMeta()?.url ?? null,
+  );
 
   constructor() {
     effect(() => {
@@ -95,7 +96,8 @@ export class ArticleDetailPage {
       const path = `/articulos/${article.slug}`;
       const title = article.seoTitle ?? `${article.title} — The Blast Beast`;
       const description = article.seoDescription ?? article.excerpt;
-      const image = this.coverHero() ?? undefined;
+      const hero = this.coverHeroMeta();
+      const image = hero?.url ?? undefined;
 
       const thumb = this.coverThumb();
       if (image) {
@@ -124,6 +126,8 @@ export class ArticleDetailPage {
         section: article.category.name,
         image,
         imageAlt: article.cover?.altText ?? article.title,
+        imageWidth: hero?.width,
+        imageHeight: hero?.height,
       });
 
       this.seo.applyArticleJsonLd({

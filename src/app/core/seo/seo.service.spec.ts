@@ -60,6 +60,8 @@ describe('SeoService', () => {
       type: 'article',
       image: '/media/portada-hero.webp',
       imageAlt: 'Portada de Metallica',
+      imageWidth: 1600,
+      imageHeight: 900,
     });
 
     expect(meta.getTag('property="og:image"')?.content).toBe(
@@ -71,6 +73,8 @@ describe('SeoService', () => {
     expect(meta.getTag('name="twitter:image:alt"')?.content).toBe(
       'Portada de Metallica',
     );
+    expect(meta.getTag('property="og:image:width"')?.content).toBe('1600');
+    expect(meta.getTag('property="og:image:height"')?.content).toBe('900');
 
     service.apply({
       title: 'Otra noticia',
@@ -82,6 +86,8 @@ describe('SeoService', () => {
     expect(meta.getTag('property="og:image"')?.content).toBe(
       'https://cdn.example.com/og.jpg',
     );
+    expect(meta.getTag('property="og:image:width"')).toBeNull();
+    expect(meta.getTag('property="og:image:height"')).toBeNull();
   });
 
   it('marca noindex y retira el canonical en páginas no indexables', () => {

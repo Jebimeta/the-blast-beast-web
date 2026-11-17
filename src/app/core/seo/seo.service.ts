@@ -15,6 +15,8 @@ export interface SeoData {
   section?: string;
   image?: string;
   imageAlt?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   noIndex?: boolean;
 }
 
@@ -76,8 +78,18 @@ export class SeoService {
     this.setMeta('name', 'twitter:image', image);
     this.setMeta('property', 'og:image:alt', imageAlt);
     this.setMeta('name', 'twitter:image:alt', imageAlt);
-    this.setMeta('property', 'og:image:width', DEFAULT_OG_IMAGE_WIDTH);
-    this.setMeta('property', 'og:image:height', DEFAULT_OG_IMAGE_HEIGHT);
+
+    // Las dimensiones solo son válidas para la imagen por defecto o si el
+    // llamador las conoce; una portada no mide 1200×630.
+    const width = data.image ? data.imageWidth : Number(DEFAULT_OG_IMAGE_WIDTH);
+    const height = data.image ? data.imageHeight : Number(DEFAULT_OG_IMAGE_HEIGHT);
+    if (width && height) {
+      this.setMeta('property', 'og:image:width', String(width));
+      this.setMeta('property', 'og:image:height', String(height));
+    } else {
+      this.meta.removeTag('property="og:image:width"');
+      this.meta.removeTag('property="og:image:height"');
+    }
 
     if (data.publishedAt) {
       this.setMeta('property', 'article:published_time', data.publishedAt);
