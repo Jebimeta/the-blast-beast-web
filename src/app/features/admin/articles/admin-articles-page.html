@@ -103,18 +103,18 @@
 
               <a
                 [routerLink]="['/admin/articulos', article.id]"
-                class="mt-1 block truncate font-display text-lg uppercase leading-tight transition hover:text-blood-soft"
+                class="mt-1 line-clamp-2 font-display text-lg uppercase leading-tight transition hover:text-blood-soft"
               >
                 {{ article.title }}
               </a>
 
-              <p class="mt-1 truncate text-xs text-muted">{{ article.excerpt }}</p>
+              <p class="mt-1 line-clamp-2 text-xs text-muted">{{ article.excerpt }}</p>
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
               <a
                 [routerLink]="['/admin/articulos', article.id]"
-                class="rounded-md border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bone transition hover:border-muted hover:bg-surface-2"
+                class="inline-flex min-h-10 items-center justify-center rounded-md border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bone transition hover:border-muted hover:bg-surface-2"
               >
                 Editar
               </a>
@@ -122,7 +122,7 @@
               @if (article.status === 'draft') {
                 <button
                   type="button"
-                  class="rounded-md border border-emerald-500/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-emerald-300 transition hover:bg-emerald-500/10 disabled:opacity-40"
+                  class="inline-flex min-h-10 items-center justify-center rounded-md border border-emerald-500/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-emerald-300 transition hover:bg-emerald-500/10 disabled:opacity-40"
                   [disabled]="busyId() !== null"
                   (click)="publish(article)"
                 >
@@ -132,7 +132,7 @@
               @if (article.status === 'published') {
                 <button
                   type="button"
-                  class="rounded-md border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted transition hover:bg-surface-2 disabled:opacity-40"
+                  class="inline-flex min-h-10 items-center justify-center rounded-md border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted transition hover:bg-surface-2 disabled:opacity-40"
                   [disabled]="busyId() !== null"
                   (click)="unpublish(article)"
                 >
@@ -142,7 +142,7 @@
               @if (article.status !== 'archived') {
                 <button
                   type="button"
-                  class="rounded-md border border-amber-500/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-amber-300 transition hover:bg-amber-500/10 disabled:opacity-40"
+                  class="inline-flex min-h-10 items-center justify-center rounded-md border border-amber-500/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-amber-300 transition hover:bg-amber-500/10 disabled:opacity-40"
                   [disabled]="busyId() !== null"
                   (click)="archive(article)"
                 >
@@ -151,7 +151,7 @@
               }
               <button
                 type="button"
-                class="rounded-md border border-blood/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-blood-soft transition hover:bg-blood/10 disabled:opacity-40"
+                class="inline-flex min-h-10 items-center justify-center rounded-md border border-blood/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-blood-soft transition hover:bg-blood/10 disabled:opacity-40"
                 [disabled]="busyId() !== null"
                 (click)="remove(article)"
               >
@@ -170,7 +170,7 @@
       >
         <button
           type="button"
-          class="btn-ghost !px-4 !py-2 !text-xs disabled:cursor-not-allowed disabled:opacity-40"
+          class="btn-ghost min-h-10 !px-4 !py-2.5 !text-xs disabled:cursor-not-allowed disabled:opacity-40"
           [disabled]="!hasPrev()"
           (click)="go(page() - 1)"
         >
@@ -183,7 +183,7 @@
 
         <button
           type="button"
-          class="btn-ghost !px-4 !py-2 !text-xs disabled:cursor-not-allowed disabled:opacity-40"
+          class="btn-ghost min-h-10 !px-4 !py-2.5 !text-xs disabled:cursor-not-allowed disabled:opacity-40"
           [disabled]="!hasNext()"
           (click)="go(page() + 1)"
         >

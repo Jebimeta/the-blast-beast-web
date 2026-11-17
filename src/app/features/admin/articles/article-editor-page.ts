@@ -169,6 +169,7 @@ export class ArticleEditorPage implements OnInit {
   protected save(silent = false): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.scrollToFormStart();
       return;
     }
     if (this.saving()) {
@@ -211,6 +212,7 @@ export class ArticleEditorPage implements OnInit {
   protected publish(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
+      this.scrollToFormStart();
       return;
     }
     if (this.publishing()) {
@@ -288,6 +290,12 @@ export class ArticleEditorPage implements OnInit {
     if (next) {
       this.loadRevisions();
     }
+  }
+
+  protected scrollToSocial(): void {
+    this.document
+      .getElementById('social-panel')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   protected restore(revision: ArticleRevision): void {
@@ -395,6 +403,12 @@ export class ArticleEditorPage implements OnInit {
       return `https://x.com/intent/post?text=${encodeURIComponent(text)}`;
     }
     return `https://wa.me/?text=${encodeURIComponent(text)}`;
+  }
+
+  private scrollToFormStart(): void {
+    this.document
+      .getElementById('article-form')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   private shareArticleUrl(): string {

@@ -11,10 +11,11 @@
     </div>
   </div>
 
-  <div class="mt-6 flex flex-wrap gap-2">
+  <div class="mt-6 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex flex-wrap gap-2">
     <button
       type="button"
-      class="rounded-full border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] transition"
+      class="inline-flex min-h-10 items-center rounded-full border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.16em] transition"
       [class]="
         tab() === 'categories'
           ? 'border-blood bg-blood/10 text-bone'
@@ -26,7 +27,7 @@
     </button>
     <button
       type="button"
-      class="rounded-full border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] transition"
+      class="inline-flex min-h-10 items-center rounded-full border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.16em] transition"
       [class]="
         tab() === 'bands'
           ? 'border-blood bg-blood/10 text-bone'
@@ -38,7 +39,7 @@
     </button>
     <button
       type="button"
-      class="rounded-full border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] transition"
+      class="inline-flex min-h-10 items-center rounded-full border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.16em] transition"
       [class]="
         tab() === 'tags'
           ? 'border-blood bg-blood/10 text-bone'
@@ -47,6 +48,21 @@
       (click)="selectTab('tags')"
     >
       Etiquetas ({{ tags().length }})
+    </button>
+    </div>
+
+    <button
+      type="button"
+      class="btn-primary min-h-10 w-full justify-center !px-4 !py-2.5 !text-xs sm:w-auto lg:hidden"
+      (click)="startCreate()"
+    >
+      @if (tab() === 'categories') {
+        + Nueva categoría
+      } @else if (tab() === 'bands') {
+        + Nueva banda
+      } @else {
+        + Nueva etiqueta
+      }
     </button>
   </div>
 
@@ -81,14 +97,14 @@
             </div>
             <button
               type="button"
-              class="rounded-md border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bone transition hover:bg-surface-2"
+              class="inline-flex min-h-10 items-center justify-center rounded-md border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bone transition hover:bg-surface-2"
               (click)="editCategory(category)"
             >
               Editar
             </button>
             <button
               type="button"
-              class="rounded-md border border-blood/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-blood-soft transition hover:bg-blood/10 disabled:cursor-not-allowed disabled:opacity-30"
+              class="inline-flex min-h-10 items-center justify-center rounded-md border border-blood/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-blood-soft transition hover:bg-blood/10 disabled:cursor-not-allowed disabled:opacity-30"
               [disabled]="category.articleCount > 0"
               [title]="
                 category.articleCount > 0
@@ -104,9 +120,10 @@
       </ul>
 
       <form
+        id="category-form"
         [formGroup]="categoryForm"
         (ngSubmit)="saveCategory()"
-        class="card h-fit !p-5"
+        class="card h-fit scroll-mt-4 !p-5"
       >
         <p class="font-display text-sm uppercase tracking-wider">
           {{ editingCategoryId() ? 'Editar categoría' : 'Nueva categoría' }}
@@ -154,11 +171,11 @@
         />
 
         <div class="mt-4 flex gap-2">
-          <button type="submit" class="btn-primary flex-1 justify-center !px-4 !py-2.5 !text-xs" [disabled]="saving()">
+          <button type="submit" class="btn-primary min-h-10 flex-1 justify-center !px-4 !py-2.5 !text-xs" [disabled]="saving()">
             {{ editingCategoryId() ? 'Guardar' : 'Crear' }}
           </button>
           @if (editingCategoryId()) {
-            <button type="button" class="btn-ghost !px-4 !py-2.5 !text-xs" (click)="cancelCategory()">
+            <button type="button" class="btn-ghost min-h-10 !px-4 !py-2.5 !text-xs" (click)="cancelCategory()">
               Cancelar
             </button>
           }
@@ -200,14 +217,14 @@
               </div>
               <button
                 type="button"
-                class="rounded-md border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bone transition hover:bg-surface-2"
+                class="inline-flex min-h-10 items-center justify-center rounded-md border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bone transition hover:bg-surface-2"
                 (click)="editBand(band)"
               >
                 Editar
               </button>
               <button
                 type="button"
-                class="rounded-md border border-blood/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-blood-soft transition hover:bg-blood/10"
+                class="inline-flex min-h-10 items-center justify-center rounded-md border border-blood/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-blood-soft transition hover:bg-blood/10"
                 (click)="removeBand(band)"
               >
                 Eliminar
@@ -219,7 +236,12 @@
         </ul>
       </div>
 
-      <form [formGroup]="bandForm" (ngSubmit)="saveBand()" class="card h-fit !p-5">
+      <form
+        id="band-form"
+        [formGroup]="bandForm"
+        (ngSubmit)="saveBand()"
+        class="card h-fit scroll-mt-4 !p-5"
+      >
         <p class="font-display text-sm uppercase tracking-wider">
           {{ editingBandId() ? 'Editar banda' : 'Nueva banda' }}
         </p>
@@ -317,11 +339,11 @@
         />
 
         <div class="mt-4 flex gap-2">
-          <button type="submit" class="btn-primary flex-1 justify-center !px-4 !py-2.5 !text-xs" [disabled]="saving()">
+          <button type="submit" class="btn-primary min-h-10 flex-1 justify-center !px-4 !py-2.5 !text-xs" [disabled]="saving()">
             {{ editingBandId() ? 'Guardar' : 'Crear' }}
           </button>
           @if (editingBandId()) {
-            <button type="button" class="btn-ghost !px-4 !py-2.5 !text-xs" (click)="cancelBand()">
+            <button type="button" class="btn-ghost min-h-10 !px-4 !py-2.5 !text-xs" (click)="cancelBand()">
               Cancelar
             </button>
           }
@@ -349,7 +371,7 @@
               </span>
               <button
                 type="button"
-                class="text-muted transition hover:text-bone"
+                class="grid size-10 place-items-center rounded-full text-muted transition hover:bg-surface-2 hover:text-bone"
                 [attr.aria-label]="'Editar ' + tag.name"
                 (click)="editTag(tag)"
               >
@@ -357,7 +379,7 @@
               </button>
               <button
                 type="button"
-                class="text-blood-soft transition hover:text-bone"
+                class="grid size-10 place-items-center rounded-full text-blood-soft transition hover:bg-surface-2 hover:text-bone"
                 [attr.aria-label]="'Eliminar ' + tag.name"
                 (click)="removeTag(tag)"
               >
@@ -370,7 +392,12 @@
         </ul>
       </div>
 
-      <form [formGroup]="tagForm" (ngSubmit)="saveTag()" class="card h-fit !p-5">
+      <form
+        id="tag-form"
+        [formGroup]="tagForm"
+        (ngSubmit)="saveTag()"
+        class="card h-fit scroll-mt-4 !p-5"
+      >
         <p class="font-display text-sm uppercase tracking-wider">
           {{ editingTagId() ? 'Editar etiqueta' : 'Nueva etiqueta' }}
         </p>
@@ -396,11 +423,11 @@
         />
 
         <div class="mt-4 flex gap-2">
-          <button type="submit" class="btn-primary flex-1 justify-center !px-4 !py-2.5 !text-xs" [disabled]="saving()">
+          <button type="submit" class="btn-primary min-h-10 flex-1 justify-center !px-4 !py-2.5 !text-xs" [disabled]="saving()">
             {{ editingTagId() ? 'Guardar' : 'Crear' }}
           </button>
           @if (editingTagId()) {
-            <button type="button" class="btn-ghost !px-4 !py-2.5 !text-xs" (click)="cancelTag()">
+            <button type="button" class="btn-ghost min-h-10 !px-4 !py-2.5 !text-xs" (click)="cancelTag()">
               Cancelar
             </button>
           }

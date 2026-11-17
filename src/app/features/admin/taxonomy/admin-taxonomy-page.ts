@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -19,6 +20,7 @@ import type {
 } from '../../../core/api/admin.models';
 import { problemMessage } from '../../../core/api/problem';
 import { CategoryStore } from '../../../core/category-store';
+import { scrollToAdminForm } from '../scroll-to-admin-form';
 
 type TaxonomyTab = 'categories' | 'bands' | 'tags';
 
@@ -32,6 +34,7 @@ export class AdminTaxonomyPage implements OnInit {
   private readonly api = inject(AdminApiService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly categoryStore = inject(CategoryStore);
+  private readonly document = inject(DOCUMENT);
 
   protected readonly tab = signal<TaxonomyTab>('categories');
   protected readonly categories = signal<CategoryAdmin[]>([]);
@@ -109,6 +112,21 @@ export class AdminTaxonomyPage implements OnInit {
     this.notice.set(null);
   }
 
+  protected startCreate(): void {
+    this.error.set(null);
+    this.notice.set(null);
+    if (this.tab() === 'categories') {
+      this.cancelCategory();
+      scrollToAdminForm(this.document, 'category-form');
+    } else if (this.tab() === 'bands') {
+      this.cancelBand();
+      scrollToAdminForm(this.document, 'band-form');
+    } else {
+      this.cancelTag();
+      scrollToAdminForm(this.document, 'tag-form');
+    }
+  }
+
   // Categorías ---------------------------------------------------------
   protected editCategory(category: CategoryAdmin): void {
     this.editingCategoryId.set(category.id);
@@ -118,6 +136,7 @@ export class AdminTaxonomyPage implements OnInit {
       description: category.description ?? '',
       sortOrder: category.sortOrder,
     });
+    scrollToAdminForm(this.document, 'category-form');
   }
 
   protected cancelCategory(): void {
@@ -185,6 +204,7 @@ export class AdminTaxonomyPage implements OnInit {
       bandcampUrl: band.bandcampUrl ?? '',
       spotifyUrl: band.spotifyUrl ?? '',
     });
+    scrollToAdminForm(this.document, 'band-form');
   }
 
   protected cancelBand(): void {
@@ -245,6 +265,7 @@ export class AdminTaxonomyPage implements OnInit {
   protected editTag(tag: TagResponse): void {
     this.editingTagId.set(tag.id);
     this.tagForm.setValue({ name: tag.name, slug: tag.slug });
+    scrollToAdminForm(this.document, 'tag-form');
   }
 
   protected cancelTag(): void {

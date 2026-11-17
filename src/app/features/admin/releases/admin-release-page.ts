@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -15,6 +16,7 @@ import type {
   ReleaseWriteRequest,
 } from '../../../core/api/admin.models';
 import { problemMessage } from '../../../core/api/problem';
+import { scrollToAdminForm } from '../scroll-to-admin-form';
 import {
   RELEASE_TYPES,
   formatReleaseDate,
@@ -30,6 +32,7 @@ import {
 export class AdminReleasePage implements OnInit {
   private readonly api = inject(AdminApiService);
   private readonly formBuilder = inject(FormBuilder);
+  private readonly document = inject(DOCUMENT);
 
   protected readonly releases = signal<ReleaseAdmin[]>([]);
   protected readonly bands = signal<BandResponse[]>([]);
@@ -111,6 +114,7 @@ export class AdminReleasePage implements OnInit {
       featured: release.featured,
       hidden: release.hidden,
     });
+    scrollToAdminForm(this.document, 'release-form');
   }
 
   protected cancel(): void {
@@ -129,6 +133,12 @@ export class AdminReleasePage implements OnInit {
       hidden: false,
     });
     this.error.set(null);
+  }
+
+  protected startCreate(): void {
+    this.cancel();
+    this.notice.set(null);
+    scrollToAdminForm(this.document, 'release-form');
   }
 
   protected save(): void {

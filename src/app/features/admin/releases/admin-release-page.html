@@ -10,6 +10,14 @@
         verificado, fuera del radar.
       </p>
     </div>
+
+    <button
+      type="button"
+      class="btn-primary min-h-10 w-full justify-center !px-4 !py-2.5 !text-xs sm:w-auto lg:hidden"
+      (click)="startCreate()"
+    >
+      + Nuevo lanzamiento
+    </button>
   </div>
 
   @if (error()) {
@@ -90,14 +98,14 @@
               <div class="flex gap-2 sm:pt-1">
                 <button
                   type="button"
-                  class="rounded-md border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bone transition hover:bg-surface-2"
+                  class="inline-flex min-h-10 items-center justify-center rounded-md border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-bone transition hover:bg-surface-2"
                   (click)="edit(release)"
                 >
                   Editar
                 </button>
                 <button
                   type="button"
-                  class="rounded-md border border-blood/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-blood-soft transition hover:bg-blood/10"
+                  class="inline-flex min-h-10 items-center justify-center rounded-md border border-blood/40 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-blood-soft transition hover:bg-blood/10"
                   (click)="remove(release)"
                 >
                   Eliminar
@@ -112,7 +120,12 @@
         </ul>
       </div>
 
-      <form [formGroup]="releaseForm" (ngSubmit)="save()" class="card h-fit !p-5">
+      <form
+        id="release-form"
+        [formGroup]="releaseForm"
+        (ngSubmit)="save()"
+        class="card h-fit scroll-mt-4 !p-5"
+      >
         <p class="font-display text-sm uppercase tracking-wider">
           {{ editingId() ? 'Editar lanzamiento' : 'Nuevo lanzamiento' }}
         </p>

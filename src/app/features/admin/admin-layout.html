@@ -23,14 +23,17 @@
     </div>
   </div>
 
-  <div class="grid gap-8 lg:grid-cols-[220px_1fr]">
-    <nav aria-label="Navegación de redacción" class="lg:border-r lg:border-line lg:pr-6">
-      <ul class="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
+  <div class="grid min-w-0 gap-8 lg:grid-cols-[220px_1fr]">
+    <nav
+      aria-label="Navegación de redacción"
+      class="min-w-0 lg:border-r lg:border-line lg:pr-6"
+    >
+      <ul class="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:flex lg:flex-col">
         <li>
           <a
             routerLink="/admin/articulos"
             routerLinkActive="border-blood bg-surface-2 text-bone"
-            class="block whitespace-nowrap rounded-md border border-transparent px-4 py-3 font-display text-sm uppercase tracking-wider text-muted transition hover:border-line hover:text-bone"
+            class="flex min-h-11 items-center justify-center whitespace-nowrap rounded-md border border-transparent px-3 py-2.5 text-center font-display text-sm uppercase tracking-wider text-muted transition hover:border-line hover:text-bone lg:justify-start lg:px-4 lg:py-3 lg:text-left"
           >
             Artículos
           </a>
@@ -39,7 +42,7 @@
           <a
             routerLink="/admin/radar"
             routerLinkActive="border-blood bg-surface-2 text-bone"
-            class="block whitespace-nowrap rounded-md border border-transparent px-4 py-3 font-display text-sm uppercase tracking-wider text-muted transition hover:border-line hover:text-bone"
+            class="flex min-h-11 items-center justify-center whitespace-nowrap rounded-md border border-transparent px-3 py-2.5 text-center font-display text-sm uppercase tracking-wider text-muted transition hover:border-line hover:text-bone lg:justify-start lg:px-4 lg:py-3 lg:text-left"
           >
             Radar
           </a>
@@ -48,7 +51,7 @@
           <a
             routerLink="/admin/taxonomia"
             routerLinkActive="border-blood bg-surface-2 text-bone"
-            class="block whitespace-nowrap rounded-md border border-transparent px-4 py-3 font-display text-sm uppercase tracking-wider text-muted transition hover:border-line hover:text-bone"
+            class="flex min-h-11 items-center justify-center whitespace-nowrap rounded-md border border-transparent px-3 py-2.5 text-center font-display text-sm uppercase tracking-wider text-muted transition hover:border-line hover:text-bone lg:justify-start lg:px-4 lg:py-3 lg:text-left"
           >
             Taxonomía
           </a>
@@ -57,17 +60,17 @@
           <a
             routerLink="/admin/medios"
             routerLinkActive="border-blood bg-surface-2 text-bone"
-            class="block whitespace-nowrap rounded-md border border-transparent px-4 py-3 font-display text-sm uppercase tracking-wider text-muted transition hover:border-line hover:text-bone"
+            class="flex min-h-11 items-center justify-center whitespace-nowrap rounded-md border border-transparent px-3 py-2.5 text-center font-display text-sm uppercase tracking-wider text-muted transition hover:border-line hover:text-bone lg:justify-start lg:px-4 lg:py-3 lg:text-left"
           >
             Medios
           </a>
         </li>
       </ul>
 
-      <div class="mt-6 hidden border-t border-line pt-5 lg:block">
+      <div class="mt-2 lg:mt-6 lg:border-t lg:border-line lg:pt-5">
         <a
           routerLink="/"
-          class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted hover:text-bone"
+          class="flex min-h-10 items-center justify-center rounded-md border border-line px-4 font-mono text-[10px] uppercase tracking-[0.16em] text-muted transition hover:border-muted hover:text-bone lg:min-h-0 lg:justify-start lg:border-0 lg:px-0 lg:py-0"
           >Ver el portal →</a
         >
       </div>
