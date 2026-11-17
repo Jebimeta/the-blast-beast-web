@@ -64,6 +64,8 @@ describe('HomePage', () => {
     expect(text).toContain('Judas Priest entra al estudio');
     expect(text).toContain('Noticias');
     expect(text).toContain('Leer la noticia');
+    expect(text).toContain('Últimas noticias');
+    expect(text).toContain('Ver todas');
   });
 
   it('muestra un estado vacío cuando no hay contenido', () => {
@@ -75,6 +77,11 @@ describe('HomePage', () => {
     } satisfies HomeData);
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.textContent).toContain('Aún no hay noticias');
+    const text = fixture.nativeElement.textContent;
+    expect(text).toContain('No hay artículos publicados todavía');
+    expect(text).toContain('conocer el proyecto');
+    expect(text).toContain('escribirnos');
+    expect(text).not.toContain('perfil dev');
+    expect(text).not.toContain('Últimas noticias');
   });
 });

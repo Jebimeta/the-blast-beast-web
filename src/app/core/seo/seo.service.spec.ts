@@ -36,9 +36,52 @@ describe('SeoService', () => {
     expect(meta.getTag('property="og:url"')?.content).toBe(
       'https://theblastbeast.test/categorias/conciertos?page=1',
     );
+    expect(meta.getTag('property="og:image"')?.content).toBe(
+      'https://theblastbeast.test/og-default.jpg',
+    );
+    expect(meta.getTag('property="og:image:alt"')?.content).toBe(
+      'The Blast Beast — Noticias de heavy metal',
+    );
+    expect(meta.getTag('property="og:image:width"')?.content).toBe('1200');
+    expect(meta.getTag('property="og:image:height"')?.content).toBe('630');
+    expect(meta.getTag('name="twitter:image"')?.content).toBe(
+      'https://theblastbeast.test/og-default.jpg',
+    );
     expect(
       document.querySelector('link[rel="canonical"]')?.getAttribute('href'),
     ).toBe('https://theblastbeast.test/categorias/conciertos?page=1');
+  });
+
+  it('usa la imagen específica, su alt y la normaliza a URL absoluta', () => {
+    service.apply({
+      title: 'Metallica anuncia gira',
+      description: 'Doce fechas.',
+      path: '/articulos/metallica-anuncia-gira',
+      type: 'article',
+      image: '/media/portada-hero.webp',
+      imageAlt: 'Portada de Metallica',
+    });
+
+    expect(meta.getTag('property="og:image"')?.content).toBe(
+      'https://theblastbeast.test/media/portada-hero.webp',
+    );
+    expect(meta.getTag('property="og:image:alt"')?.content).toBe(
+      'Portada de Metallica',
+    );
+    expect(meta.getTag('name="twitter:image:alt"')?.content).toBe(
+      'Portada de Metallica',
+    );
+
+    service.apply({
+      title: 'Otra noticia',
+      description: 'Otra.',
+      path: '/articulos/otra',
+      image: 'https://cdn.example.com/og.jpg',
+    });
+
+    expect(meta.getTag('property="og:image"')?.content).toBe(
+      'https://cdn.example.com/og.jpg',
+    );
   });
 
   it('marca noindex y retira el canonical en páginas no indexables', () => {

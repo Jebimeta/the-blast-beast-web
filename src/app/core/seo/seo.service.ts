@@ -14,6 +14,7 @@ export interface SeoData {
   author?: string;
   section?: string;
   image?: string;
+  imageAlt?: string;
   noIndex?: boolean;
 }
 
@@ -28,6 +29,10 @@ const SITE_JSON_LD_ID = 'site-jsonld';
 const EVENT_JSON_LD_ID = 'event-jsonld';
 const ITEM_LIST_JSON_LD_ID = 'itemlist-jsonld';
 const FEED_LINK_SELECTOR = 'link[data-page-feed]';
+const DEFAULT_OG_IMAGE_PATH = '/og-default.jpg';
+const DEFAULT_OG_IMAGE_ALT = 'The Blast Beast — Noticias de heavy metal';
+const DEFAULT_OG_IMAGE_WIDTH = '1200';
+const DEFAULT_OG_IMAGE_HEIGHT = '630';
 
 const EVENT_STATUS: Record<ConcertStatus, string> = {
   ON_SALE: 'https://schema.org/EventScheduled',
@@ -51,6 +56,8 @@ export class SeoService {
 
   apply(data: SeoData): void {
     const url = `${this.siteUrl}${data.path}`;
+    const image = this.absoluteUrl(data.image ?? DEFAULT_OG_IMAGE_PATH);
+    const imageAlt = data.imageAlt ?? DEFAULT_OG_IMAGE_ALT;
 
     this.clearJsonLd();
     this.clearFeed();
@@ -65,14 +72,12 @@ export class SeoService {
     this.setMeta('name', 'twitter:card', 'summary_large_image');
     this.setMeta('name', 'twitter:title', data.title);
     this.setMeta('name', 'twitter:description', data.description);
-
-    if (data.image) {
-      this.setMeta('property', 'og:image', data.image);
-      this.setMeta('name', 'twitter:image', data.image);
-    } else {
-      this.meta.removeTag('property="og:image"');
-      this.meta.removeTag('name="twitter:image"');
-    }
+    this.setMeta('property', 'og:image', image);
+    this.setMeta('name', 'twitter:image', image);
+    this.setMeta('property', 'og:image:alt', imageAlt);
+    this.setMeta('name', 'twitter:image:alt', imageAlt);
+    this.setMeta('property', 'og:image:width', DEFAULT_OG_IMAGE_WIDTH);
+    this.setMeta('property', 'og:image:height', DEFAULT_OG_IMAGE_HEIGHT);
 
     if (data.publishedAt) {
       this.setMeta('property', 'article:published_time', data.publishedAt);
@@ -351,6 +356,13 @@ export class SeoService {
 
     link.title = title;
     link.href = `${this.siteUrl}${path}`;
+  }
+
+  private absoluteUrl(value: string): string {
+    if (/^https?:\/\//i.test(value)) {
+      return value;
+    }
+    return `${this.siteUrl}${value.startsWith('/') ? value : `/${value}`}`;
   }
 
   private setCanonical(url: string): void {

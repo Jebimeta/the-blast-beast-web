@@ -123,6 +123,7 @@ export class ArticleDetailPage {
         author: article.authorName,
         section: article.category.name,
         image,
+        imageAlt: article.cover?.altText ?? article.title,
       });
 
       this.seo.applyArticleJsonLd({

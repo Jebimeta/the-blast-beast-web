@@ -87,7 +87,18 @@
               </h1>
               <p class="mt-4 max-w-xl text-muted">
                 No hay artículos publicados todavía. En cuanto la redacción
-                publique el primero, aparecerá aquí.
+                publique el primero, aparecerá aquí. Mientras tanto, puedes
+                <a
+                  routerLink="/sobre"
+                  class="text-bone underline decoration-line underline-offset-4 transition hover:text-blood-soft"
+                  >conocer el proyecto</a
+                >
+                o
+                <a
+                  routerLink="/contacto"
+                  class="text-bone underline decoration-line underline-offset-4 transition hover:text-blood-soft"
+                  >escribirnos</a
+                >.
               </p>
             </div>
           }
@@ -134,22 +145,22 @@
     </div>
   </section>
 
-  <section class="shell py-12 sm:py-16">
-    <div class="flex items-end justify-between gap-4 border-b border-line pb-4">
-      <div>
-        <p class="eyebrow">Recién publicado</p>
-        <h2 class="mt-2 font-display text-3xl uppercase sm:text-4xl">
-          Últimas noticias
-        </h2>
+  @if (latest().length) {
+    <section class="shell py-12 sm:py-16">
+      <div class="flex items-end justify-between gap-4 border-b border-line pb-4">
+        <div>
+          <p class="eyebrow">Recién publicado</p>
+          <h2 class="mt-2 font-display text-3xl uppercase sm:text-4xl">
+            Últimas noticias
+          </h2>
+        </div>
+        <a
+          routerLink="/articulos"
+          class="hidden font-mono text-xs uppercase tracking-[0.16em] text-muted hover:text-bone sm:inline"
+          >Ver todas →</a
+        >
       </div>
-      <a
-        routerLink="/articulos"
-        class="hidden font-mono text-xs uppercase tracking-[0.16em] text-muted hover:text-bone sm:inline"
-        >Ver todas →</a
-      >
-    </div>
 
-    @if (latest().length) {
       <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
         @for (article of latest(); track article.id) {
           <app-article-card [article]="article" ngSkipHydration />
@@ -161,20 +172,6 @@
           >Ver todas las noticias</a
         >
       </div>
-    } @else {
-      <div class="mt-8 rounded-xl border border-line bg-surface p-8">
-        <p class="font-display text-lg uppercase tracking-wide">
-          Aún no hay noticias
-        </p>
-        <p class="mt-2 text-sm text-muted">
-          El archivo está vacío. Si estás en local, arranca la API con el perfil
-          <code
-            class="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-xs text-bone"
-            >dev</code
-          >
-          para cargar el contenido de ejemplo.
-        </p>
-      </div>
-    }
-  </section>
+    </section>
+  }
 </main>
