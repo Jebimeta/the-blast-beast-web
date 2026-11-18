@@ -8,9 +8,12 @@ const PUBLIC_PAGES = [
   { path: '/categorias/noticias', label: 'sección Noticias' },
   { path: '/categorias/conciertos', label: 'categoría' },
   { path: '/buscar?q=metallica', label: 'búsqueda' },
+  { path: '/agenda', label: 'agenda' },
+  { path: '/agenda/demo-metallica-madrid', label: 'detalle de concierto' },
   { path: '/sobre', label: 'sobre' },
   { path: '/contacto', label: 'contacto' },
   { path: '/privacidad', label: 'privacidad' },
+  { path: '/aviso-legal', label: 'aviso legal' },
   { path: '/esta-ruta-no-existe', label: '404' },
 ];
 

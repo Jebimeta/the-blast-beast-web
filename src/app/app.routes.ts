@@ -4,6 +4,10 @@ import {
   articleDetailResolver,
   articleListResolver,
 } from './features/articles/article.resolvers';
+import {
+  agendaResolver,
+  concertDetailResolver,
+} from './features/agenda/agenda.resolvers';
 import { bandResolver } from './features/bands/band.resolver';
 import { homeResolver } from './features/home/home.resolver';
 import { searchResolver } from './features/search/search.resolver';
@@ -56,6 +60,23 @@ export const routes: Routes = [
     loadComponent: () => import('./features/bands/band-page').then((m) => m.BandPage),
   },
   {
+    path: 'agenda',
+    title: 'Agenda de conciertos — The Blast Beast',
+    resolve: { agenda: agendaResolver, ticker: latestTickerResolver },
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+    loadComponent: () =>
+      import('./features/agenda/agenda-page').then((m) => m.AgendaPage),
+  },
+  {
+    path: 'agenda/:slug',
+    title: 'Concierto — The Blast Beast',
+    resolve: { detail: concertDetailResolver, ticker: latestTickerResolver },
+    loadComponent: () =>
+      import('./features/agenda/concert-detail-page').then(
+        (m) => m.ConcertDetailPage,
+      ),
+  },
+  {
     path: 'sobre',
     title: 'Sobre The Blast Beast — Quiénes somos',
     loadComponent: () =>
@@ -72,6 +93,12 @@ export const routes: Routes = [
     title: 'Privacidad — The Blast Beast',
     loadComponent: () =>
       import('./features/static/privacy-page').then((m) => m.PrivacyPage),
+  },
+  {
+    path: 'aviso-legal',
+    title: 'Aviso legal — The Blast Beast',
+    loadComponent: () =>
+      import('./features/static/legal-page').then((m) => m.LegalPage),
   },
   {
     path: 'admin/login',

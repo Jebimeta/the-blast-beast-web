@@ -21,6 +21,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
   },
   {
+    path: 'aviso-legal',
+    renderMode: RenderMode.Prerender,
+  },
+  {
     path: 'admin/**',
     renderMode: RenderMode.Client,
   },

@@ -10,29 +10,43 @@ describe('Footer', () => {
     }).compileComponents();
   });
 
-  it('incluye los cuatro perfiles sociales con enlaces seguros', () => {
+  it('enlaza la agenda, las páginas legales y el feed', () => {
     const fixture = TestBed.createComponent(Footer);
     fixture.detectChanges();
 
     const links = Array.from(
       fixture.nativeElement.querySelectorAll(
-        'nav[aria-label="Redes sociales"] a',
+        'nav[aria-label="Enlaces del pie"] a',
       ),
     ) as HTMLAnchorElement[];
 
-    expect(links).toHaveLength(4);
-    expect(links.map((link) => link.getAttribute('aria-label'))).toEqual([
-      'The Blast Beast en Facebook',
-      'The Blast Beast en X',
-      'The Blast Beast en WhatsApp',
-      'The Blast Beast en Instagram',
+    expect(links.map((link) => link.textContent?.trim())).toEqual([
+      'Archivo',
+      'Buscar',
+      'Agenda',
+      'Sobre',
+      'Contacto',
+      'Privacidad',
+      'Aviso legal',
+      'RSS',
     ]);
 
-    for (const link of links) {
-      expect(link.target).toBe('_blank');
-      expect(link.rel).toContain('noopener');
-      expect(link.rel).toContain('noreferrer');
-      expect(link.querySelector('svg')).toBeTruthy();
-    }
+    const hrefs = links.map((link) => link.getAttribute('href'));
+    expect(hrefs).toContain('/agenda');
+    expect(hrefs).toContain('/privacidad');
+    expect(hrefs).toContain('/aviso-legal');
+    expect(hrefs).toContain('/feed.xml');
+  });
+
+  it('no publica redes sociales mientras no haya perfiles reales', () => {
+    const fixture = TestBed.createComponent(Footer);
+    fixture.detectChanges();
+
+    expect(
+      fixture.nativeElement.querySelector('nav[aria-label="Redes sociales"]'),
+    ).toBeNull();
+    expect(
+      fixture.nativeElement.querySelectorAll('a[target="_blank"]'),
+    ).toHaveLength(0);
   });
 });

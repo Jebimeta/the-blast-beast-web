@@ -1,0 +1,132 @@
+<main id="contenido">
+  <section class="relative overflow-hidden border-b border-line">
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -top-40 right-0 size-[32rem] rounded-full bg-[radial-gradient(circle_at_center,rgba(200,16,46,0.14),transparent_70%)]"
+    ></div>
+
+    <div class="shell relative py-12 sm:py-16">
+      <nav
+        aria-label="Migas de pan"
+        class="font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+      >
+        <a routerLink="/" class="hover:text-bone">Inicio</a>
+        <span aria-hidden="true" class="mx-2 text-line">/</span>
+        <span class="text-bone">Aviso legal</span>
+      </nav>
+
+      <p class="eyebrow mt-6">Aviso legal</p>
+      <h1
+        class="mt-3 max-w-3xl font-display text-4xl uppercase leading-none sm:text-6xl"
+      >
+        Quiénes están detrás
+      </h1>
+      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
+        Información sobre el titular del sitio, las condiciones de uso y la
+        propiedad intelectual de los contenidos.
+      </p>
+      <p
+        class="mt-4 font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
+      >
+        Última actualización: noviembre de 2026
+      </p>
+    </div>
+  </section>
+
+  <section class="shell py-12 sm:py-16">
+    <div class="article-body mx-auto max-w-3xl">
+      @if (!complete) {
+        <p
+          class="rounded-md border border-blood/40 bg-blood/10 px-4 py-3 text-sm text-blood-soft"
+          role="note"
+        >
+          <strong>Configuración pendiente.</strong> Faltan los datos del titular
+          exigidos por la LSSI-CE. Esta página no debe publicarse hasta
+          completarlos en <code>legal-data.ts</code>.
+        </p>
+      }
+
+      <h2>Titular del sitio</h2>
+      <p>
+        <strong>Nombre o razón social:</strong>
+        {{ legal.owner || 'Pendiente de completar' }}<br />
+        <strong>NIF/CIF:</strong> {{ legal.taxId || 'Pendiente de completar' }}<br />
+        <strong>Domicilio:</strong>
+        {{ legal.address || 'Pendiente de completar' }}<br />
+        <strong>Correo de contacto:</strong>
+        <a href="mailto:{{ legal.email }}">{{ legal.email }}</a>
+      </p>
+      <p>
+        The Blast Beast es un medio digital independiente dedicado a la
+        actualidad del heavy metal. El sitio no vende productos ni requiere
+        registro de lectores.
+      </p>
+
+      <h2>Objeto y condiciones de uso</h2>
+      <p>
+        El acceso a este sitio es gratuito. La navegación atribuye la condición
+        de usuario e implica la aceptación de estas condiciones. El usuario se
+        compromete a hacer un uso lícito de los contenidos y a no interferir en
+        el funcionamiento del servicio.
+      </p>
+      <p>
+        La agenda, las noticias y el resto de contenidos tienen carácter
+        informativo. Las fechas, precios y disponibilidad de entradas pueden
+        cambiar: prevalece siempre la información publicada por la promotora o
+        por el punto de venta.
+      </p>
+
+      <h2>Propiedad intelectual e industrial</h2>
+      <p>
+        Los textos, el diseño, el logotipo, el código y los elementos gráficos
+        propios son titularidad de The Blast Beast o se utilizan con licencia.
+        Queda prohibida su reproducción total o parcial sin autorización, salvo
+        cita o enlace a la fuente.
+      </p>
+      <p>
+        Las imágenes de artistas, discos y promotoras se usan para ilustrar la
+        información y pertenecen a sus respectivos titulares. Si eres titular de
+        una imagen y consideras que su uso no está justificado, escríbenos y la
+        retiraremos.
+      </p>
+
+      <h2>Contenidos de terceros y enlaces</h2>
+      <p>
+        La agenda se nutre de datos públicos de Ticketmaster y de información
+        facilitada por promotoras. Los enlaces externos llevan a sitios de
+        terceros cuyas condiciones de uso y políticas de privacidad no
+        controlamos.
+      </p>
+
+      <h2>Responsabilidad</h2>
+      <p>
+        Trabajamos para que la información sea exacta y esté actualizada, pero no
+        garantizamos la ausencia de errores ni la disponibilidad continua del
+        servicio. No somos responsables de los daños derivados del uso de la
+        información publicada ni de las interrupciones ajenas a nuestro control.
+      </p>
+
+      <h2>Protección de datos</h2>
+      <p>
+        El tratamiento de datos personales se explica en la
+        <a routerLink="/privacidad">política de privacidad</a>. No hay analítica
+        de terceros, publicidad ni cookies de seguimiento.
+      </p>
+
+      <h2>Legislación aplicable</h2>
+      <p>
+        Estas condiciones se rigen por la legislación española. Cualquier
+        controversia se someterá a los juzgados y tribunales del domicilio del
+        titular, sin perjuicio de los derechos que la normativa de consumo
+        reconozca a las personas usuarias.
+      </p>
+
+      <h2>Contacto</h2>
+      <p>
+        Para cualquier duda sobre este aviso legal puedes escribir a
+        <a href="mailto:{{ legal.email }}">{{ legal.email }}</a> o usar la
+        <a routerLink="/contacto">página de contacto</a>.
+      </p>
+    </div>
+  </section>
+</main>

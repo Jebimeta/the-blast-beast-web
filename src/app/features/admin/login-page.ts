@@ -22,7 +22,7 @@ export class AdminLoginPage {
   private readonly route = inject(ActivatedRoute);
 
   protected readonly form = this.formBuilder.group({
-    email: ['redaccion@theblastbeast.com', [Validators.required, Validators.email]],
+    email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
   });
   protected readonly loading = signal(false);

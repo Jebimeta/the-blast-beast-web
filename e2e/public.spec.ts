@@ -21,6 +21,9 @@ test.describe('Portal público', () => {
       sections.getByRole('link', { name: 'Inicio', exact: true }),
     ).toBeVisible();
     await expect(
+      sections.getByRole('link', { name: 'Agenda', exact: true }),
+    ).toBeVisible();
+    await expect(
       page.getByRole('link', { name: /Metallica anuncia una gira/i }).first(),
     ).toBeVisible();
   });
@@ -152,8 +155,39 @@ test.describe('Portal público', () => {
     ).toBeVisible();
   });
 
+  test('la agenda lista conciertos y abre la ficha del evento', async ({
+    page,
+  }) => {
+    await page.goto('/agenda');
+
+    await expect(
+      page.getByRole('heading', { name: 'Conciertos en España' }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Próximos conciertos' }),
+    ).toBeVisible();
+
+    const firstConcert = page.locator('main#contenido article h3 a').first();
+    await expect(firstConcert).toBeVisible();
+    const title = (await firstConcert.textContent())?.trim() ?? '';
+
+    await firstConcert.click();
+
+    await expect(page).toHaveURL(/\/agenda\/[a-z0-9-]+$/);
+    await expect(page.locator('main#contenido h1')).toContainText(title);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      /\/agenda\/[a-z0-9-]+$/,
+    );
+  });
+
   test('las páginas institucionales se prerenderizan', async ({ page }) => {
-    for (const path of ['/sobre', '/contacto', '/privacidad']) {
+    for (const path of [
+      '/sobre',
+      '/contacto',
+      '/privacidad',
+      '/aviso-legal',
+    ]) {
       const response = await page.goto(path);
       expect(response?.status(), `${path} debe responder 200`).toBe(200);
       await expect(page.locator('main#contenido h1')).toBeVisible();
@@ -197,7 +231,10 @@ test.describe('Portal público', () => {
     const sitemap = await request.get('/sitemap.xml');
     expect(sitemap.status()).toBe(200);
     expect(sitemap.headers()['content-type']).toContain('xml');
-    expect(await sitemap.text()).toContain(`/articulos/${SEED_ARTICLE}`);
+    const sitemapXml = await sitemap.text();
+    expect(sitemapXml).toContain(`/articulos/${SEED_ARTICLE}`);
+    expect(sitemapXml).toContain('/agenda');
+    expect(sitemapXml).toContain('/aviso-legal');
 
     const robots = await request.get('/robots.txt');
     expect(robots.status()).toBe(200);
