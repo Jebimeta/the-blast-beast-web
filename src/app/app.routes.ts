@@ -138,6 +138,14 @@ export const routes: Routes = [
             (m) => m.AdminMediaPage,
           ),
       },
+      {
+        path: 'cuenta',
+        title: 'Cuenta — Redacción',
+        loadComponent: () =>
+          import('./features/admin/account/admin-account-page').then(
+            (m) => m.AdminAccountPage,
+          ),
+      },
     ],
   },
   {

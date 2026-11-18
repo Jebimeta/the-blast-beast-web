@@ -7,6 +7,7 @@ import {
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/api/auth.service';
+import { problemMessage } from '../../core/api/problem';
 
 @Component({
   selector: 'app-admin-login-page',
@@ -26,6 +27,11 @@ export class AdminLoginPage {
   });
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
+  protected readonly notice = signal<string | null>(
+    this.route.snapshot.queryParamMap.get('passwordChanged') === '1'
+      ? 'Contraseña actualizada. Inicia sesión con la nueva.'
+      : null,
+  );
 
   constructor() {
     const returnUrl = this.returnUrl();
@@ -54,7 +60,7 @@ export class AdminLoginPage {
       },
       error: (error: unknown) => {
         this.loading.set(false);
-        this.error.set(readError(error) ?? 'No se pudo iniciar sesión');
+        this.error.set(problemMessage(error, 'No se pudo iniciar sesión'));
       },
     });
   }
@@ -62,12 +68,4 @@ export class AdminLoginPage {
   private returnUrl(): string {
     return this.route.snapshot.queryParamMap.get('returnUrl') ?? '/admin/articulos';
   }
-}
-
-function readError(error: unknown): string | null {
-  if (typeof error === 'object' && error !== null && 'error' in error) {
-    const body = (error as { error?: { detail?: string } }).error;
-    return body?.detail ?? null;
-  }
-  return null;
 }

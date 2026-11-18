@@ -24,7 +24,9 @@ export class HomePage {
 
   private readonly seo = inject(SeoService);
 
-  protected readonly lead = computed(() => this.home().featured[0] ?? null);
+  protected readonly lead = computed(
+    () => this.home().featured[0] ?? this.home().latest.content[0] ?? null,
+  );
   protected readonly secondary = computed(() => this.home().featured.slice(1));
   protected readonly latest = computed(() => this.home().latest.content);
   protected readonly ticker = computed(() =>

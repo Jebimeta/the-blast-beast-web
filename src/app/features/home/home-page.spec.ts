@@ -84,4 +84,24 @@ describe('HomePage', () => {
     expect(text).not.toContain('perfil dev');
     expect(text).not.toContain('Últimas noticias');
   });
+
+  it('usa el artículo más reciente como portada si no hay destacados', () => {
+    const fixture = TestBed.createComponent(HomePage);
+    fixture.componentRef.setInput('home', {
+      featured: [],
+      latest: {
+        ...data.latest,
+        content: [article(7, 'ultima', 'Opeth vuelve a los escenarios')],
+        totalElements: 1,
+        totalPages: 1,
+      },
+      categories: [],
+    } satisfies HomeData);
+    fixture.detectChanges();
+
+    const text = fixture.nativeElement.textContent;
+    expect(text).toContain('Opeth vuelve a los escenarios');
+    expect(text).toContain('Leer la noticia');
+    expect(text).not.toContain('No hay artículos publicados todavía');
+  });
 });

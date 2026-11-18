@@ -37,6 +37,7 @@ Frontend del portal de noticias de heavy metal **The Blast Beast**.
 | `/admin/radar` | Radar de lanzamientos: CRUD editorial |
 | `/admin/taxonomia` | Categorías, bandas y etiquetas |
 | `/admin/medios` | Biblioteca de imágenes |
+| `/admin/cuenta` | Cambio de contraseña del usuario autenticado |
 | `**` | 404 real (status HTTP en SSR) |
 
 Cada ruta pública resuelve sus datos con un `ResolveFn` y los entrega al componente mediante
@@ -142,12 +143,14 @@ npm run e2e
 npm run lighthouse
 ```
 
-**Unitarios** (11 ficheros, 26 tests): portada con contenido y estado vacío, shell de la
-aplicación, pie con enlaces sociales, cinta de última hora, botón de volver arriba, progreso
-de lectura, utilidades y página del radar (conservadas para su futura publicación), 404 con
-buscador y noticia aleatoria, resolver del listado (filtro por etiqueta en Noticias y por
-categoría en el resto), y `SeoService` (canonical, `noindex`, JSON-LD de artículo, evento e
-`ItemList`, migas y enlace de feed).
+**Unitarios** (13 ficheros, 32 tests): portada con contenido, estado vacío y fallback al
+artículo más reciente, shell de la aplicación, pie con enlaces sociales, cinta de última
+hora, botón de volver arriba, progreso de lectura, utilidades y página del radar
+(conservadas para su futura publicación), 404 con buscador y noticia aleatoria, resolver del
+listado (filtro por etiqueta en Noticias y por categoría en el resto), `SeoService`
+(canonical, `noindex`, JSON-LD de artículo, evento e `ItemList`, migas y enlace de feed),
+interceptor de autenticación (Bearer solo en endpoints privados) y formulario de cambio de
+contraseña.
 
 **E2E** (Playwright, 27 tests) sobre Caddy + SSR + API + PostgreSQL en
 `http://localhost:8088`:

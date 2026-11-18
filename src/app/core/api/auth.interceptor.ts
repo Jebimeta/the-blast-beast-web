@@ -13,11 +13,16 @@ const AUTH_RETRIED = new HttpContextToken<boolean>(() => false);
 export const authInterceptor: HttpInterceptorFn = (request, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
-  const isAuthRequest = request.url.includes('/api/v1/auth/');
+  // Login, refresco y logout no llevan Bearer (ni deben reintentar con refresco).
+  // El resto de /api/v1/auth/** sí: /me y /password exigen el access token.
+  const isPublicAuthRequest =
+    request.url.includes('/api/v1/auth/login') ||
+    request.url.includes('/api/v1/auth/refresh') ||
+    request.url.includes('/api/v1/auth/logout');
 
   const token = auth.accessToken();
   const authorized =
-    token && !isAuthRequest
+    token && !isPublicAuthRequest
       ? request.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
       : request;
 
@@ -26,7 +31,7 @@ export const authInterceptor: HttpInterceptorFn = (request, next) => {
       if (
         !(error instanceof HttpErrorResponse) ||
         error.status !== 401 ||
-        isAuthRequest ||
+        isPublicAuthRequest ||
         request.context.get(AUTH_RETRIED)
       ) {
         return throwError(() => error);

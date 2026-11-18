@@ -1,0 +1,123 @@
+<section>
+  <div class="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
+    <div>
+      <p class="eyebrow">Redacción</p>
+      <h1 class="mt-2 font-display text-3xl uppercase leading-none sm:text-4xl">
+        Cuenta
+      </h1>
+      <p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+        Cambia la contraseña de tu usuario. Al guardar se cierran todas las
+        sesiones abiertas y tendrás que entrar de nuevo con la contraseña nueva.
+      </p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <p
+      class="mt-5 rounded-md border border-blood/40 bg-blood/10 px-4 py-3 text-sm text-blood-soft"
+      role="alert"
+    >
+      {{ error() }}
+    </p>
+  }
+
+  <form
+    class="card mt-6 max-w-xl space-y-5"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+  >
+    <div>
+      <label
+        for="current-password"
+        class="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+      >
+        Contraseña actual
+      </label>
+      <input
+        id="current-password"
+        type="password"
+        formControlName="currentPassword"
+        autocomplete="current-password"
+        class="w-full rounded-md border border-line bg-ink px-4 py-3 text-sm text-bone outline-none transition focus:border-blood"
+      />
+      @if (
+        form.controls.currentPassword.touched &&
+        form.controls.currentPassword.invalid
+      ) {
+        <p class="mt-2 text-xs text-blood-soft">
+          Introduce tu contraseña actual.
+        </p>
+      }
+    </div>
+
+    <div>
+      <label
+        for="new-password"
+        class="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+      >
+        Nueva contraseña
+      </label>
+      <input
+        id="new-password"
+        type="password"
+        formControlName="newPassword"
+        autocomplete="new-password"
+        class="w-full rounded-md border border-line bg-ink px-4 py-3 text-sm text-bone outline-none transition focus:border-blood"
+      />
+      <p
+        class="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted"
+      >
+        Mínimo 12 caracteres.
+      </p>
+      @if (form.controls.newPassword.touched) {
+        @if (form.controls.newPassword.hasError('required')) {
+          <p class="mt-2 text-xs text-blood-soft">
+            Introduce una contraseña nueva.
+          </p>
+        } @else if (form.controls.newPassword.hasError('minlength')) {
+          <p class="mt-2 text-xs text-blood-soft">
+            La nueva contraseña debe tener al menos 12 caracteres.
+          </p>
+        }
+      }
+    </div>
+
+    <div>
+      <label
+        for="confirm-password"
+        class="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+      >
+        Repite la nueva contraseña
+      </label>
+      <input
+        id="confirm-password"
+        type="password"
+        formControlName="confirmPassword"
+        autocomplete="new-password"
+        class="w-full rounded-md border border-line bg-ink px-4 py-3 text-sm text-bone outline-none transition focus:border-blood"
+      />
+      @if (form.controls.confirmPassword.touched) {
+        @if (form.controls.confirmPassword.hasError('required')) {
+          <p class="mt-2 text-xs text-blood-soft">
+            Repite la nueva contraseña.
+          </p>
+        } @else if (form.hasError('passwordsMismatch')) {
+          <p class="mt-2 text-xs text-blood-soft">
+            Las contraseñas no coinciden.
+          </p>
+        }
+      }
+    </div>
+
+    <div class="flex flex-wrap items-center gap-4 pt-1">
+      <button type="submit" class="btn-primary" [disabled]="loading()">
+        {{ loading() ? 'Guardando…' : 'Cambiar contraseña' }}
+      </button>
+      <a
+        routerLink="/admin/articulos"
+        class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted transition hover:text-bone"
+        >← Volver a artículos</a
+      >
+    </div>
+  </form>
+</section>

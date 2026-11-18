@@ -2,7 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, catchError, finalize, map, of, shareReplay, tap } from 'rxjs';
 import { API_BASE_URL } from './api-base-url';
-import type { AuthResponse, AuthUser, LoginRequest } from './admin.models';
+import type {
+  AuthResponse,
+  AuthUser,
+  ChangePasswordRequest,
+  LoginRequest,
+} from './admin.models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -69,6 +74,20 @@ export class AuthService {
         catchError(() => of(undefined)),
         finalize(() => this.clear()),
       );
+  }
+
+  /**
+   * Cambia la contraseña del usuario autenticado. La API revoca los refrescos y
+   * borra la cookie; aquí se limpia también la sesión en memoria para que el
+   * usuario vuelva a entrar con la contraseña nueva.
+   */
+  changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    const body: ChangePasswordRequest = { currentPassword, newPassword };
+    return this.http
+      .post<void>(`${this.baseUrl}/api/v1/auth/password`, body, {
+        withCredentials: true,
+      })
+      .pipe(tap(() => this.clear()));
   }
 
   clear(): void {

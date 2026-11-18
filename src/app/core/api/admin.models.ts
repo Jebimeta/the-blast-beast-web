@@ -27,6 +27,11 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export type AdminArticleStatus = 'draft' | 'published' | 'archived';
 
 export type SocialSummarySource = 'ai' | 'template';
