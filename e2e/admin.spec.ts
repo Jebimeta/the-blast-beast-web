@@ -32,7 +32,7 @@ test.describe('Redacción', () => {
     // La sección y las etiquetas se eligen por separado: la etiqueta se
     // guarda aunque no coincida con la categoría del artículo.
     await page.locator('#tagIds').click();
-    await page.getByRole('checkbox', { name: 'España' }).check();
+    await page.getByRole('checkbox', { name: 'Giras' }).check();
     await page.keyboard.press('Escape');
 
     await expect(
@@ -52,7 +52,7 @@ test.describe('Redacción', () => {
     ).toBeVisible();
     await expect(page.getByText('Publicado', { exact: true })).toBeVisible();
 
-    const tagged = await request.get('/api/v1/articles?tag=espana&size=50');
+    const tagged = await request.get('/api/v1/articles?tag=giras&size=50');
     expect(tagged.status()).toBe(200);
     const taggedBody = (await tagged.json()) as {
       content: { title: string }[];

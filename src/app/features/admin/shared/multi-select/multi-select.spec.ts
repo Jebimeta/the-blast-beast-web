@@ -17,7 +17,7 @@ import { MultiSelect } from './multi-select';
 class Host {
   readonly options = [
     { id: 1, name: 'Noticias' },
-    { id: 2, name: 'España' },
+    { id: 2, name: 'Giras' },
   ];
   readonly control = new FormControl<number[]>([], { nonNullable: true });
 }
@@ -36,7 +36,7 @@ describe('MultiSelect', () => {
 
     expect(fixture.nativeElement.querySelector('#tags-panel')).not.toBeNull();
     expect(fixture.nativeElement.textContent).toContain('Noticias');
-    expect(fixture.nativeElement.textContent).toContain('España');
+    expect(fixture.nativeElement.textContent).toContain('Giras');
   });
 
   it('permite seleccionar varias etiquetas y actualiza el formulario', () => {
@@ -54,7 +54,7 @@ describe('MultiSelect', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.control.value).toEqual([1, 2]);
-    expect(fixture.nativeElement.textContent).toContain('Noticias, España');
+    expect(fixture.nativeElement.textContent).toContain('Noticias, Giras');
   });
 
   it('refleja el valor del formulario y permite quitar una etiqueta', () => {
@@ -65,7 +65,7 @@ describe('MultiSelect', () => {
     const buttons = Array.from(
       fixture.nativeElement.querySelectorAll('button'),
     ) as HTMLButtonElement[];
-    const remove = buttons.find((button) => button.textContent?.includes('Quitar España'));
+    const remove = buttons.find((button) => button.textContent?.includes('Quitar Giras'));
     expect(remove).toBeDefined();
     remove!.click();
     fixture.detectChanges();
