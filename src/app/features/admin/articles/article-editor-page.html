@@ -363,6 +363,9 @@
           @if (form.controls.categoryId.touched && form.controls.categoryId.invalid) {
             <p class="mt-2 text-xs text-blood-soft">Selecciona una categoría.</p>
           }
+          <p class="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+            Es la sección del portal. Independiente de las etiquetas.
+          </p>
 
           <label
             for="bandIds"
@@ -381,25 +384,15 @@
             }
           </select>
 
-          <label
-            for="tagIds"
-            class="mt-4 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
-            >Etiquetas</label
-          >
-          <select
-            id="tagIds"
+          <app-multi-select
+            inputId="tagIds"
+            label="Etiquetas"
+            [options]="tags()"
             formControlName="tagIds"
-            multiple
-            size="6"
-            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-xs text-bone outline-none transition focus:border-blood"
-          >
-            @for (tag of tags(); track tag.id) {
-              <option [ngValue]="tag.id">{{ tag.name }}</option>
-            }
-          </select>
-          <p class="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
-            Usa Ctrl/Cmd para seleccionar varias.
-          </p>
+            placeholder="Selecciona etiquetas"
+            hint="Puedes elegir varias. Son independientes de la categoría."
+            class="mt-4 block"
+          />
         </div>
 
         <div class="card !p-5">

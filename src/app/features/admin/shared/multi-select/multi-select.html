@@ -1,0 +1,94 @@
+<div class="relative">
+  <span
+    [id]="inputId() + '-label'"
+    class="block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+    >{{ label() }}</span
+  >
+
+  <button
+    type="button"
+    [id]="inputId()"
+    class="mt-2 flex min-h-11 w-full items-center justify-between gap-2 rounded-md border border-line bg-ink px-3 py-2.5 text-left text-sm text-bone outline-none transition focus:border-blood disabled:cursor-not-allowed disabled:opacity-60"
+    [attr.aria-labelledby]="inputId() + '-label ' + inputId() + '-value'"
+    [attr.aria-expanded]="open()"
+    [attr.aria-controls]="inputId() + '-panel'"
+    aria-haspopup="true"
+    [disabled]="disabled()"
+    (click)="toggle()"
+  >
+    <span
+      [id]="inputId() + '-value'"
+      class="min-w-0 truncate"
+      [class.text-muted]="selectedOptions().length === 0"
+      [attr.title]="selectedLabel() || null"
+    >
+      @if (selectedOptions().length === 0) {
+        {{ placeholder() }}
+      } @else {
+        {{ selectedLabel() }}
+      }
+    </span>
+    <span aria-hidden="true" class="shrink-0 text-muted">▾</span>
+  </button>
+
+  @if (selectedOptions().length > 0) {
+    <div class="mt-2 flex flex-wrap gap-1.5">
+      @for (option of selectedOptions(); track option.id) {
+        <span
+          class="inline-flex items-center gap-1 rounded-full border border-line bg-surface-2 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-bone"
+        >
+          {{ option.name }}
+          <button
+            type="button"
+            class="text-muted transition hover:text-blood-soft"
+            (click)="remove(option.id, $event)"
+          >
+            <span aria-hidden="true">×</span>
+            <span class="sr-only">Quitar {{ option.name }}</span>
+          </button>
+        </span>
+      }
+    </div>
+  }
+
+  @if (open()) {
+    <div
+      [id]="inputId() + '-panel'"
+      role="group"
+      [attr.aria-label]="label()"
+      class="absolute left-0 right-0 z-30 mt-2 max-h-64 overflow-y-auto rounded-md border border-line bg-ink p-2 shadow-2xl shadow-black/50"
+    >
+      @for (option of options(); track option.id) {
+        <label
+          class="flex min-h-9 cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-xs text-bone transition hover:bg-surface-2"
+        >
+          <input
+            type="checkbox"
+            class="size-4 shrink-0 accent-blood"
+            [checked]="isSelected(option.id)"
+            (change)="toggleOption(option.id)"
+          />
+          <span>{{ option.name }}</span>
+        </label>
+      } @empty {
+        <p class="px-2 py-3 text-xs text-muted">No hay opciones disponibles.</p>
+      }
+
+      @if (selectedOptions().length > 0) {
+        <button
+          type="button"
+          class="mt-1 w-full rounded px-2 py-2 text-left font-mono text-[10px] uppercase tracking-[0.14em] text-muted transition hover:text-bone"
+          (click)="clear()"
+        >
+          Limpiar selección
+        </button>
+      }
+    </div>
+  }
+
+  @if (hint()) {
+    <p class="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+      {{ hint() }}
+    </p>
+  }
+</div>

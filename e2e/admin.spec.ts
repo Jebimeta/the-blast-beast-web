@@ -14,6 +14,7 @@ test.describe('Redacción', () => {
 
   test('crear, publicar, comprobar en el portal y eliminar un artículo', async ({
     page,
+    request,
   }) => {
     await loginAsAdmin(page);
     await page.goto('/admin/articulos/nuevo');
@@ -27,6 +28,12 @@ test.describe('Redacción', () => {
     await page.getByLabel('Entradilla').fill(excerpt);
     await page.getByLabel('Cuerpo (Markdown)').fill(body);
     await page.locator('#categoryId').selectOption({ label: 'Noticias' });
+
+    // La sección y las etiquetas se eligen por separado: la etiqueta se
+    // guarda aunque no coincida con la categoría del artículo.
+    await page.locator('#tagIds').click();
+    await page.getByRole('checkbox', { name: 'España' }).check();
+    await page.keyboard.press('Escape');
 
     await expect(
       page.getByText('Guarda el borrador para generar los textos.'),
@@ -44,6 +51,15 @@ test.describe('Redacción', () => {
       page.getByText('Artículo publicado', { exact: true }),
     ).toBeVisible();
     await expect(page.getByText('Publicado', { exact: true })).toBeVisible();
+
+    const tagged = await request.get('/api/v1/articles?tag=espana&size=50');
+    expect(tagged.status()).toBe(200);
+    const taggedBody = (await tagged.json()) as {
+      content: { title: string }[];
+    };
+    expect(taggedBody.content.some((article) => article.title === title)).toBe(
+      true,
+    );
 
     // Sin AI_API_KEY el resumen usa la plantilla local, pero sigue siendo útil.
     await page.getByRole('button', { name: 'Generar textos' }).click();

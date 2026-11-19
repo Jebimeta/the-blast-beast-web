@@ -116,14 +116,20 @@ test.describe('Portal público', () => {
     expect(await page.locator('article').count()).toBeGreaterThanOrEqual(3);
 
     // «Noticias» solo muestra los artículos marcados con la etiqueta homónima.
+    // Nightwish la lleva; Iron Maiden está en la categoría pero no en la sección.
     await page.goto('/categorias/noticias');
     await expect(
       page.getByRole('heading', { name: 'Noticias', exact: true }),
     ).toBeVisible();
-    expect(await page.locator('article').count()).toBe(1);
-    await expect(page.locator('main#contenido')).toContainText(
-      'Nightwish anuncia un parón indefinido',
-    );
+    const noticiasCards = page.locator('article');
+    await expect(
+      noticiasCards.filter({ hasText: 'Nightwish anuncia un parón indefinido' }),
+    ).toHaveCount(1);
+    await expect(
+      noticiasCards.filter({
+        hasText: 'Iron Maiden prepara un documental sobre sus primeros años',
+      }),
+    ).toHaveCount(0);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
       'href',
       /\/categorias\/noticias$/,

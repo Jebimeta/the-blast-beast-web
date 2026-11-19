@@ -26,6 +26,7 @@ import type {
   TagResponse,
 } from '../../../core/api/admin.models';
 import { problemMessage } from '../../../core/api/problem';
+import { MultiSelect } from '../shared/multi-select/multi-select';
 
 const STATUS_LABELS: Record<AdminArticleStatus, string> = {
   draft: 'Borrador',
@@ -61,7 +62,7 @@ const EMPTY_SOCIAL_TEXTS: Record<SocialSummaryPlatform, string> = {
 
 @Component({
   selector: 'app-article-editor-page',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, MultiSelect],
   templateUrl: './article-editor-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
