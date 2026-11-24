@@ -171,6 +171,28 @@ export interface MediaUpdateRequest {
   credit?: string | null;
 }
 
+export interface PressContact {
+  categoria: string;
+  nombre: string;
+  tipo: string;
+  pais: string;
+  web: string;
+  enlace: string;
+  email: string;
+  contactoNombre: string;
+  idioma: string;
+  tipoDeMaterial: string;
+  licenciaUso: string;
+  notas: string;
+  verificado: string;
+}
+
+export interface PressContactList {
+  rows: PressContact[];
+  total: number;
+  updatedAt?: string | null;
+}
+
 export type {
   ReleaseAdmin,
   ReleaseKind,

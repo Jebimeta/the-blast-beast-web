@@ -153,4 +153,46 @@ test.describe('Redacción', () => {
       page.getByRole('link', { name: /Metallica anuncia una gira/i }).first(),
     ).toBeVisible();
   });
+
+  test('los contactos de prensa cargan, filtran y se descargan', async ({
+    page,
+  }) => {
+    await loginAsAdmin(page);
+    await page.getByRole('link', { name: 'Contactos' }).click();
+
+    await expect(page).toHaveURL(/\/admin\/contactos$/);
+    await expect(
+      page.getByRole('heading', { name: 'Contactos', exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Wikimedia Commons', { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Frontiers Music', { exact: true }),
+    ).toBeVisible();
+
+    await page.locator('#press-search').fill('Leyendas del Rock');
+    await expect(
+      page.getByText('Leyendas del Rock', { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Wikimedia Commons', { exact: true }),
+    ).toHaveCount(0);
+
+    await page.locator('#press-search').fill('');
+    await page.locator('#press-category').selectOption('Sellos');
+    await expect(
+      page.getByText('Frontiers Music', { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Leyendas del Rock', { exact: true }),
+    ).toHaveCount(0);
+
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Descargar CSV' }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe(
+      'contactos-prensa-e-imagenes.csv',
+    );
+  });
 });

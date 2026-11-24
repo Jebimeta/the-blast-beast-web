@@ -16,6 +16,7 @@ import type {
   MediaAsset,
   MediaPage,
   MediaUpdateRequest,
+  PressContactList,
   ReleaseAdmin,
   ReleaseWriteRequest,
   SocialSummaryResponse,
@@ -294,5 +295,12 @@ export class AdminApiService {
 
   deleteMedia(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/api/v1/admin/media/${id}`);
+  }
+
+  // Contactos de prensa e imagen ---------------------------------------
+  listPressContacts(): Observable<PressContactList> {
+    return this.http.get<PressContactList>(
+      `${this.baseUrl}/api/v1/admin/press-contacts`,
+    );
   }
 }

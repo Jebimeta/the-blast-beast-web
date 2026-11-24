@@ -166,6 +166,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'contactos',
+        title: 'Contactos — Redacción',
+        loadComponent: () =>
+          import('./features/admin/press-contacts/admin-press-contacts-page').then(
+            (m) => m.AdminPressContactsPage,
+          ),
+      },
+      {
         path: 'cuenta',
         title: 'Cuenta — Redacción',
         loadComponent: () =>

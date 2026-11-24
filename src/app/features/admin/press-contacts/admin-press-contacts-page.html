@@ -1,0 +1,250 @@
+<section>
+  <div class="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
+    <div>
+      <p class="eyebrow">Redacción</p>
+      <h1 class="mt-2 font-display text-3xl uppercase leading-none sm:text-4xl">
+        Contactos
+      </h1>
+      <p class="mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+        {{ contacts().length }} contactos · {{ visibleCount() }} visibles
+        @if (updatedAt()) {
+          · CSV actualizado el {{ date(updatedAt()) }}
+        }
+      </p>
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <button
+        type="button"
+        class="btn-primary !px-4 !py-2.5 !text-xs disabled:cursor-not-allowed disabled:opacity-40"
+        [disabled]="visibleCount() === 0"
+        (click)="download('csv')"
+      >
+        Descargar CSV
+      </button>
+      <button
+        type="button"
+        class="btn-ghost !px-4 !py-2.5 !text-xs disabled:cursor-not-allowed disabled:opacity-40"
+        [disabled]="visibleCount() === 0"
+        (click)="download('excel')"
+      >
+        Excel (;)
+      </button>
+    </div>
+  </div>
+
+  <p class="mt-5 rounded-md border border-line bg-surface px-4 py-3 text-xs text-muted">
+    Vista privada de redacción. Los correos de prensa no se publican en el
+    portal; no compartas esta lista fuera del equipo.
+  </p>
+
+  @if (error()) {
+    <p
+      class="mt-5 rounded-md border border-blood/40 bg-blood/10 px-4 py-3 text-sm text-blood-soft"
+    >
+      {{ error() }}
+    </p>
+  }
+  @if (notice()) {
+    <p
+      class="mt-5 rounded-md border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300"
+    >
+      {{ notice() }}
+    </p>
+  }
+
+  <div
+    class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"
+  >
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <div>
+        <label
+          for="press-search"
+          class="block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+          >Buscar</label
+        >
+        <input
+          id="press-search"
+          type="search"
+          [formControl]="search"
+          placeholder="Nombre, país, email, material…"
+          class="mt-2 w-full rounded-md border border-line bg-ink px-4 py-2.5 text-sm text-bone outline-none transition placeholder:text-muted/70 focus:border-blood sm:w-72"
+        />
+      </div>
+
+      <div>
+        <label
+          for="press-category"
+          class="block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+          >Categoría</label
+        >
+        <select
+          id="press-category"
+          [formControl]="category"
+          class="mt-2 w-full rounded-md border border-line bg-ink px-4 py-2.5 text-sm text-bone outline-none transition focus:border-blood sm:w-56"
+        >
+          <option value="">Todas</option>
+          @for (item of categories(); track item.name) {
+            <option [value]="item.name">{{ item.name }} ({{ item.count }})</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    @if (hasFilters()) {
+      <button
+        type="button"
+        class="btn-ghost min-h-10 !px-4 !py-2.5 !text-xs"
+        (click)="clearFilters()"
+      >
+        Limpiar filtros
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <p
+      class="mt-10 font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
+    >
+      Cargando contactos…
+    </p>
+  } @else if (contacts().length === 0) {
+    <div class="mt-8 rounded-xl border border-line bg-surface p-8">
+      <p class="font-display text-lg uppercase tracking-wide">
+        No hay contactos disponibles
+      </p>
+      <p class="mt-2 text-sm text-muted">
+        El CSV está vacío o no se pudo leer en el servidor. Revisa que
+        <code class="text-bone">docs/contactos-prensa-e-imagenes.csv</code>
+        exista y sea accesible por la API.
+      </p>
+      <button
+        type="button"
+        class="btn-ghost mt-4 !px-4 !py-2.5 !text-xs"
+        (click)="load()"
+      >
+        Reintentar
+      </button>
+    </div>
+  } @else {
+    <div class="mt-6 overflow-x-auto rounded-xl border border-line">
+      <table class="w-full min-w-[1180px] border-collapse text-left text-sm">
+        <thead
+          class="bg-surface-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted"
+        >
+          <tr>
+            <th scope="col" class="px-4 py-3 font-normal">Nombre</th>
+            <th scope="col" class="px-4 py-3 font-normal">Categoría</th>
+            <th scope="col" class="px-4 py-3 font-normal">País</th>
+            <th scope="col" class="px-4 py-3 font-normal">Contacto</th>
+            <th scope="col" class="px-4 py-3 font-normal">Email</th>
+            <th scope="col" class="px-4 py-3 font-normal">Material</th>
+            <th scope="col" class="px-4 py-3 font-normal">Licencia</th>
+            <th scope="col" class="px-4 py-3 font-normal">Notas</th>
+            <th scope="col" class="px-4 py-3 font-normal">Verificado</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (
+            contact of filtered();
+            track contact.nombre + '|' + contact.categoria + '|' + contact.email
+          ) {
+            <tr class="border-t border-line align-top">
+              <td class="px-4 py-4">
+                <p class="font-display text-sm uppercase tracking-wide text-bone">
+                  {{ contact.nombre }}
+                </p>
+                <p
+                  class="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-muted"
+                >
+                  {{ contact.tipo }}
+                </p>
+                <div class="mt-2 flex flex-wrap gap-3">
+                  @if (safeUrl(contact.web); as web) {
+                    <a
+                      [href]="web"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="font-mono text-[10px] uppercase tracking-[0.14em] text-blood-soft transition hover:text-bone"
+                      >Web ↗</a
+                    >
+                  }
+                  @if (safeUrl(contact.enlace); as link) {
+                    <a
+                      [href]="link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="font-mono text-[10px] uppercase tracking-[0.14em] text-blood-soft transition hover:text-bone"
+                      >Enlace ↗</a
+                    >
+                  }
+                </div>
+              </td>
+
+              <td class="px-4 py-4 text-muted">{{ contact.categoria }}</td>
+              <td class="px-4 py-4 text-muted">{{ contact.pais || '—' }}</td>
+
+              <td class="px-4 py-4 text-muted">
+                {{ contact.contactoNombre || '—' }}
+                @if (contact.idioma) {
+                  <p
+                    class="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-muted"
+                  >
+                    {{ contact.idioma }}
+                  </p>
+                }
+              </td>
+
+              <td class="px-4 py-4">
+                @if (contact.email) {
+                  <a
+                    [href]="'mailto:' + contact.email"
+                    class="break-all text-bone transition hover:text-blood-soft"
+                    >{{ contact.email }}</a
+                  >
+                  <button
+                    type="button"
+                    class="mt-1 block font-mono text-[9px] uppercase tracking-[0.14em] text-muted transition hover:text-bone"
+                    (click)="copyEmail(contact.email)"
+                  >
+                    Copiar correo
+                  </button>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+
+              <td class="px-4 py-4 text-muted">
+                {{ contact.tipoDeMaterial || '—' }}
+              </td>
+              <td class="px-4 py-4 text-muted">
+                {{ contact.licenciaUso || '—' }}
+              </td>
+              <td class="max-w-xs px-4 py-4 text-muted">
+                {{ contact.notas || '—' }}
+              </td>
+              <td
+                class="whitespace-nowrap px-4 py-4 font-mono text-[10px] uppercase tracking-[0.14em] text-muted"
+              >
+                {{ date(contact.verificado) || '—' }}
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="9" class="px-4 py-10 text-center text-sm text-muted">
+                No hay contactos que coincidan con los filtros.
+                <button
+                  type="button"
+                  class="ml-1 text-blood-soft underline transition hover:text-bone"
+                  (click)="clearFilters()"
+                >
+                  Limpiar filtros
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
