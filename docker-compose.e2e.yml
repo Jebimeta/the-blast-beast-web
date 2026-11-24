@@ -37,8 +37,12 @@ services:
       SPRING_PROFILES_ACTIVE: dev
       ADMIN_EMAIL: ""
       ADMIN_PASSWORD: ""
+      PRESS_CONTACTS_CSV_PATH: /app/docs/contactos-prensa-e-imagenes.csv
     volumes:
       - media:/app/data/media
+      # El e2e usa el fixture de la API (sin correos reales) para no depender
+      # del CSV de producción, que vive en el repo privado de despliegue.
+      - ${PRESS_CONTACTS_DIR:-../the-blast-beast-api/src/test/resources/press}:/app/docs:ro
 
   web:
     build:

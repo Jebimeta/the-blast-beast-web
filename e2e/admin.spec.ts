@@ -164,11 +164,13 @@ test.describe('Redacción', () => {
     await expect(
       page.getByRole('heading', { name: 'Contactos', exact: true }),
     ).toBeVisible();
-    await expect(
-      page.getByText('Wikimedia Commons', { exact: true }),
-    ).toBeVisible();
+    // El e2e monta el fixture de la API (dos filas) para no depender del CSV
+    // real, que contiene correos y vive en el repo privado de despliegue.
     await expect(
       page.getByText('Frontiers Music', { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Leyendas del Rock', { exact: true }),
     ).toBeVisible();
 
     await page.locator('#press-search').fill('Leyendas del Rock');
@@ -176,7 +178,7 @@ test.describe('Redacción', () => {
       page.getByText('Leyendas del Rock', { exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByText('Wikimedia Commons', { exact: true }),
+      page.getByText('Frontiers Music', { exact: true }),
     ).toHaveCount(0);
 
     await page.locator('#press-search').fill('');

@@ -53,6 +53,7 @@ jobs:
     env:
       API_CONTEXT: ./the-blast-beast-api
       E2E_PORT: '8088'
+      PRESS_CONTACTS_DIR: ./the-blast-beast-api/src/test/resources/press
     steps:
       - uses: actions/checkout@v4
 
