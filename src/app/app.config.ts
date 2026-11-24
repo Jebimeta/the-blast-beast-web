@@ -25,7 +25,12 @@ export const appConfig: ApplicationConfig = {
       routes,
       withComponentInputBinding(),
       withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
-      withViewTransitions(),
+      // En rutas CSR (`/admin/**`) la navegación inicial se activa después del
+      // bootstrap. Si se envuelve en una View Transition, el callback espera a
+      // `afterNextRender` y, sin un ciclo de detección pendiente, la navegación
+      // nunca termina: el outlet queda vacío. Saltar solo la transición inicial
+      // evita ese bloqueo; las navegaciones posteriores sí se animan.
+      withViewTransitions({ skipInitialTransition: true }),
     ),
     provideHttpClient(withFetch(), withInterceptors([authInterceptor])),
     // La app no usa bloques `@defer`. Desactivar la hidratación incremental evita
