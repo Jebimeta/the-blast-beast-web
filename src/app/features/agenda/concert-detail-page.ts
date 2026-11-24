@@ -10,28 +10,21 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import type { ArticleSummary } from '../../core/api/article.models';
 import type { ConcertStatus } from '../../core/api/concert.models';
-import { formatEventDate, formatEventTime, formatPriceRange } from '../../core/format';
+import { formatEventDate, formatEventTime } from '../../core/format';
 import { SeoService } from '../../core/seo/seo.service';
 import { LatestTicker } from '../../layout/latest-ticker/latest-ticker';
 import type { ConcertDetailData } from './agenda.resolvers';
 
-const STATUS_LABELS: Record<ConcertStatus, string> = {
-  ON_SALE: 'Entradas a la venta',
-  OFF_SALE: 'Entradas no disponibles',
+const STATUS_LABELS: Partial<Record<ConcertStatus, string>> = {
   POSTPONED: 'Aplazado',
   RESCHEDULED: 'Cambio de fecha',
   CANCELLED: 'Cancelado',
 };
 
 const STATUS_NOTICES: Partial<Record<ConcertStatus, string>> = {
-  OFF_SALE:
-    'Las entradas no están disponibles en este momento. Consulta la web de venta por si vuelven a salir a la venta.',
-  POSTPONED:
-    'El concierto está aplazado. Conserva tu entrada y consulta la nueva fecha con la promotora.',
-  RESCHEDULED:
-    'El concierto cambia de fecha. Las entradas emitidas siguen siendo válidas para la nueva fecha.',
-  CANCELLED:
-    'El concierto ha sido cancelado. Consulta las condiciones de devolución en el punto de venta.',
+  POSTPONED: 'El concierto está aplazado. Consulta la nueva fecha con la promotora.',
+  RESCHEDULED: 'El concierto cambia de fecha. Consulta la nueva fecha con la promotora.',
+  CANCELLED: 'El concierto ha sido cancelado.',
 };
 
 @Component({
@@ -58,13 +51,9 @@ export class ConcertDetailPage {
     }
     return concert.timeTba ? 'Hora por confirmar' : formatEventTime(concert.startAt);
   });
-  protected readonly priceLabel = computed(() => {
-    const concert = this.concert();
-    return concert ? formatPriceRange(concert.priceMin, concert.priceMax, concert.currency) : '';
-  });
   protected readonly statusLabel = computed(() => {
     const concert = this.concert();
-    return concert ? STATUS_LABELS[concert.status] : '';
+    return concert ? (STATUS_LABELS[concert.status] ?? '') : '';
   });
   protected readonly statusNotice = computed(() => {
     const concert = this.concert();
@@ -81,10 +70,6 @@ export class ConcertDetailPage {
       `Concierto de ${concert.genreLabel.toLowerCase()} en ${concert.venue.name}, ${concert.venue.city}.`
     );
   });
-  protected readonly hasTickets = computed(() => {
-    const concert = this.concert();
-    return Boolean(concert && concert.status === 'ON_SALE' && concert.ticketUrl);
-  });
   protected readonly sourceLabel = computed(() => {
     const source = this.concert()?.source;
     if (source === 'TICKETMASTER') {
@@ -94,10 +79,6 @@ export class ConcertDetailPage {
       return 'Datos de demostración';
     }
     return source ?? '';
-  });
-  protected readonly showSourceLink = computed(() => {
-    const concert = this.concert();
-    return Boolean(concert && concert.source === 'TICKETMASTER' && concert.sourceUrl);
   });
 
   constructor() {
@@ -144,10 +125,6 @@ export class ConcertDetailPage {
         city: concert.venue.city,
         region: concert.venue.region,
         image: concert.imageUrl,
-        ticketUrl: concert.ticketUrl,
-        priceMin: concert.priceMin,
-        priceMax: concert.priceMax,
-        currency: concert.currency,
         performers: concert.artists.map((artist) => artist.name),
       });
 

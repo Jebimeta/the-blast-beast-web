@@ -227,10 +227,6 @@ export class SeoService {
     city: string;
     region?: string | null;
     image?: string | null;
-    ticketUrl?: string | null;
-    priceMin?: number | null;
-    priceMax?: number | null;
-    currency?: string | null;
     performers: string[];
   }): void {
     const url = `${this.siteUrl}${data.path}`;
@@ -270,20 +266,6 @@ export class SeoService {
         '@type': 'MusicGroup',
         name,
       }));
-    }
-
-    const price = data.priceMin ?? data.priceMax;
-    if (data.ticketUrl && price != null) {
-      payload['offers'] = {
-        '@type': 'Offer',
-        url: data.ticketUrl,
-        price,
-        priceCurrency: data.currency ?? 'EUR',
-        availability:
-          data.status === 'ON_SALE'
-            ? 'https://schema.org/InStock'
-            : 'https://schema.org/SoldOut',
-      };
     }
 
     this.setJsonLd(EVENT_JSON_LD_ID, payload);

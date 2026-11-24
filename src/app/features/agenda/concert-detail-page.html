@@ -62,17 +62,6 @@
           }
 
           <div class="mt-8 flex flex-wrap gap-3">
-            @if (hasTickets()) {
-              <a
-                [href]="concert.ticketUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="btn-primary"
-              >
-                Comprar entradas
-                <span class="sr-only">(se abre en una pestaña nueva)</span>
-              </a>
-            }
             <a routerLink="/agenda" class="btn-ghost">Volver a la agenda</a>
           </div>
         </div>
@@ -164,16 +153,12 @@
                 >
               </dd>
             </div>
-            <div>
-              <dt class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Precio</dt>
-              <dd class="mt-1 text-bone">
-                {{ priceLabel() || 'Consulta en la web de venta' }}
-              </dd>
-            </div>
-            <div>
-              <dt class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Estado</dt>
-              <dd class="mt-1 text-bone">{{ statusLabel() }}</dd>
-            </div>
+            @if (statusLabel()) {
+              <div>
+                <dt class="font-mono text-[10px] uppercase tracking-[0.16em] text-muted">Estado</dt>
+                <dd class="mt-1 text-bone">{{ statusLabel() }}</dd>
+              </div>
+            }
           </dl>
 
           @if (sourceLabel()) {
@@ -181,19 +166,7 @@
               class="mt-6 border-t border-line pt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-muted"
             >
               Datos del evento:
-              @if (showSourceLink()) {
-                <a
-                  [href]="concert.sourceUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-bone underline underline-offset-4 transition hover:text-blood-soft"
-                >
-                  {{ sourceLabel() }}
-                  <span class="sr-only">(se abre en una pestaña nueva)</span>
-                </a>
-              } @else {
-                <span class="text-bone">{{ sourceLabel() }}</span>
-              }
+              <span class="text-bone">{{ sourceLabel() }}</span>
             </p>
           }
         </aside>

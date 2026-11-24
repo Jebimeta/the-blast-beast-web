@@ -42,8 +42,6 @@ const eventMonthFormatter = new Intl.DateTimeFormat('es-ES', {
   timeZone: 'Europe/Madrid',
 });
 
-const priceFormatters = new Map<string, Intl.NumberFormat>();
-
 export function formatDate(value: string | null | undefined): string {
   if (!value) {
     return '';
@@ -104,43 +102,4 @@ export function formatEventMonth(value: string | null | undefined): string {
   const date = new Date(value);
   const label = Number.isNaN(date.getTime()) ? '' : eventMonthFormatter.format(date);
   return label.replace('.', '').toUpperCase();
-}
-
-export function formatPriceRange(
-  min: number | null | undefined,
-  max: number | null | undefined,
-  currency: string | null | undefined,
-): string {
-  if (min == null && max == null) {
-    return '';
-  }
-  const formatter = priceFormatter(currency);
-  if (min != null && max != null && min !== max) {
-    return `${formatter.format(min)} – ${formatter.format(max)}`;
-  }
-  return formatter.format(min ?? max ?? 0);
-}
-
-function priceFormatter(currency: string | null | undefined): Intl.NumberFormat {
-  const code = currency && /^[A-Za-z]{3}$/.test(currency) ? currency.toUpperCase() : 'EUR';
-  const cached = priceFormatters.get(code);
-  if (cached) {
-    return cached;
-  }
-  let formatter: Intl.NumberFormat;
-  try {
-    formatter = new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: code,
-      maximumFractionDigits: 2,
-    });
-  } catch {
-    formatter = new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'EUR',
-      maximumFractionDigits: 2,
-    });
-  }
-  priceFormatters.set(code, formatter);
-  return formatter;
 }

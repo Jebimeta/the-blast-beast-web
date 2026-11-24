@@ -32,10 +32,6 @@ export interface ConcertSummary {
   genreLabel: string;
   venue: VenueSummary;
   artists: ConcertArtist[];
-  ticketUrl?: string | null;
-  priceMin?: number | null;
-  priceMax?: number | null;
-  currency?: string | null;
   featured?: boolean | null;
 }
 
@@ -45,7 +41,6 @@ export interface ConcertDetail extends Omit<ConcertSummary, 'venue'> {
   imageUrl?: string | null;
   imageAttribution?: string | null;
   source?: string | null;
-  sourceUrl?: string | null;
 }
 
 export interface ConcertPage {

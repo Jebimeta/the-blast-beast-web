@@ -172,6 +172,10 @@ test.describe('Portal público', () => {
     await expect(
       page.getByRole('heading', { name: 'Próximos conciertos' }),
     ).toBeVisible();
+    await expect(page.getByText('Precio por confirmar')).toHaveCount(0);
+    await expect(
+      page.getByRole('link', { name: /Comprar entradas/i }),
+    ).toHaveCount(0);
 
     const firstConcert = page.locator('main#contenido article h3 a').first();
     await expect(firstConcert).toBeVisible();
@@ -185,6 +189,15 @@ test.describe('Portal público', () => {
       'href',
       /\/agenda\/[a-z0-9-]+$/,
     );
+    await expect(page.getByText('Precio', { exact: true })).toHaveCount(0);
+    await expect(
+      page.getByRole('link', { name: /Comprar entradas/i }),
+    ).toHaveCount(0);
+    const eventJsonLd =
+      (await page.locator('script#event-jsonld').textContent()) ?? '';
+    expect(eventJsonLd).not.toContain('offers');
+    expect(eventJsonLd).not.toContain('ticketUrl');
+    expect(eventJsonLd).not.toContain('price');
   });
 
   test('las páginas institucionales se prerenderizan', async ({ page }) => {

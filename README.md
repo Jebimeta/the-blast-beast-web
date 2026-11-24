@@ -143,7 +143,7 @@ npm run e2e
 npm run lighthouse
 ```
 
-**Unitarios** (13 ficheros, 32 tests): portada con contenido, estado vacío y fallback al
+**Unitarios** (15 ficheros, 43 tests): portada con contenido, estado vacío y fallback al
 artículo más reciente, shell de la aplicación, pie con enlaces sociales, cinta de última
 hora, botón de volver arriba, progreso de lectura, utilidades y página del radar
 (conservadas para su futura publicación), 404 con buscador y noticia aleatoria, resolver del
@@ -152,14 +152,14 @@ listado (filtro por etiqueta en Noticias y por categoría en el resto), `SeoServ
 interceptor de autenticación (Bearer solo en endpoints privados) y formulario de cambio de
 contraseña.
 
-**E2E** (Playwright, 27 tests) sobre Caddy + SSR + API + PostgreSQL en
+**E2E** (Playwright, 32 tests) sobre Caddy + SSR + API + PostgreSQL en
 `http://localhost:8088`:
 
 | Spec | Tests | Contenido |
 |---|---|---|
-| `e2e/public.spec.ts` | 12 | Portada, cinta en portada y secciones, volver arriba, detalle, archivo, Noticias por etiqueta, radar oculto (404), búsqueda, 404 real y 404 con buscador/aleatorio, estáticas, sitemap/robots/feed |
-| `e2e/admin.spec.ts` | 4 | Login obligatorio, ciclo crear→publicar→generar difusión→verificar→borrar, CRUD del radar, filtros |
-| `e2e/a11y.spec.ts` | 11 | axe WCAG 2.1 AA: un test por página pública (incluida Noticias) y panel autenticado |
+| `e2e/public.spec.ts` | 13 | Portada, cinta en portada y secciones, volver arriba, detalle, archivo, Noticias por etiqueta, radar oculto (404), búsqueda, agenda, 404 real y 404 con buscador/aleatorio, estáticas, sitemap/robots/feed |
+| `e2e/admin.spec.ts` | 5 | Login obligatorio, ciclo crear→publicar→generar difusión→verificar→borrar, CRUD del radar, filtros y contactos de prensa |
+| `e2e/a11y.spec.ts` | 14 | axe WCAG 2.1 AA: un test por página pública (incluidas Noticias y agenda) y panel autenticado |
 
 **Accesibilidad**: `@axe-core/playwright` con `wcag2a`, `wcag2aa`, `wcag21a` y `wcag21aa`.
 Criterio: cero violaciones.

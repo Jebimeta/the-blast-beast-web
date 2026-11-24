@@ -163,10 +163,6 @@ describe('SeoService', () => {
       address: 'Calle de Raimundo Fernández Villaverde, 61',
       city: 'Madrid',
       region: 'Madrid',
-      ticketUrl: 'https://www.ticketmaster.es/',
-      priceMin: 65,
-      priceMax: 145,
-      currency: 'EUR',
       performers: ['Metallica'],
     });
 
@@ -189,8 +185,7 @@ describe('SeoService', () => {
     expect(event.location.name).toBe('Movistar Arena');
     expect(event.location.address.addressCountry).toBe('ES');
     expect(event.performer[0].name).toBe('Metallica');
-    expect(event.offers.price).toBe(65);
-    expect(event.offers.priceCurrency).toBe('EUR');
+    expect(event.offers).toBeUndefined();
   });
 
   it('declara el feed de la página y lo sustituye al cambiar de ruta', () => {
