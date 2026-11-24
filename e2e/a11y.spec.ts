@@ -22,6 +22,10 @@ test.describe('Accesibilidad WCAG 2.1 AA', () => {
   // fallo identifica la URL concreta en lugar de agotar el test del recorrido.
   for (const target of PUBLIC_PAGES) {
     test(`${target.label}: sin violaciones`, async ({ page }) => {
+      // Axe es intensivo en CPU y, con varios workers en paralelo, la portada
+      // y el archivo pueden superar los 45 s por contención, no por un fallo.
+      test.setTimeout(90_000);
+
       await page.goto(target.path);
       await expect(page.locator('main#contenido h1')).toBeVisible();
       await expectNoAxeViolations(page, target.label);

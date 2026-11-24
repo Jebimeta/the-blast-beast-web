@@ -14,7 +14,10 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env['CI']),
   retries: process.env['CI'] ? 1 : 0,
-  workers: process.env['CI'] ? 2 : undefined,
+  // Axe y el render SSR son intensivos en CPU. Con 4 workers las páginas más
+  // pesadas agotan el timeout por contención, así que se usan 2 también en
+  // local, igual que en CI.
+  workers: 2,
   timeout: 45_000,
   expect: {
     timeout: 8_000,
