@@ -1,9 +1,9 @@
-<article [id]="concert().slug" class="scroll-mt-24 border-t border-line py-6">
+<article [id]="concert().slug" class="scroll-mt-24 border-t border-line py-6 text-right">
   <h3 class="font-display text-xl uppercase leading-tight text-bone">
     {{ concert().title }}
   </h3>
 
-  <p class="mt-2 flex flex-wrap items-baseline gap-x-2 gap-y-1">
+  <p class="mt-2 flex flex-wrap items-baseline justify-end gap-x-2 gap-y-1">
     <time [attr.datetime]="concert().startAt" class="text-bone">{{ date() }}</time>
     <span aria-hidden="true" class="text-line">·</span>
     <span class="text-muted">{{ time() }}</span>
@@ -22,7 +22,7 @@
 
   @if (statusNotice()) {
     <p
-      class="mt-4 flex max-w-2xl items-start gap-3 rounded-lg border border-blood/50 bg-blood/10 px-4 py-3 text-sm text-bone"
+      class="mt-4 ml-auto flex max-w-2xl items-start justify-end gap-3 rounded-lg border border-blood/50 bg-blood/10 px-4 py-3 text-sm text-bone"
     >
       <span aria-hidden="true" class="mt-1 size-2 shrink-0 rounded-full bg-blood-soft"></span>
       <span>{{ statusNotice() }}</span>
