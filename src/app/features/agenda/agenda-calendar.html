@@ -52,7 +52,7 @@
       @if (cell.date) {
         <button
           type="button"
-          class="relative flex h-10 flex-col items-center justify-center rounded-md border border-transparent text-xs text-bone transition hover:border-line hover:bg-surface-2 data-[selected=true]:border-blood data-[selected=true]:bg-blood data-[selected=true]:text-white data-[today=true]:ring-1 data-[today=true]:ring-inset data-[today=true]:ring-blood-soft/60"
+          class="relative flex h-10 flex-col items-center justify-center rounded-md border border-transparent text-xs text-bone transition hover:border-line hover:bg-surface-2 data-[selected=true]:border-blood data-[selected=true]:bg-blood data-[selected=true]:text-ink data-[today=true]:ring-1 data-[today=true]:ring-inset data-[today=true]:ring-blood-soft/60"
           [attr.data-selected]="cell.isSelected ? 'true' : null"
           [attr.data-today]="cell.isToday ? 'true' : null"
           [attr.aria-pressed]="cell.isSelected"

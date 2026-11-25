@@ -55,15 +55,21 @@
     U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/*
+ * Paleta industrial.
+ * El texto secundario usa una mezcla 50/50 de medium y silver (#949494)
+ * para mantener el contraste AA tanto sobre el fondo como sobre las
+ * superficies grises.
+ */
 @theme {
-  --color-ink: #07080a;
-  --color-surface: #0e1014;
-  --color-surface-2: #15181e;
-  --color-line: #242a33;
-  --color-bone: #f4f2ee;
-  --color-muted: #98a0ad;
-  --color-blood: #c8102e;
-  --color-blood-soft: #ff2247;
+  --color-ink: #111111;
+  --color-surface: #292929;
+  --color-surface-2: #292929;
+  --color-line: #686868;
+  --color-bone: #c0c0c0;
+  --color-muted: #949494;
+  --color-blood: #e5a000;
+  --color-blood-soft: #e5a000;
 
   --font-display: "Oswald", "Oswald Fallback", ui-sans-serif, system-ui, sans-serif;
   --font-body: "Inter", "Inter Fallback", ui-sans-serif, system-ui, sans-serif;
@@ -96,7 +102,7 @@
   }
 
   ::selection {
-    @apply bg-blood text-white;
+    @apply bg-blood text-ink;
   }
 
   :focus-visible {
@@ -119,7 +125,7 @@
 
   .btn-primary {
     @apply inline-flex items-center gap-2 rounded-md bg-blood px-5 py-3 font-display text-sm
-      uppercase tracking-wider text-white transition hover:bg-blood-soft;
+      uppercase tracking-wider text-ink transition hover:brightness-110;
   }
 
   .btn-ghost {
