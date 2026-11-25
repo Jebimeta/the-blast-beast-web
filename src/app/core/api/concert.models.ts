@@ -8,12 +8,6 @@ export interface VenueSummary {
   region?: string | null;
 }
 
-export interface VenueDetail extends VenueSummary {
-  address?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
-}
-
 export interface ConcertArtist {
   slug: string;
   name: string;
@@ -33,14 +27,6 @@ export interface ConcertSummary {
   venue: VenueSummary;
   artists: ConcertArtist[];
   featured?: boolean | null;
-}
-
-export interface ConcertDetail extends Omit<ConcertSummary, 'venue'> {
-  description?: string | null;
-  venue: VenueDetail;
-  imageUrl?: string | null;
-  imageAttribution?: string | null;
-  source?: string | null;
 }
 
 export interface ConcertPage {

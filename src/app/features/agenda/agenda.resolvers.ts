@@ -2,7 +2,7 @@ import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn } from '@angular/router';
 import { catchError, forkJoin, map, of } from 'rxjs';
 import { ConcertApiService } from '../../core/api/concert-api.service';
-import type { ConcertDetail, ConcertFacets, ConcertPage } from '../../core/api/concert.models';
+import type { ConcertFacets, ConcertPage } from '../../core/api/concert.models';
 
 export interface AgendaFilters {
   genre: string | null;
@@ -16,11 +16,6 @@ export interface AgendaData {
   page: ConcertPage;
   facets: ConcertFacets;
   filters: AgendaFilters;
-}
-
-export interface ConcertDetailData {
-  concert: ConcertDetail | null;
-  status: number;
 }
 
 const PAGE_SIZE = 12;
@@ -83,19 +78,4 @@ export const agendaResolver: ResolveFn<AgendaData> = (route: ActivatedRouteSnaps
       .pipe(catchError(() => of(emptyConcertPage))),
     facets: api.getFacets().pipe(catchError(() => of(emptyConcertFacets))),
   }).pipe(map(({ page, facets }) => ({ page, facets, filters })));
-};
-
-export const concertDetailResolver: ResolveFn<ConcertDetailData> = (
-  route: ActivatedRouteSnapshot,
-) => {
-  const slug = route.paramMap.get('slug') ?? '';
-
-  return inject(ConcertApiService)
-    .getConcert(slug)
-    .pipe(
-      map((concert) => ({ concert, status: 200 })),
-      catchError((error: { status?: number }) =>
-        of({ concert: null, status: error?.status ?? 500 }),
-      ),
-    );
 };

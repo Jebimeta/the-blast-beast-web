@@ -140,7 +140,7 @@ describe('SeoService', () => {
     expect(document.querySelectorAll('script[data-seo-jsonld]')).toHaveLength(0);
   });
 
-  it('publica JSON-LD de evento e ItemList para la agenda', () => {
+  it('publica el ItemList de la agenda con anclas a cada concierto', () => {
     service.apply({
       title: 'Agenda de conciertos',
       description: 'Cartelera en España.',
@@ -149,43 +149,20 @@ describe('SeoService', () => {
     service.applyItemListJsonLd({
       name: 'Agenda de conciertos',
       items: [
-        { name: 'Metallica: M72 World Tour', path: '/agenda/demo-metallica-madrid' },
+        { name: 'Metallica: M72 World Tour', path: '/agenda#demo-metallica-madrid' },
       ],
-    });
-    service.applyEventJsonLd({
-      name: 'Metallica: M72 World Tour',
-      description: 'Concierto en Madrid.',
-      path: '/agenda/demo-metallica-madrid',
-      startDate: '2026-12-02T21:00:00+01:00',
-      endDate: '2026-12-03T00:00:00+01:00',
-      status: 'ON_SALE',
-      venueName: 'Movistar Arena',
-      address: 'Calle de Raimundo Fernández Villaverde, 61',
-      city: 'Madrid',
-      region: 'Madrid',
-      performers: ['Metallica'],
     });
 
     expect(document.querySelectorAll('script#itemlist-jsonld')).toHaveLength(1);
-    expect(document.querySelectorAll('script#event-jsonld')).toHaveLength(1);
+    expect(document.querySelectorAll('script#event-jsonld')).toHaveLength(0);
 
     const list = JSON.parse(
       document.querySelector('script#itemlist-jsonld')?.textContent ?? '{}',
     );
     expect(list['@type']).toBe('ItemList');
     expect(list.itemListElement[0].url).toBe(
-      'https://theblastbeast.test/agenda/demo-metallica-madrid',
+      'https://theblastbeast.test/agenda#demo-metallica-madrid',
     );
-
-    const event = JSON.parse(
-      document.querySelector('script#event-jsonld')?.textContent ?? '{}',
-    );
-    expect(event['@type']).toBe('MusicEvent');
-    expect(event.eventStatus).toBe('https://schema.org/EventScheduled');
-    expect(event.location.name).toBe('Movistar Arena');
-    expect(event.location.address.addressCountry).toBe('ES');
-    expect(event.performer[0].name).toBe('Metallica');
-    expect(event.offers).toBeUndefined();
   });
 
   it('declara el feed de la página y lo sustituye al cambiar de ruta', () => {

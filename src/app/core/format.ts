@@ -32,16 +32,6 @@ const eventTimeFormatter = new Intl.DateTimeFormat('es-ES', {
   timeZone: 'Europe/Madrid',
 });
 
-const eventDayFormatter = new Intl.DateTimeFormat('es-ES', {
-  day: '2-digit',
-  timeZone: 'Europe/Madrid',
-});
-
-const eventMonthFormatter = new Intl.DateTimeFormat('es-ES', {
-  month: 'short',
-  timeZone: 'Europe/Madrid',
-});
-
 export function formatDate(value: string | null | undefined): string {
   if (!value) {
     return '';
@@ -85,21 +75,4 @@ export function formatEventTime(value: string | null | undefined): string {
   }
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? '' : eventTimeFormatter.format(date);
-}
-
-export function formatEventDay(value: string | null | undefined): string {
-  if (!value) {
-    return '';
-  }
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? '' : eventDayFormatter.format(date);
-}
-
-export function formatEventMonth(value: string | null | undefined): string {
-  if (!value) {
-    return '';
-  }
-  const date = new Date(value);
-  const label = Number.isNaN(date.getTime()) ? '' : eventMonthFormatter.format(date);
-  return label.replace('.', '').toUpperCase();
 }

@@ -161,7 +161,7 @@ test.describe('Portal público', () => {
     ).toBeVisible();
   });
 
-  test('la agenda lista conciertos y abre la ficha del evento', async ({
+  test('la agenda muestra título, fecha, hora y sala sin ficha de detalle', async ({
     page,
   }) => {
     await page.goto('/agenda');
@@ -177,27 +177,25 @@ test.describe('Portal público', () => {
       page.getByRole('link', { name: /Comprar entradas/i }),
     ).toHaveCount(0);
 
-    const firstConcert = page.locator('main#contenido article h3 a').first();
-    await expect(firstConcert).toBeVisible();
-    const title = (await firstConcert.textContent())?.trim() ?? '';
-
-    await firstConcert.click();
-
-    await expect(page).toHaveURL(/\/agenda\/[a-z0-9-]+$/);
-    await expect(page.locator('main#contenido h1')).toContainText(title);
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
-      'href',
-      /\/agenda\/[a-z0-9-]+$/,
+    const card = page
+      .locator('main#contenido article')
+      .filter({ hasText: 'Metallica: M72 World Tour' })
+      .first();
+    await expect(card).toBeVisible();
+    await expect(card.getByRole('heading', { level: 3 })).toHaveText(
+      'Metallica: M72 World Tour',
     );
-    await expect(page.getByText('Precio', { exact: true })).toHaveCount(0);
-    await expect(
-      page.getByRole('link', { name: /Comprar entradas/i }),
-    ).toHaveCount(0);
-    const eventJsonLd =
-      (await page.locator('script#event-jsonld').textContent()) ?? '';
-    expect(eventJsonLd).not.toContain('offers');
-    expect(eventJsonLd).not.toContain('ticketUrl');
-    expect(eventJsonLd).not.toContain('price');
+
+    const date = card.locator('time');
+    await expect(date).toHaveAttribute('datetime', /^\d{4}-\d{2}-\d{2}T/);
+    await expect(date).toHaveText(
+      /^(Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo), \d{1,2} de [a-záéíóú]+ de \d{4}$/i,
+    );
+    await expect(card).toContainText('21:00');
+    await expect(card).toContainText('Movistar Arena');
+    await expect(card).toContainText('Madrid');
+    await expect(card.getByRole('link', { name: /Ver ficha/i })).toHaveCount(0);
+    await expect(card.locator('a[href^="/agenda/"]')).toHaveCount(0);
   });
 
   test('las páginas institucionales se prerenderizan', async ({ page }) => {

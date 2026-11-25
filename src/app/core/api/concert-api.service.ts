@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { API_BASE_URL } from './api-base-url';
-import type { ConcertDetail, ConcertFacets, ConcertPage, ConcertQuery } from './concert.models';
+import type { ConcertFacets, ConcertPage, ConcertQuery } from './concert.models';
 
 @Injectable({ providedIn: 'root' })
 export class ConcertApiService {
@@ -37,12 +37,6 @@ export class ConcertApiService {
     return this.http.get<ConcertPage>(`${this.baseUrl}/api/v1/concerts`, {
       params,
     });
-  }
-
-  getConcert(slug: string): Observable<ConcertDetail> {
-    return this.http.get<ConcertDetail>(
-      `${this.baseUrl}/api/v1/concerts/${encodeURIComponent(slug)}`,
-    );
   }
 
   getFacets(): Observable<ConcertFacets> {

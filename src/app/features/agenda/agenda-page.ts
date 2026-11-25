@@ -148,7 +148,7 @@ export class AgendaPage {
         name: heading,
         items: page.content.map((concert) => ({
           name: concert.title,
-          path: `/agenda/${concert.slug}`,
+          path: `/agenda#${concert.slug}`,
         })),
       });
       this.seo.applyBreadcrumbJsonLd([

@@ -4,10 +4,7 @@ import {
   articleDetailResolver,
   articleListResolver,
 } from './features/articles/article.resolvers';
-import {
-  agendaResolver,
-  concertDetailResolver,
-} from './features/agenda/agenda.resolvers';
+import { agendaResolver } from './features/agenda/agenda.resolvers';
 import { bandResolver } from './features/bands/band.resolver';
 import { homeResolver } from './features/home/home.resolver';
 import { searchResolver } from './features/search/search.resolver';
@@ -66,15 +63,6 @@ export const routes: Routes = [
     runGuardsAndResolvers: 'paramsOrQueryParamsChange',
     loadComponent: () =>
       import('./features/agenda/agenda-page').then((m) => m.AgendaPage),
-  },
-  {
-    path: 'agenda/:slug',
-    title: 'Concierto — The Blast Beast',
-    resolve: { detail: concertDetailResolver, ticker: latestTickerResolver },
-    loadComponent: () =>
-      import('./features/agenda/concert-detail-page').then(
-        (m) => m.ConcertDetailPage,
-      ),
   },
   {
     path: 'sobre',
