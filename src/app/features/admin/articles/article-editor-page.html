@@ -1,9 +1,9 @@
 <section class="pb-28 lg:pb-0">
-  <div class="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-5">
+  <div class="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-6">
     <div class="min-w-0">
       <a
         routerLink="/admin/articulos"
-        class="inline-flex min-h-10 items-center font-mono text-[10px] uppercase tracking-[0.16em] text-muted hover:text-bone"
+        class="inline-flex min-h-10 items-center font-mono text-[11px] uppercase tracking-[0.16em] text-muted hover:text-bone"
         >← Artículos</a
       >
       <div class="mt-2 flex flex-wrap items-center gap-3">
@@ -11,7 +11,7 @@
           {{ isNew() ? 'Nuevo artículo' : 'Editar artículo' }}
         </h1>
         <span
-          class="rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em]"
+          class="rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em]"
           [class]="statusClass()"
         >
           {{ statusLabel() }}
@@ -24,14 +24,14 @@
         [routerLink]="['/articulos', publicSlug()]"
         target="_blank"
         rel="noopener"
-        class="btn-ghost min-h-10 !px-4 !py-2.5 !text-xs"
+        class="btn-ghost min-h-10 !px-4 !py-2.5 !text-sm"
         >Ver en el portal ↗</a
       >
     }
   </div>
 
   @if (loading()) {
-    <p class="mt-10 font-mono text-[10px] uppercase tracking-[0.16em] text-muted">
+    <p class="mt-10 font-mono text-[11px] uppercase tracking-[0.16em] text-muted">
       Cargando artículo…
     </p>
   } @else {
@@ -50,23 +50,23 @@
       id="article-form"
       [formGroup]="form"
       (ngSubmit)="save()"
-      class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]"
+      class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-8"
     >
-      <div class="min-w-0 space-y-5">
+      <div class="min-w-0 space-y-6">
         <div>
           <label
             for="title"
-            class="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            class="mb-2 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
             >Titular</label
           >
           <input
             id="title"
             type="text"
             formControlName="title"
-            class="w-full rounded-md border border-line bg-ink px-4 py-3 font-display text-xl uppercase text-bone outline-none transition focus:border-blood"
+            class="w-full rounded-md border border-line bg-ink px-4 py-3 font-display text-2xl uppercase text-bone outline-none transition focus:border-blood"
           />
           @if (form.controls.title.touched && form.controls.title.invalid) {
-            <p class="mt-2 text-xs text-blood-soft">
+            <p class="mt-2 text-sm text-blood-soft">
               El titular debe tener entre 3 y 200 caracteres.
             </p>
           }
@@ -75,7 +75,7 @@
         <div>
           <label
             for="slug"
-            class="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            class="mb-2 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
             >Slug</label
           >
           <input
@@ -83,9 +83,9 @@
             type="text"
             formControlName="slug"
             placeholder="se-genera-desde-el-titular"
-            class="w-full rounded-md border border-line bg-ink px-4 py-2.5 font-mono text-xs text-bone outline-none transition placeholder:text-muted/60 focus:border-blood"
+            class="w-full rounded-md border border-line bg-ink px-4 py-2.5 font-mono text-sm text-bone outline-none transition placeholder:text-muted/60 focus:border-blood"
           />
-          <p class="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+          <p class="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
             @if (slug()) {
               Actual: /articulos/{{ slug() }}
             } @else {
@@ -97,17 +97,17 @@
         <div>
           <label
             for="excerpt"
-            class="mb-2 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            class="mb-2 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
             >Entradilla</label
           >
           <textarea
             id="excerpt"
             formControlName="excerpt"
             rows="3"
-            class="w-full resize-y rounded-md border border-line bg-ink px-4 py-3 text-sm leading-relaxed text-bone outline-none transition focus:border-blood"
+            class="w-full resize-y rounded-md border border-line bg-ink px-4 py-3 text-base leading-relaxed text-bone outline-none transition focus:border-blood"
           ></textarea>
           @if (form.controls.excerpt.touched && form.controls.excerpt.invalid) {
-            <p class="mt-2 text-xs text-blood-soft">
+            <p class="mt-2 text-sm text-blood-soft">
               La entradilla debe tener entre 10 y 500 caracteres.
             </p>
           }
@@ -117,41 +117,41 @@
           <div class="mb-2 flex items-center justify-between">
             <label
               for="bodyMd"
-              class="font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+              class="font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
               >Cuerpo (Markdown)</label
             >
-            <span class="font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+            <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
               {{ form.controls.bodyMd.value.length }} caracteres
             </span>
           </div>
 
-          <div class="grid gap-4 xl:grid-cols-2">
+          <div class="grid gap-4">
             <textarea
               id="bodyMd"
               formControlName="bodyMd"
-              rows="26"
+              rows="24"
               spellcheck="true"
-              class="w-full resize-y rounded-md border border-line bg-ink px-4 py-3 font-mono text-xs leading-relaxed text-bone outline-none transition focus:border-blood"
+              class="min-h-[22rem] w-full resize-y rounded-md border border-line bg-ink px-5 py-4 font-mono text-[0.9375rem] leading-7 text-bone outline-none transition focus:border-blood"
             ></textarea>
 
             <div class="min-w-0">
               <div class="mb-2 flex items-center justify-between">
-                <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+                <span class="font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
                   >Vista previa</span
                 >
                 @if (previewLoading()) {
-                  <span class="font-mono text-[9px] uppercase tracking-[0.14em] text-muted"
+                  <span class="font-mono text-[10px] uppercase tracking-[0.14em] text-muted"
                     >Renderizando…</span
                   >
                 }
               </div>
               <div
-                class="article-body min-h-[16rem] max-h-[24rem] overflow-auto rounded-md border border-line bg-surface p-5 lg:min-h-[26rem] lg:max-h-[32rem]"
+                class="article-body min-h-[18rem] max-h-[28rem] overflow-auto rounded-md border border-line bg-surface p-5 sm:p-6 lg:min-h-[22rem] lg:max-h-[36rem]"
               >
                 @if (preview()) {
                   <div [innerHTML]="preview()"></div>
                 } @else {
-                  <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+                  <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-muted">
                     La vista previa aparecerá al escribir.
                   </p>
                 }
@@ -160,18 +160,18 @@
           </div>
 
           @if (form.controls.bodyMd.touched && form.controls.bodyMd.invalid) {
-            <p class="mt-2 text-xs text-blood-soft">
+            <p class="mt-2 text-sm text-blood-soft">
               El cuerpo es obligatorio y debe tener al menos 10 caracteres.
             </p>
           }
         </div>
       </div>
 
-      <aside class="space-y-5">
-        <div class="card !p-5">
+      <aside class="space-y-6">
+        <div class="card !p-6">
           <p class="font-display text-sm uppercase tracking-wider">Publicación</p>
 
-          <p class="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+          <p class="mt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
             @if (saving()) {
               Guardando…
             } @else if (dirty()) {
@@ -186,7 +186,7 @@
           <div class="mt-4 space-y-2">
             <button
               type="submit"
-              class="btn-primary min-h-10 w-full justify-center !px-4 !py-2.5 !text-xs"
+              class="btn-primary min-h-10 w-full justify-center !px-4 !py-2.5 !text-sm"
               [disabled]="saving()"
             >
               {{ saving() ? 'Guardando…' : 'Guardar borrador' }}
@@ -195,7 +195,7 @@
             @if (status() !== 'published') {
               <button
                 type="button"
-                class="min-h-10 w-full rounded-md border border-emerald-500/40 px-4 py-2.5 font-display text-xs uppercase tracking-wider text-emerald-300 transition hover:bg-emerald-500/10 disabled:opacity-40"
+                class="min-h-10 w-full rounded-md border border-emerald-500/40 px-4 py-2.5 font-display text-sm uppercase tracking-wider text-emerald-300 transition hover:bg-emerald-500/10 disabled:opacity-40"
                 [disabled]="publishing()"
                 (click)="publish()"
               >
@@ -204,7 +204,7 @@
             } @else {
               <button
                 type="button"
-                class="btn-ghost min-h-10 w-full justify-center !px-4 !py-2.5 !text-xs"
+                class="btn-ghost min-h-10 w-full justify-center !px-4 !py-2.5 !text-sm"
                 (click)="unpublish()"
               >
                 Despublicar
@@ -214,7 +214,7 @@
             @if (status() !== 'archived') {
               <button
                 type="button"
-                class="min-h-10 w-full rounded-md border border-amber-500/40 px-4 py-2.5 font-display text-xs uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/10"
+                class="min-h-10 w-full rounded-md border border-amber-500/40 px-4 py-2.5 font-display text-sm uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/10"
                 (click)="archive()"
               >
                 Archivar
@@ -223,19 +223,19 @@
           </div>
         </div>
 
-        <div id="social-panel" class="card scroll-mt-4 !p-5">
+        <div id="social-panel" class="card scroll-mt-4 !p-6">
           <div class="flex items-start justify-between gap-3">
             <div>
               <p class="font-display text-sm uppercase tracking-wider">
                 Difusión en redes
               </p>
-              <p class="mt-1 text-xs text-muted">
+              <p class="mt-1 text-sm text-muted">
                 Textos editables para copiar y publicar manualmente.
               </p>
             </div>
             @if (socialSource(); as source) {
               <span
-                class="rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em]"
+                class="rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.16em]"
                 [class]="
                   source === 'ai'
                     ? 'border-blood/40 bg-blood/10 text-blood-soft'
@@ -248,13 +248,13 @@
           </div>
 
           @if (isNew()) {
-            <p class="mt-4 rounded-md border border-line px-3 py-2 text-xs text-muted">
+            <p class="mt-4 rounded-md border border-line px-3 py-2 text-sm text-muted">
               Guarda el borrador para generar los textos.
             </p>
           } @else {
             <button
               type="button"
-              class="mt-4 min-h-10 w-full rounded-md border border-line px-4 py-2.5 font-display text-xs uppercase tracking-wider text-bone transition hover:border-blood hover:bg-blood/10 disabled:opacity-40"
+              class="mt-4 min-h-10 w-full rounded-md border border-line px-4 py-2.5 font-display text-sm uppercase tracking-wider text-bone transition hover:border-blood hover:bg-blood/10 disabled:opacity-40"
               [disabled]="socialLoading()"
               (click)="generateSocialSummary()"
             >
@@ -266,18 +266,18 @@
                     : 'Generar textos'
               }}
             </button>
-            <p class="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+            <p class="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
               Usa la última versión guardada. Nada se publica automáticamente.
             </p>
 
             @if (socialError()) {
-              <p class="mt-3 text-xs text-blood-soft" role="alert">
+              <p class="mt-3 text-sm text-blood-soft" role="alert">
                 {{ socialError() }}
               </p>
             }
 
             @if (socialSource(); as source) {
-              <p class="mt-3 text-xs text-muted">
+              <p class="mt-3 text-sm text-muted">
                 @if (source === 'ai') {
                   Generado con IA: revisa datos, cifras y tono antes de publicar.
                 } @else {
@@ -291,10 +291,10 @@
                     <div class="flex items-center justify-between gap-2">
                       <label
                         [for]="'social-' + platform.key"
-                        class="font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+                        class="font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
                         >{{ platform.label }}</label
                       >
-                      <span class="font-mono text-[9px] tracking-[0.14em] text-muted">
+                      <span class="font-mono text-[10px] tracking-[0.14em] text-muted">
                         {{ socialText(platform.key).length }}/{{ platform.limit }}
                       </span>
                     </div>
@@ -304,12 +304,12 @@
                       [attr.maxlength]="platform.limit"
                       [value]="socialText(platform.key)"
                       (input)="updateSocialText(platform.key, $event)"
-                      class="mt-2 w-full resize-y rounded-md border border-line bg-ink px-3 py-2 text-xs text-bone outline-none transition focus:border-blood"
+                      class="mt-2 w-full resize-y rounded-md border border-line bg-ink px-3 py-2 text-sm text-bone outline-none transition focus:border-blood"
                     ></textarea>
                     <div class="mt-2 flex flex-wrap items-center justify-between gap-2">
                       <button
                         type="button"
-                        class="inline-flex min-h-10 items-center justify-center rounded-md border border-line px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-muted transition hover:border-blood hover:text-bone disabled:opacity-40"
+                        class="inline-flex min-h-10 items-center justify-center rounded-md border border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-muted transition hover:border-blood hover:text-bone disabled:opacity-40"
                         [attr.aria-label]="'Copiar texto para ' + platform.label"
                         [disabled]="!socialText(platform.key).trim()"
                         (click)="copySocialText(platform.key)"
@@ -321,12 +321,12 @@
                           [href]="socialShareUrl(platform.key)"
                           target="_blank"
                           rel="noopener noreferrer"
-                          class="inline-flex min-h-10 items-center font-mono text-[9px] uppercase tracking-[0.14em] text-muted transition hover:text-bone"
+                          class="inline-flex min-h-10 items-center font-mono text-[10px] uppercase tracking-[0.14em] text-muted transition hover:text-bone"
                           >Compartir en {{ platform.label }} ↗</a
                         >
                       } @else {
                         <span
-                          class="font-mono text-[9px] uppercase tracking-[0.14em] text-muted"
+                          class="font-mono text-[10px] uppercase tracking-[0.14em] text-muted"
                         >
                           Pega el texto en la app
                         </span>
@@ -342,12 +342,12 @@
           }
         </div>
 
-        <div class="card !p-5">
+        <div class="card !p-6">
           <p class="font-display text-sm uppercase tracking-wider">Clasificación</p>
 
           <label
             for="categoryId"
-            class="mt-4 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            class="mt-4 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
             >Categoría</label
           >
           <select
@@ -361,15 +361,15 @@
             }
           </select>
           @if (form.controls.categoryId.touched && form.controls.categoryId.invalid) {
-            <p class="mt-2 text-xs text-blood-soft">Selecciona una categoría.</p>
+            <p class="mt-2 text-sm text-blood-soft">Selecciona una categoría.</p>
           }
-          <p class="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+          <p class="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
             Es la sección del portal. Independiente de las etiquetas.
           </p>
 
           <label
             for="bandIds"
-            class="mt-4 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            class="mt-4 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
             >Bandas</label
           >
           <select
@@ -377,7 +377,7 @@
             formControlName="bandIds"
             multiple
             size="5"
-            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-xs text-bone outline-none transition focus:border-blood"
+            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-sm text-bone outline-none transition focus:border-blood"
           >
             @for (band of bands(); track band.id) {
               <option [ngValue]="band.id">{{ band.name }}</option>
@@ -395,7 +395,7 @@
           />
         </div>
 
-        <div class="card !p-5">
+        <div class="card !p-6">
           <label
             for="coverMediaId"
             class="font-display text-sm uppercase tracking-wider"
@@ -405,7 +405,7 @@
           <select
             id="coverMediaId"
             formControlName="coverMediaId"
-            class="mt-3 w-full rounded-md border border-line bg-ink px-3 py-2.5 text-xs text-bone outline-none transition focus:border-blood"
+            class="mt-3 w-full rounded-md border border-line bg-ink px-3 py-2.5 text-sm text-bone outline-none transition focus:border-blood"
           >
             <option [ngValue]="null">Sin portada</option>
             @for (asset of media(); track asset.id) {
@@ -424,7 +424,7 @@
               class="mt-3 w-full rounded border border-line object-cover"
             />
             @if (cover.credit) {
-              <p class="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+              <p class="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
                 {{ cover.credit }}
               </p>
             }
@@ -432,12 +432,12 @@
 
           <a
             routerLink="/admin/medios"
-            class="mt-1 inline-flex min-h-10 items-center font-mono text-[9px] uppercase tracking-[0.14em] text-muted hover:text-bone"
+            class="mt-1 inline-flex min-h-10 items-center font-mono text-[10px] uppercase tracking-[0.14em] text-muted hover:text-bone"
             >Gestionar biblioteca →</a
           >
         </div>
 
-        <details class="card !p-5">
+        <details class="card !p-6">
           <summary
             class="cursor-pointer font-display text-sm uppercase tracking-wider"
           >
@@ -446,47 +446,47 @@
 
           <label
             for="seoTitle"
-            class="mt-4 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            class="mt-4 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
             >Título SEO</label
           >
           <input
             id="seoTitle"
             type="text"
             formControlName="seoTitle"
-            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-xs text-bone outline-none transition focus:border-blood"
+            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-sm text-bone outline-none transition focus:border-blood"
           />
 
           <label
             for="seoDescription"
-            class="mt-4 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            class="mt-4 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
             >Descripción SEO</label
           >
           <textarea
             id="seoDescription"
             formControlName="seoDescription"
             rows="3"
-            class="mt-2 w-full resize-y rounded-md border border-line bg-ink px-3 py-2 text-xs text-bone outline-none transition focus:border-blood"
+            class="mt-2 w-full resize-y rounded-md border border-line bg-ink px-3 py-2 text-sm text-bone outline-none transition focus:border-blood"
           ></textarea>
 
           <label
             for="canonicalUrl"
-            class="mt-4 block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+            class="mt-4 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
             >URL canónica</label
           >
           <input
             id="canonicalUrl"
             type="url"
             formControlName="canonicalUrl"
-            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-xs text-bone outline-none transition focus:border-blood"
+            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-sm text-bone outline-none transition focus:border-blood"
           />
         </details>
 
-        <div class="card !p-5">
+        <div class="card !p-6">
           <div class="flex items-center justify-between">
             <p class="font-display text-sm uppercase tracking-wider">Historial</p>
             <button
               type="button"
-              class="inline-flex min-h-10 items-center px-1 font-mono text-[9px] uppercase tracking-[0.14em] text-muted hover:text-bone"
+              class="inline-flex min-h-10 items-center px-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted hover:text-bone"
               (click)="toggleRevisions()"
             >
               {{ showRevisions() ? 'Ocultar' : 'Ver' }}
@@ -495,24 +495,24 @@
 
           @if (showRevisions()) {
             @if (revisionsLoading()) {
-              <p class="mt-3 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+              <p class="mt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
                 Cargando…
               </p>
             } @else if (revisions().length === 0) {
-              <p class="mt-3 text-xs text-muted">
+              <p class="mt-3 text-sm text-muted">
                 Todavía no hay versiones anteriores.
               </p>
             } @else {
               <ul class="mt-3 space-y-2">
                 @for (revision of revisions(); track revision.id) {
                   <li class="rounded border border-line px-3 py-2">
-                    <p class="truncate text-xs text-bone">{{ revision.title }}</p>
-                    <p class="mt-1 font-mono text-[9px] uppercase tracking-[0.14em] text-muted">
+                    <p class="truncate text-sm text-bone">{{ revision.title }}</p>
+                    <p class="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
                       {{ revisionDate(revision.createdAt) }} · {{ revision.editorName }}
                     </p>
                     <button
                       type="button"
-                      class="mt-1 inline-flex min-h-10 items-center font-mono text-[9px] uppercase tracking-[0.14em] text-blood-soft hover:text-bone"
+                      class="mt-1 inline-flex min-h-10 items-center font-mono text-[10px] uppercase tracking-[0.14em] text-blood-soft hover:text-bone"
                       (click)="restore(revision)"
                     >
                       Restaurar
@@ -531,7 +531,7 @@
             </p>
             <button
               type="button"
-              class="mt-3 min-h-10 w-full rounded-md border border-blood/40 px-4 py-2.5 font-display text-xs uppercase tracking-wider text-blood-soft transition hover:bg-blood/10"
+              class="mt-3 min-h-10 w-full rounded-md border border-blood/40 px-4 py-2.5 font-display text-sm uppercase tracking-wider text-blood-soft transition hover:bg-blood/10"
               (click)="remove()"
             >
               Eliminar artículo
@@ -547,7 +547,7 @@
         <div class="mx-auto flex max-w-lg items-center gap-2">
           <button
             type="submit"
-            class="btn-primary min-h-11 flex-1 justify-center !px-4 !py-2.5 !text-xs"
+            class="btn-primary min-h-11 flex-1 justify-center !px-4 !py-2.5 !text-sm"
             [disabled]="saving()"
           >
             {{ saving() ? 'Guardando…' : 'Guardar' }}
@@ -556,7 +556,7 @@
           @if (status() !== 'published') {
             <button
               type="button"
-              class="inline-flex min-h-11 items-center justify-center rounded-md border border-emerald-500/40 px-4 py-2.5 font-display text-xs uppercase tracking-wider text-emerald-300 transition hover:bg-emerald-500/10 disabled:opacity-40"
+              class="inline-flex min-h-11 items-center justify-center rounded-md border border-emerald-500/40 px-4 py-2.5 font-display text-sm uppercase tracking-wider text-emerald-300 transition hover:bg-emerald-500/10 disabled:opacity-40"
               [disabled]="publishing()"
               (click)="publish()"
             >
@@ -565,7 +565,7 @@
           } @else {
             <button
               type="button"
-              class="btn-ghost min-h-11 !px-3 !py-2.5 !text-xs"
+              class="btn-ghost min-h-11 !px-3 !py-2.5 !text-sm"
               (click)="unpublish()"
             >
               Despublicar
@@ -575,7 +575,7 @@
           @if (!isNew()) {
             <button
               type="button"
-              class="btn-ghost min-h-11 !px-2 !py-2.5 !text-xs"
+              class="btn-ghost min-h-11 !px-2 !py-2.5 !text-sm"
               aria-label="Ir a difusión en redes"
               (click)="scrollToSocial()"
             >

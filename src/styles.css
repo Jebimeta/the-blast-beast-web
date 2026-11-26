@@ -115,6 +115,15 @@
     @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
   }
 
+  /*
+   * El panel editorial necesita más aire que las páginas públicas: el
+   * editor Markdown y su rail de publicación no caben con comodidad en
+   * el ancho de lectura del portal.
+   */
+  .shell-admin {
+    @apply mx-auto w-full max-w-[1720px] px-5 sm:px-8;
+  }
+
   .eyebrow {
     @apply font-display text-xs uppercase tracking-[0.35em] text-blood-soft;
   }
