@@ -24,10 +24,23 @@ test.describe('Redacción', () => {
     const excerpt = `Entradilla de la prueba e2e ${stamp}.`;
     const body = `## Prueba e2e\n\nContenido generado por Playwright ${stamp}.`;
 
+    const coverAlt = `Portada e2e ${stamp}`;
+
     await page.getByLabel('Titular').fill(title);
     await page.getByLabel('Entradilla').fill(excerpt);
     await page.getByLabel('Cuerpo (Markdown)').fill(body);
     await page.locator('#categoryId').selectOption({ label: 'Noticias' });
+
+    // La portada es propia de cada artículo: se selecciona en el editor y se
+    // sube al guardar el borrador (todavía no existe el artículo).
+    await page
+      .getByLabel('Imagen de portada')
+      .setInputFiles('e2e/fixtures/portada.png');
+    await expect(page.locator('#cover-panel img')).toBeVisible();
+    await page.getByLabel('Texto alternativo').fill(coverAlt);
+    await expect(
+      page.getByText('Se subirá al guardar el borrador.'),
+    ).toBeVisible();
 
     // La sección y las etiquetas se eligen por separado: la etiqueta se
     // guarda aunque no coincida con la categoría del artículo.
@@ -43,6 +56,13 @@ test.describe('Redacción', () => {
     await expect(page).toHaveURL(/\/admin\/articulos\/\d+$/);
     await expect(page.getByLabel('Slug')).toHaveValue(
       new RegExp(`^prueba-e2e-${stamp}$`),
+    );
+
+    // La portada quedó asociada al artículo y se sirve desde /media.
+    await expect(page.getByAltText(coverAlt)).toBeVisible();
+    await expect(page.locator('#cover-panel img')).toHaveAttribute(
+      'src',
+      /\/media\//,
     );
 
     const editorUrl = page.url();
@@ -79,6 +99,10 @@ test.describe('Redacción', () => {
     await expect(page.locator('.article-body')).toContainText(
       'Contenido generado por Playwright',
     );
+    const publicCover = page.getByRole('img', { name: coverAlt }).first();
+    await expect(publicCover).toBeVisible();
+    const coverSrc = await publicCover.getAttribute('src');
+    expect(coverSrc).toBeTruthy();
 
     // Limpieza: el artículo de prueba no debe quedar en la base de datos.
     await page.goto(editorUrl);
@@ -86,6 +110,10 @@ test.describe('Redacción', () => {
     await page.getByRole('button', { name: 'Eliminar artículo' }).click();
     await expect(page).toHaveURL(/\/admin\/articulos$/);
     await expect(page.getByText(title)).toHaveCount(0);
+
+    // Al borrar el artículo también se elimina su portada.
+    const orphan = await request.get(coverSrc!);
+    expect(orphan.status()).toBe(404);
   });
 
   test('crear y eliminar un lanzamiento desde el radar editorial', async ({

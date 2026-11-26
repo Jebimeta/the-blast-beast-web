@@ -6,6 +6,7 @@ import type {
   AdminArticleDetail,
   AdminArticlePage,
   AdminArticleStatus,
+  ArticleCoverUpdateRequest,
   ArticleRevision,
   ArticleWriteRequest,
   BandResponse,
@@ -13,9 +14,6 @@ import type {
   CategoryAdmin,
   CategoryWriteRequest,
   MarkdownPreviewResponse,
-  MediaAsset,
-  MediaPage,
-  MediaUpdateRequest,
   PressContactList,
   ReleaseAdmin,
   ReleaseWriteRequest,
@@ -81,6 +79,42 @@ export class AdminApiService {
 
   deleteArticle(id: number): Observable<void> {
     return this.http.delete<void>(`${this.baseUrl}/api/v1/admin/articles/${id}`);
+  }
+
+  uploadArticleCover(
+    id: number,
+    file: File,
+    altText?: string | null,
+    credit?: string | null,
+  ): Observable<AdminArticleDetail> {
+    const form = new FormData();
+    form.append('file', file);
+    if (altText) {
+      form.append('altText', altText);
+    }
+    if (credit) {
+      form.append('credit', credit);
+    }
+    return this.http.put<AdminArticleDetail>(
+      `${this.baseUrl}/api/v1/admin/articles/${id}/cover`,
+      form,
+    );
+  }
+
+  updateArticleCover(
+    id: number,
+    request: ArticleCoverUpdateRequest,
+  ): Observable<AdminArticleDetail> {
+    return this.http.patch<AdminArticleDetail>(
+      `${this.baseUrl}/api/v1/admin/articles/${id}/cover`,
+      request,
+    );
+  }
+
+  deleteArticleCover(id: number): Observable<AdminArticleDetail> {
+    return this.http.delete<AdminArticleDetail>(
+      `${this.baseUrl}/api/v1/admin/articles/${id}/cover`,
+    );
   }
 
   publishArticle(id: number): Observable<AdminArticleDetail> {
@@ -254,47 +288,6 @@ export class AdminApiService {
     return this.http.delete<void>(
       `${this.baseUrl}/api/v1/admin/releases/${id}`,
     );
-  }
-
-  // Medios ------------------------------------------------------------
-  listMedia(page = 0, size = 24, q = ''): Observable<MediaPage> {
-    let params = new HttpParams().set('page', page).set('size', size);
-    if (q) {
-      params = params.set('q', q);
-    }
-    return this.http.get<MediaPage>(`${this.baseUrl}/api/v1/admin/media`, {
-      params,
-    });
-  }
-
-  uploadMedia(
-    file: File,
-    altText?: string,
-    credit?: string,
-  ): Observable<MediaAsset> {
-    const form = new FormData();
-    form.append('file', file);
-    if (altText) {
-      form.append('altText', altText);
-    }
-    if (credit) {
-      form.append('credit', credit);
-    }
-    return this.http.post<MediaAsset>(
-      `${this.baseUrl}/api/v1/admin/media`,
-      form,
-    );
-  }
-
-  updateMedia(id: number, request: MediaUpdateRequest): Observable<MediaAsset> {
-    return this.http.patch<MediaAsset>(
-      `${this.baseUrl}/api/v1/admin/media/${id}`,
-      request,
-    );
-  }
-
-  deleteMedia(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/api/v1/admin/media/${id}`);
   }
 
   // Contactos de prensa e imagen ---------------------------------------

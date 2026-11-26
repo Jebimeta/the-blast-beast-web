@@ -3,15 +3,26 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
   OnInit,
   computed,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Observable, debounceTime, distinctUntilChanged, forkJoin, of, switchMap } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  forkJoin,
+  map,
+  of,
+  switchMap,
+} from 'rxjs';
 import { AdminApiService } from '../../../core/api/admin-api.service';
 import type {
   AdminArticleDetail,
@@ -20,11 +31,11 @@ import type {
   ArticleWriteRequest,
   BandResponse,
   CategoryAdmin,
-  MediaAsset,
   SocialSummaryPlatform,
   SocialSummarySource,
   TagResponse,
 } from '../../../core/api/admin.models';
+import type { MediaSummary } from '../../../core/api/article.models';
 import { problemMessage } from '../../../core/api/problem';
 import { MultiSelect } from '../shared/multi-select/multi-select';
 
@@ -60,6 +71,20 @@ const EMPTY_SOCIAL_TEXTS: Record<SocialSummaryPlatform, string> = {
   whatsapp: '',
 };
 
+const MAX_COVER_BYTES = 10 * 1024 * 1024;
+const COVER_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+]);
+
+interface SaveWithCoverResult {
+  article: AdminArticleDetail;
+  coverUploaded: boolean;
+  coverError: string | null;
+}
+
 @Component({
   selector: 'app-article-editor-page',
   imports: [ReactiveFormsModule, RouterLink, MultiSelect],
@@ -88,7 +113,13 @@ export class ArticleEditorPage implements OnInit {
   protected readonly categories = signal<CategoryAdmin[]>([]);
   protected readonly bands = signal<BandResponse[]>([]);
   protected readonly tags = signal<TagResponse[]>([]);
-  protected readonly media = signal<MediaAsset[]>([]);
+  protected readonly cover = signal<MediaSummary | null>(null);
+  protected readonly coverAlt = signal('');
+  protected readonly coverCredit = signal('');
+  protected readonly coverFile = signal<File | null>(null);
+  protected readonly coverPreview = signal<string | null>(null);
+  protected readonly coverBusy = signal(false);
+  protected readonly coverError = signal<string | null>(null);
   protected readonly status = signal<AdminArticleStatus>('draft');
   protected readonly slug = signal('');
   protected readonly publicSlug = signal('');
@@ -104,6 +135,8 @@ export class ArticleEditorPage implements OnInit {
   protected readonly socialPlatforms = SOCIAL_PLATFORMS;
 
   private suppressDirty = false;
+  private coverObjectUrl: string | null = null;
+  private readonly coverInput = viewChild<ElementRef<HTMLInputElement>>('coverInput');
 
   protected readonly form = this.formBuilder.nonNullable.group({
     title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(200)]],
@@ -113,7 +146,6 @@ export class ArticleEditorPage implements OnInit {
     categoryId: [0, [Validators.required, Validators.min(1)]],
     bandIds: [[] as number[]],
     tagIds: [[] as number[]],
-    coverMediaId: this.formBuilder.control<number | null>(null),
     seoTitle: ['', [Validators.maxLength(200)]],
     seoDescription: ['', [Validators.maxLength(320)]],
     canonicalUrl: ['', [Validators.maxLength(500)]],
@@ -127,6 +159,16 @@ export class ArticleEditorPage implements OnInit {
     return date
       ? date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
       : '';
+  });
+  protected readonly coverMetadataDirty = computed(() => {
+    const cover = this.cover();
+    if (!cover) {
+      return false;
+    }
+    return (
+      (cover.altText ?? '').trim() !== this.coverAlt().trim() ||
+      (cover.credit ?? '').trim() !== this.coverCredit().trim()
+    );
   });
 
   constructor() {
@@ -155,6 +197,8 @@ export class ArticleEditorPage implements OnInit {
           this.save(true);
         }
       });
+
+    this.destroyRef.onDestroy(() => this.releaseCoverObjectUrl());
   }
 
   ngOnInit(): void {
@@ -189,15 +233,22 @@ export class ArticleEditorPage implements OnInit {
       ? this.api.updateArticle(id, request)
       : this.api.createArticle(request);
 
-    save$.subscribe({
-      next: (article) => {
+    this.saveWithCover(save$).subscribe({
+      next: ({ article, coverUploaded, coverError }) => {
         this.saving.set(false);
         this.lastSavedAt.set(new Date());
-        this.applyArticle(article);
+        this.applyArticle(article, coverUploaded);
         if (id === null) {
           void this.router.navigate(['/admin/articulos', article.id], {
             replaceUrl: true,
           });
+        }
+        if (coverError) {
+          this.coverError.set(coverError);
+          this.error.set(
+            'Borrador guardado, pero la portada no se pudo subir. Vuelve a intentarlo desde la ficha.',
+          );
+          return;
         }
         if (!silent) {
           this.notice.set('Borrador guardado');
@@ -219,6 +270,11 @@ export class ArticleEditorPage implements OnInit {
     if (this.publishing()) {
       return;
     }
+    if (!this.cover() && !this.coverFile()) {
+      this.error.set('Añade una portada antes de publicar.');
+      this.scrollToCover();
+      return;
+    }
 
     this.publishing.set(true);
     this.error.set(null);
@@ -230,17 +286,33 @@ export class ArticleEditorPage implements OnInit {
       ? this.api.updateArticle(id, request)
       : this.api.createArticle(request);
 
-    save$
-      .pipe(switchMap((article) => this.api.publishArticle(article.id)))
+    this.saveWithCover(save$)
+      .pipe(
+        switchMap((result) => {
+          if (result.coverError) {
+            return of(result);
+          }
+          return this.api
+            .publishArticle(result.article.id)
+            .pipe(map((article) => ({ ...result, article })));
+        }),
+      )
       .subscribe({
-        next: (article) => {
+        next: ({ article, coverUploaded, coverError }) => {
           this.publishing.set(false);
           this.lastSavedAt.set(new Date());
-          this.applyArticle(article);
+          this.applyArticle(article, coverUploaded);
           if (id === null) {
             void this.router.navigate(['/admin/articulos', article.id], {
               replaceUrl: true,
             });
+          }
+          if (coverError) {
+            this.coverError.set(coverError);
+            this.error.set(
+              'No se publicó: la portada no se pudo subir. El artículo sigue en borrador.',
+            );
+            return;
           }
           this.notice.set('Artículo publicado');
         },
@@ -299,6 +371,136 @@ export class ArticleEditorPage implements OnInit {
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  protected onCoverSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] ?? null;
+    this.coverError.set(null);
+    if (!file) {
+      return;
+    }
+    if (!COVER_TYPES.has(file.type)) {
+      this.coverError.set('Formato no admitido. Usa JPG, PNG, WebP o GIF.');
+      input.value = '';
+      return;
+    }
+    if (file.size > MAX_COVER_BYTES) {
+      this.coverError.set('La imagen no puede superar 10 MB.');
+      input.value = '';
+      return;
+    }
+
+    this.setPendingCover(file);
+    if (this.articleId() !== null) {
+      this.uploadCover();
+    }
+  }
+
+  protected updateCoverAlt(event: Event): void {
+    this.coverAlt.set((event.target as HTMLInputElement).value);
+  }
+
+  protected updateCoverCredit(event: Event): void {
+    this.coverCredit.set((event.target as HTMLInputElement).value);
+  }
+
+  protected uploadCover(): void {
+    const id = this.articleId();
+    const file = this.coverFile();
+    if (id === null || !file || this.coverBusy()) {
+      return;
+    }
+
+    this.coverBusy.set(true);
+    this.coverError.set(null);
+    this.api
+      .uploadArticleCover(
+        id,
+        file,
+        this.coverAlt().trim() || null,
+        this.coverCredit().trim() || null,
+      )
+      .subscribe({
+        next: (article) => {
+          this.coverBusy.set(false);
+          this.applyArticle(article, true);
+          this.notice.set('Portada actualizada');
+        },
+        error: (error: unknown) => {
+          this.coverBusy.set(false);
+          this.coverError.set(
+            problemMessage(error, 'No se pudo subir la portada'),
+          );
+        },
+      });
+  }
+
+  protected saveCoverMetadata(): void {
+    const id = this.articleId();
+    if (
+      id === null ||
+      !this.cover() ||
+      !this.coverMetadataDirty() ||
+      this.coverBusy()
+    ) {
+      return;
+    }
+
+    this.coverBusy.set(true);
+    this.coverError.set(null);
+    this.api
+      .updateArticleCover(id, {
+        altText: this.coverAlt().trim() || null,
+        credit: this.coverCredit().trim() || null,
+      })
+      .subscribe({
+        next: (article) => {
+          this.coverBusy.set(false);
+          this.applyArticle(article, true);
+          this.notice.set('Datos de portada guardados');
+        },
+        error: (error: unknown) => {
+          this.coverBusy.set(false);
+          this.coverError.set(
+            problemMessage(error, 'No se pudieron guardar los datos de la portada'),
+          );
+        },
+      });
+  }
+
+  protected removeCover(): void {
+    const id = this.articleId();
+    const existing = this.cover();
+    if (!existing && !this.coverFile()) {
+      return;
+    }
+    if (existing && !confirm('¿Quitar la portada de este artículo?')) {
+      return;
+    }
+
+    this.coverError.set(null);
+    if (this.coverFile()) {
+      this.setPendingCover(null);
+    }
+    if (!existing || id === null) {
+      return;
+    }
+
+    this.coverBusy.set(true);
+    this.api.deleteArticleCover(id).subscribe({
+      next: (article) => {
+        this.coverBusy.set(false);
+        this.applyArticle(article, true);
+        this.notice.set('Portada eliminada');
+      },
+      error: (error: unknown) => {
+        this.coverBusy.set(false);
+        this.coverError.set(
+          problemMessage(error, 'No se pudo quitar la portada'),
+        );
+      },
+    });
+  }
+
   protected restore(revision: ArticleRevision): void {
     const id = this.articleId();
     if (id === null) {
@@ -317,15 +519,6 @@ export class ArticleEditorPage implements OnInit {
         this.error.set(problemMessage(error, 'No se pudo restaurar la revisión'));
       },
     });
-  }
-
-  protected coverFor(id: number | null): MediaAsset | undefined {
-    return id === null ? undefined : this.media().find((asset) => asset.id === id);
-  }
-
-  /** La previsualización de portada usa la variante `thumb` si existe. */
-  protected coverPreview(asset: MediaAsset): string {
-    return asset.variants.find((variant) => variant.kind === 'thumb')?.url ?? asset.url;
   }
 
   protected revisionDate(value: string): string {
@@ -444,16 +637,14 @@ export class ArticleEditorPage implements OnInit {
       categories: this.api.listCategories(),
       bands: this.api.listBands(),
       tags: this.api.listTags(),
-      media: this.api.listMedia(0, 50),
       article: id === null ? of(null) : this.api.getArticle(id),
     }).subscribe({
-      next: ({ categories, bands, tags, media, article }) => {
+      next: ({ categories, bands, tags, article }) => {
         this.categories.set(categories);
         this.bands.set(bands);
         this.tags.set(tags);
-        this.media.set(media.content);
         if (article) {
-          this.applyArticle(article);
+          this.applyArticle(article, true);
           this.loadRevisions();
         } else {
           this.resetForNew();
@@ -467,7 +658,7 @@ export class ArticleEditorPage implements OnInit {
     });
   }
 
-  private applyArticle(article: AdminArticleDetail): void {
+  private applyArticle(article: AdminArticleDetail, syncCover = false): void {
     this.suppressDirty = true;
     this.form.patchValue({
       title: article.title,
@@ -477,7 +668,6 @@ export class ArticleEditorPage implements OnInit {
       categoryId: article.category.id,
       bandIds: article.bands.map((band) => band.id),
       tagIds: article.tags.map((tag) => tag.id),
-      coverMediaId: article.cover?.id ?? null,
       seoTitle: article.seoTitle ?? '',
       seoDescription: article.seoDescription ?? '',
       canonicalUrl: article.canonicalUrl ?? '',
@@ -488,6 +678,9 @@ export class ArticleEditorPage implements OnInit {
     this.preview.set(article.bodyHtml);
     this.dirty.set(false);
     this.suppressDirty = false;
+    if (syncCover) {
+      this.applyCover(article.cover ?? null);
+    }
   }
 
   private resetForNew(): void {
@@ -500,7 +693,6 @@ export class ArticleEditorPage implements OnInit {
       categoryId: this.categories()[0]?.id ?? 0,
       bandIds: [],
       tagIds: [],
-      coverMediaId: null,
       seoTitle: '',
       seoDescription: '',
       canonicalUrl: '',
@@ -513,6 +705,7 @@ export class ArticleEditorPage implements OnInit {
     this.lastSavedAt.set(null);
     this.dirty.set(false);
     this.suppressDirty = false;
+    this.applyCover(null);
   }
 
   private buildRequest(): ArticleWriteRequest {
@@ -525,11 +718,95 @@ export class ArticleEditorPage implements OnInit {
       categoryId: Number(value.categoryId),
       bandIds: (value.bandIds ?? []).map(Number),
       tagIds: (value.tagIds ?? []).map(Number),
-      coverMediaId: value.coverMediaId === null ? null : Number(value.coverMediaId),
       seoTitle: value.seoTitle.trim() || null,
       seoDescription: value.seoDescription.trim() || null,
       canonicalUrl: value.canonicalUrl.trim() || null,
     };
+  }
+
+  private saveWithCover(
+    save$: Observable<AdminArticleDetail>,
+  ): Observable<SaveWithCoverResult> {
+    const pending = this.coverFile();
+    return save$.pipe(
+      switchMap((article) => {
+        if (!pending) {
+          return of({ article, coverUploaded: false, coverError: null });
+        }
+        return this.api
+          .uploadArticleCover(
+            article.id,
+            pending,
+            this.coverAlt().trim() || null,
+            this.coverCredit().trim() || null,
+          )
+          .pipe(
+            map((updated) => ({
+              article: updated,
+              coverUploaded: true,
+              coverError: null,
+            })),
+            catchError((error: unknown) =>
+              of({
+                article,
+                coverUploaded: false,
+                coverError: problemMessage(
+                  error,
+                  'No se pudo subir la portada',
+                ),
+              }),
+            ),
+          );
+      }),
+    );
+  }
+
+  private scrollToCover(): void {
+    this.document
+      .getElementById('cover-panel')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  private setPendingCover(file: File | null): void {
+    this.releaseCoverObjectUrl();
+    this.coverFile.set(file);
+    if (file) {
+      this.coverObjectUrl = URL.createObjectURL(file);
+      this.coverPreview.set(this.coverObjectUrl);
+    } else {
+      this.coverPreview.set(this.coverThumb(this.cover()));
+    }
+  }
+
+  private applyCover(cover: MediaSummary | null): void {
+    this.releaseCoverObjectUrl();
+    this.coverFile.set(null);
+    this.cover.set(cover);
+    this.coverAlt.set(cover?.altText ?? '');
+    this.coverCredit.set(cover?.credit ?? '');
+    this.coverPreview.set(this.coverThumb(cover));
+    this.coverError.set(null);
+    const input = this.coverInput()?.nativeElement;
+    if (input) {
+      input.value = '';
+    }
+  }
+
+  private coverThumb(cover: MediaSummary | null): string | null {
+    if (!cover) {
+      return null;
+    }
+    return (
+      cover.variants?.find((variant) => variant.kind === 'thumb')?.url ??
+      cover.url
+    );
+  }
+
+  private releaseCoverObjectUrl(): void {
+    if (this.coverObjectUrl) {
+      URL.revokeObjectURL(this.coverObjectUrl);
+      this.coverObjectUrl = null;
+    }
   }
 
   private updatePreview(bodyMd: string): void {

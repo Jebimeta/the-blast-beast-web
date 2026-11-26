@@ -2,7 +2,6 @@ import type {
   BandSummary,
   CategorySummary,
   MediaSummary,
-  MediaVariant,
   TagSummary,
 } from './article.models';
 
@@ -93,7 +92,6 @@ export interface ArticleWriteRequest {
   categoryId: number;
   bandIds?: number[];
   tagIds?: number[];
-  coverMediaId?: number | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   canonicalUrl?: string | null;
@@ -150,23 +148,7 @@ export interface TagWriteRequest {
   name: string;
 }
 
-export interface MediaAsset extends MediaSummary {
-  bytes: number;
-  createdAt: string;
-  variants: MediaVariant[];
-}
-
-export interface MediaPage {
-  content: MediaAsset[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  first: boolean;
-  last: boolean;
-}
-
-export interface MediaUpdateRequest {
+export interface ArticleCoverUpdateRequest {
   altText?: string | null;
   credit?: string | null;
 }

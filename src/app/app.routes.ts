@@ -146,14 +146,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'medios',
-        title: 'Medios — Redacción',
-        loadComponent: () =>
-          import('./features/admin/media/admin-media-page').then(
-            (m) => m.AdminMediaPage,
-          ),
-      },
-      {
         path: 'contactos',
         title: 'Contactos — Redacción',
         loadComponent: () =>

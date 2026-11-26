@@ -395,46 +395,143 @@
           />
         </div>
 
-        <div class="card !p-6">
-          <label
-            for="coverMediaId"
-            class="font-display text-sm uppercase tracking-wider"
-            >Portada</label
-          >
+        <div id="cover-panel" class="card scroll-mt-4 !p-6">
+          <p class="font-display text-sm uppercase tracking-wider">Portada</p>
+          <p class="mt-2 text-sm text-muted">
+            Imagen propia de este artículo. Se guarda y se borra con la noticia;
+            no hay biblioteca compartida.
+          </p>
 
-          <select
-            id="coverMediaId"
-            formControlName="coverMediaId"
-            class="mt-3 w-full rounded-md border border-line bg-ink px-3 py-2.5 text-sm text-bone outline-none transition focus:border-blood"
-          >
-            <option [ngValue]="null">Sin portada</option>
-            @for (asset of media(); track asset.id) {
-              <option [ngValue]="asset.id">
-                {{ asset.altText || asset.credit || 'Medio #' + asset.id }}
-              </option>
-            }
-          </select>
-
-          @if (coverFor(form.controls.coverMediaId.value); as cover) {
+          @if (coverPreview(); as preview) {
             <img
-              [src]="coverPreview(cover)"
-              [alt]="cover.altText ?? ''"
-              width="320"
-              height="180"
-              class="mt-3 w-full rounded border border-line object-cover"
+              [src]="preview"
+              [alt]="
+                coverAlt() ||
+                form.controls.title.value ||
+                'Portada del artículo'
+              "
+              width="640"
+              height="360"
+              class="mt-4 aspect-video w-full rounded border border-line object-cover"
             />
-            @if (cover.credit) {
-              <p class="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
-                {{ cover.credit }}
-              </p>
-            }
+          } @else {
+            <div
+              aria-hidden="true"
+              class="mt-4 grid aspect-video w-full place-items-center rounded border border-dashed border-line bg-surface-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted"
+            >
+              Sin portada
+            </div>
           }
 
-          <a
-            routerLink="/admin/medios"
-            class="mt-1 inline-flex min-h-10 items-center font-mono text-[10px] uppercase tracking-[0.14em] text-muted hover:text-bone"
-            >Gestionar biblioteca →</a
+          <label
+            for="coverFile"
+            class="mt-4 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
+            >Imagen de portada</label
           >
+          <input
+            #coverInput
+            id="coverFile"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            [disabled]="coverBusy()"
+            (change)="onCoverSelected($event)"
+            class="mt-2 block w-full cursor-pointer rounded-md border border-line bg-ink px-3 py-2 text-sm text-bone outline-none transition file:mr-3 file:rounded file:border-0 file:bg-surface-2 file:px-3 file:py-1.5 file:font-mono file:text-[10px] file:uppercase file:tracking-[0.14em] file:text-bone focus:border-blood disabled:opacity-40"
+          />
+          <p class="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+            JPG, PNG, WebP o GIF · máximo 10 MB
+          </p>
+
+          <label
+            for="coverAlt"
+            class="mt-4 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
+            >Texto alternativo</label
+          >
+          <input
+            id="coverAlt"
+            type="text"
+            maxlength="300"
+            [value]="coverAlt()"
+            (input)="updateCoverAlt($event)"
+            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-sm text-bone outline-none transition focus:border-blood"
+          />
+          <p class="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+            Describe la imagen; si lo dejas vacío se usa el titular.
+          </p>
+
+          <label
+            for="coverCredit"
+            class="mt-4 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
+            >Crédito</label
+          >
+          <input
+            id="coverCredit"
+            type="text"
+            maxlength="200"
+            [value]="coverCredit()"
+            (input)="updateCoverCredit($event)"
+            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-sm text-bone outline-none transition focus:border-blood"
+          />
+
+          @if (coverFile()) {
+            <p class="mt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
+              {{
+                isNew()
+                  ? 'Se subirá al guardar el borrador.'
+                  : 'Pendiente de subir.'
+              }}
+            </p>
+          }
+
+          <div class="mt-4 flex flex-wrap gap-2">
+            @if (coverFile() && !isNew()) {
+              <button
+                type="button"
+                class="btn-ghost min-h-10 !px-3 !py-2 !text-sm"
+                [disabled]="coverBusy()"
+                (click)="uploadCover()"
+              >
+                {{ coverBusy() ? 'Subiendo…' : 'Subir portada' }}
+              </button>
+            }
+            @if (cover() && !coverFile()) {
+              <button
+                type="button"
+                class="btn-ghost min-h-10 !px-3 !py-2 !text-sm"
+                [disabled]="coverBusy() || !coverMetadataDirty()"
+                (click)="saveCoverMetadata()"
+              >
+                Guardar datos
+              </button>
+            }
+            @if (cover() || coverFile()) {
+              <button
+                type="button"
+                class="min-h-10 rounded-md border border-line px-3 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted transition hover:border-blood hover:text-bone disabled:opacity-40"
+                [disabled]="coverBusy()"
+                (click)="removeCover()"
+              >
+                {{
+                  coverFile() && !cover()
+                    ? 'Descartar selección'
+                    : 'Quitar portada'
+                }}
+              </button>
+            }
+          </div>
+
+          @if (coverBusy()) {
+            <p
+              role="status"
+              class="mt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-muted"
+            >
+              Guardando portada…
+            </p>
+          }
+          @if (coverError()) {
+            <p class="mt-3 text-sm text-blood-soft" role="alert">
+              {{ coverError() }}
+            </p>
+          }
         </div>
 
         <details class="card !p-6">
