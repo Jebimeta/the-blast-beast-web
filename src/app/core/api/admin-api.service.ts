@@ -10,16 +10,12 @@ import type {
   ArticleRevision,
   ArticleWriteRequest,
   BandResponse,
-  BandWriteRequest,
   CategoryAdmin,
-  CategoryWriteRequest,
   MarkdownPreviewResponse,
   PressContactList,
   ReleaseAdmin,
   ReleaseWriteRequest,
   SocialSummaryResponse,
-  TagResponse,
-  TagWriteRequest,
 } from './admin.models';
 
 export interface AdminArticleQuery {
@@ -172,29 +168,6 @@ export class AdminApiService {
     );
   }
 
-  createCategory(request: CategoryWriteRequest): Observable<CategoryAdmin> {
-    return this.http.post<CategoryAdmin>(
-      `${this.baseUrl}/api/v1/admin/categories`,
-      request,
-    );
-  }
-
-  updateCategory(
-    id: number,
-    request: CategoryWriteRequest,
-  ): Observable<CategoryAdmin> {
-    return this.http.put<CategoryAdmin>(
-      `${this.baseUrl}/api/v1/admin/categories/${id}`,
-      request,
-    );
-  }
-
-  deleteCategory(id: number): Observable<void> {
-    return this.http.delete<void>(
-      `${this.baseUrl}/api/v1/admin/categories/${id}`,
-    );
-  }
-
   // Bandas ------------------------------------------------------------
   listBands(q = ''): Observable<BandResponse[]> {
     let params = new HttpParams();
@@ -204,53 +177,6 @@ export class AdminApiService {
     return this.http.get<BandResponse[]>(`${this.baseUrl}/api/v1/admin/bands`, {
       params,
     });
-  }
-
-  createBand(request: BandWriteRequest): Observable<BandResponse> {
-    return this.http.post<BandResponse>(
-      `${this.baseUrl}/api/v1/admin/bands`,
-      request,
-    );
-  }
-
-  updateBand(id: number, request: BandWriteRequest): Observable<BandResponse> {
-    return this.http.put<BandResponse>(
-      `${this.baseUrl}/api/v1/admin/bands/${id}`,
-      request,
-    );
-  }
-
-  deleteBand(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/api/v1/admin/bands/${id}`);
-  }
-
-  // Etiquetas ---------------------------------------------------------
-  listTags(q = ''): Observable<TagResponse[]> {
-    let params = new HttpParams();
-    if (q) {
-      params = params.set('q', q);
-    }
-    return this.http.get<TagResponse[]>(`${this.baseUrl}/api/v1/admin/tags`, {
-      params,
-    });
-  }
-
-  createTag(request: TagWriteRequest): Observable<TagResponse> {
-    return this.http.post<TagResponse>(
-      `${this.baseUrl}/api/v1/admin/tags`,
-      request,
-    );
-  }
-
-  updateTag(id: number, request: TagWriteRequest): Observable<TagResponse> {
-    return this.http.put<TagResponse>(
-      `${this.baseUrl}/api/v1/admin/tags/${id}`,
-      request,
-    );
-  }
-
-  deleteTag(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/api/v1/admin/tags/${id}`);
   }
 
   // Radar de lanzamientos ---------------------------------------------

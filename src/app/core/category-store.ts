@@ -33,9 +33,4 @@ export class CategoryStore {
     );
   }
 
-  /** Fuerza una recarga tras cambiar la taxonomía desde la redacción. */
-  reload(): Observable<void> {
-    this.loaded = false;
-    return this.load();
-  }
 }

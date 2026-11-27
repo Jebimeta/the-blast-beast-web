@@ -33,10 +33,8 @@ Frontend del portal de noticias de heavy metal **The Blast Beast**.
 | `/admin/login` | Acceso a la redacción |
 | `/admin/articulos` | Listado de artículos con filtros y acciones |
 | `/admin/articulos/nuevo` | Editor de artículo nuevo |
-| `/admin/articulos/:id` | Editor con vista previa, autoguardado, historial y difusión en redes |
+| `/admin/articulos/:id` | Editor con vista previa, autoguardado, clasificación manual, historial y difusión en redes |
 | `/admin/radar` | Radar de lanzamientos: CRUD editorial |
-| `/admin/taxonomia` | Categorías, bandas y etiquetas |
-| `/admin/medios` | Biblioteca de imágenes |
 | `/admin/cuenta` | Cambio de contraseña del usuario autenticado |
 | `**` | 404 real (status HTTP en SSR) |
 
@@ -196,7 +194,7 @@ src/app/
 │   ├── category-store.ts
 │   └── format.ts
 ├── features/
-│   ├── admin/         # login, layout, artículos, editor, radar, taxonomía, medios
+│   ├── admin/         # login, layout, artículos, editor, radar y contactos
 │   ├── home/          # portada + resolver
 │   ├── articles/      # tarjeta, listado, detalle, resolvers
 │   ├── radar/         # radar de lanzamientos + utilidades y resolver
@@ -223,7 +221,7 @@ src/app/
 
 - [x] **M0** Fundaciones: Angular 22 + SSR, Tailwind, layout, integración con la API
 - [x] **M1** Lectura: portada, archivo, secciones, detalle, bandas, búsqueda y SEO
-- [x] **M2** Redacción: login, editor Markdown con autoguardado, taxonomía y medios
+- [x] **M2** Redacción: login, editor Markdown con autoguardado, clasificación manual y portada por artículo
 - [x] **M3** SEO avanzado: sitemap, robots, RSS, JSON-LD y prerender selectivo
 - [x] **M4** Calidad: e2e, accesibilidad, presupuesto de rendimiento
 - [ ] **M5** Producción: la imagen se publica en GHCR y se sirve detrás de Caddy con TLS;

@@ -46,7 +46,6 @@ test.describe('Accesibilidad WCAG 2.1 AA', () => {
       { path: '/admin/articulos', label: 'listado editorial' },
       { path: '/admin/articulos/nuevo', label: 'editor de artículo' },
       { path: '/admin/radar', label: 'radar editorial' },
-      { path: '/admin/taxonomia', label: 'taxonomía' },
     ];
 
     for (const target of adminPages) {

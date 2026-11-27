@@ -130,14 +130,6 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'taxonomia',
-        title: 'Taxonomía — Redacción',
-        loadComponent: () =>
-          import('./features/admin/taxonomy/admin-taxonomy-page').then(
-            (m) => m.AdminTaxonomyPage,
-          ),
-      },
-      {
         path: 'radar',
         title: 'Radar de lanzamientos — Redacción',
         loadComponent: () =>

@@ -115,37 +115,12 @@ export interface CategoryAdmin extends CategorySummary {
   articleCount: number;
 }
 
-export interface CategoryWriteRequest {
-  slug?: string | null;
-  name: string;
-  description?: string | null;
-  sortOrder?: number | null;
-}
-
 export interface BandResponse extends BandSummary {
   country?: string | null;
   formedYear?: number | null;
   website?: string | null;
   bandcampUrl?: string | null;
   spotifyUrl?: string | null;
-}
-
-export interface BandWriteRequest {
-  slug?: string | null;
-  name: string;
-  country?: string | null;
-  formedYear?: number | null;
-  genre?: string | null;
-  website?: string | null;
-  bandcampUrl?: string | null;
-  spotifyUrl?: string | null;
-}
-
-export interface TagResponse extends TagSummary {}
-
-export interface TagWriteRequest {
-  slug?: string | null;
-  name: string;
 }
 
 export interface ArticleCoverUpdateRequest {
