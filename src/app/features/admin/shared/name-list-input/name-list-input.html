@@ -1,0 +1,52 @@
+<div>
+  <label
+    [for]="inputId()"
+    class="block font-mono text-[10px] uppercase tracking-[0.18em] text-muted"
+    >{{ label() }}</label
+  >
+
+  <input
+    [id]="inputId()"
+    type="text"
+    autocomplete="off"
+    [value]="draft()"
+    [placeholder]="placeholder()"
+    [disabled]="disabled()"
+    [attr.aria-describedby]="hint() ? inputId() + '-hint' : null"
+    class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2.5 text-sm text-bone outline-none transition placeholder:text-muted/70 focus:border-blood disabled:cursor-not-allowed disabled:opacity-60"
+    (input)="onInput($event)"
+    (keydown)="onKeydown($event)"
+    (paste)="onPaste($event)"
+    (blur)="onBlur()"
+  />
+
+  @if (names().length > 0) {
+    <ul class="mt-2 flex flex-wrap gap-1.5" [attr.aria-label]="label() + ' añadidas'">
+      @for (name of names(); track name; let index = $index) {
+        <li
+          class="inline-flex items-center gap-1 rounded-full border border-line bg-surface-2 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-bone"
+        >
+          {{ name }}
+          <button
+            type="button"
+            class="text-muted transition hover:text-blood-soft disabled:cursor-not-allowed disabled:opacity-50"
+            [disabled]="disabled()"
+            [attr.aria-label]="'Quitar ' + name"
+            (click)="remove(index)"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+
+  @if (hint()) {
+    <p
+      [id]="inputId() + '-hint'"
+      class="mt-2 font-mono text-[9px] uppercase tracking-[0.14em] text-muted"
+    >
+      {{ hint() }}
+    </p>
+  }
+</div>

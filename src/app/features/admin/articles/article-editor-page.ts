@@ -29,15 +29,13 @@ import type {
   AdminArticleStatus,
   ArticleRevision,
   ArticleWriteRequest,
-  BandResponse,
   CategoryAdmin,
   SocialSummaryPlatform,
   SocialSummarySource,
-  TagResponse,
 } from '../../../core/api/admin.models';
 import type { MediaSummary } from '../../../core/api/article.models';
 import { problemMessage } from '../../../core/api/problem';
-import { MultiSelect } from '../shared/multi-select/multi-select';
+import { NameListInput } from '../shared/name-list-input/name-list-input';
 
 const STATUS_LABELS: Record<AdminArticleStatus, string> = {
   draft: 'Borrador',
@@ -71,6 +69,21 @@ const EMPTY_SOCIAL_TEXTS: Record<SocialSummaryPlatform, string> = {
   whatsapp: '',
 };
 
+function normalizeNames(names: string[] | null | undefined): string[] {
+  const seen = new Set<string>();
+  const result: string[] = [];
+  for (const raw of names ?? []) {
+    const name = raw.trim();
+    const key = name.toLowerCase();
+    if (!name || seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    result.push(name);
+  }
+  return result;
+}
+
 const MAX_COVER_BYTES = 10 * 1024 * 1024;
 const COVER_TYPES = new Set([
   'image/jpeg',
@@ -87,7 +100,7 @@ interface SaveWithCoverResult {
 
 @Component({
   selector: 'app-article-editor-page',
-  imports: [ReactiveFormsModule, RouterLink, MultiSelect],
+  imports: [ReactiveFormsModule, RouterLink, NameListInput],
   templateUrl: './article-editor-page.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -111,8 +124,6 @@ export class ArticleEditorPage implements OnInit {
   protected readonly revisionsLoading = signal(false);
   protected readonly showRevisions = signal(false);
   protected readonly categories = signal<CategoryAdmin[]>([]);
-  protected readonly bands = signal<BandResponse[]>([]);
-  protected readonly tags = signal<TagResponse[]>([]);
   protected readonly cover = signal<MediaSummary | null>(null);
   protected readonly coverAlt = signal('');
   protected readonly coverCredit = signal('');
@@ -144,8 +155,8 @@ export class ArticleEditorPage implements OnInit {
     excerpt: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(500)]],
     bodyMd: ['', [Validators.required, Validators.minLength(10)]],
     categoryId: [0, [Validators.required, Validators.min(1)]],
-    bandIds: [[] as number[]],
-    tagIds: [[] as number[]],
+    bandNames: [[] as string[]],
+    tagNames: [[] as string[]],
     seoTitle: ['', [Validators.maxLength(200)]],
     seoDescription: ['', [Validators.maxLength(320)]],
     canonicalUrl: ['', [Validators.maxLength(500)]],
@@ -635,14 +646,10 @@ export class ArticleEditorPage implements OnInit {
 
     forkJoin({
       categories: this.api.listCategories(),
-      bands: this.api.listBands(),
-      tags: this.api.listTags(),
       article: id === null ? of(null) : this.api.getArticle(id),
     }).subscribe({
-      next: ({ categories, bands, tags, article }) => {
+      next: ({ categories, article }) => {
         this.categories.set(categories);
-        this.bands.set(bands);
-        this.tags.set(tags);
         if (article) {
           this.applyArticle(article, true);
           this.loadRevisions();
@@ -666,8 +673,8 @@ export class ArticleEditorPage implements OnInit {
       excerpt: article.excerpt,
       bodyMd: article.bodyMd,
       categoryId: article.category.id,
-      bandIds: article.bands.map((band) => band.id),
-      tagIds: article.tags.map((tag) => tag.id),
+      bandNames: article.bands.map((band) => band.name),
+      tagNames: article.tags.map((tag) => tag.name),
       seoTitle: article.seoTitle ?? '',
       seoDescription: article.seoDescription ?? '',
       canonicalUrl: article.canonicalUrl ?? '',
@@ -691,8 +698,8 @@ export class ArticleEditorPage implements OnInit {
       excerpt: '',
       bodyMd: '',
       categoryId: this.categories()[0]?.id ?? 0,
-      bandIds: [],
-      tagIds: [],
+      bandNames: [],
+      tagNames: [],
       seoTitle: '',
       seoDescription: '',
       canonicalUrl: '',
@@ -716,8 +723,8 @@ export class ArticleEditorPage implements OnInit {
       excerpt: value.excerpt.trim(),
       bodyMd: value.bodyMd,
       categoryId: Number(value.categoryId),
-      bandIds: (value.bandIds ?? []).map(Number),
-      tagIds: (value.tagIds ?? []).map(Number),
+      bandNames: normalizeNames(value.bandNames),
+      tagNames: normalizeNames(value.tagNames),
       seoTitle: value.seoTitle.trim() || null,
       seoDescription: value.seoDescription.trim() || null,
       canonicalUrl: value.canonicalUrl.trim() || null,

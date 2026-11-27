@@ -42,11 +42,18 @@ test.describe('Redacción', () => {
       page.getByText('Se subirá al guardar el borrador.'),
     ).toBeVisible();
 
-    // La sección y las etiquetas se eligen por separado: la etiqueta se
-    // guarda aunque no coincida con la categoría del artículo.
-    await page.locator('#tagIds').click();
-    await page.getByRole('checkbox', { name: 'Giras' }).check();
-    await page.keyboard.press('Escape');
+    // Bandas y etiquetas se escriben a mano. Al guardar se reutilizan las
+    // fichas existentes (Metallica y Giras) sin abrir ningún catálogo.
+    await page.locator('#bandNames').fill('Metallica');
+    await page.locator('#bandNames').press('Enter');
+    await expect(
+      page.getByRole('button', { name: 'Quitar Metallica' }),
+    ).toBeVisible();
+    await page.locator('#tagNames').fill('Giras');
+    await page.locator('#tagNames').press('Enter');
+    await expect(
+      page.getByRole('button', { name: 'Quitar Giras' }),
+    ).toBeVisible();
 
     await expect(
       page.getByText('Guarda el borrador para generar los textos.'),
@@ -103,6 +110,17 @@ test.describe('Redacción', () => {
     await expect(publicCover).toBeVisible();
     const coverSrc = await publicCover.getAttribute('src');
     expect(coverSrc).toBeTruthy();
+
+    // La banda escrita a mano enlaza a su página con las noticias asociadas.
+    const bandLink = page.locator('a[href="/bandas/metallica"]').first();
+    await expect(bandLink).toBeVisible();
+    await expect(bandLink).toContainText('Metallica');
+    await bandLink.click();
+    await expect(page).toHaveURL(/\/bandas\/metallica$/);
+    await expect(
+      page.getByRole('heading', { name: 'Metallica', exact: true }),
+    ).toBeVisible();
+    await expect(page.getByText(title).first()).toBeVisible();
 
     // Limpieza: el artículo de prueba no debe quedar en la base de datos.
     await page.goto(editorUrl);

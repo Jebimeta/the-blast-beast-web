@@ -364,33 +364,24 @@
             <p class="mt-2 text-sm text-blood-soft">Selecciona una categoría.</p>
           }
           <p class="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-muted">
-            Es la sección del portal. Independiente de las etiquetas.
+            Es la sección del portal. Independiente de bandas y etiquetas.
           </p>
 
-          <label
-            for="bandIds"
-            class="mt-4 block font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
-            >Bandas</label
-          >
-          <select
-            id="bandIds"
-            formControlName="bandIds"
-            multiple
-            size="5"
-            class="mt-2 w-full rounded-md border border-line bg-ink px-3 py-2 text-sm text-bone outline-none transition focus:border-blood"
-          >
-            @for (band of bands(); track band.id) {
-              <option [ngValue]="band.id">{{ band.name }}</option>
-            }
-          </select>
+          <app-name-list-input
+            inputId="bandNames"
+            label="Bandas"
+            formControlName="bandNames"
+            placeholder="Escribe una banda y pulsa Enter"
+            hint="Se enlaza a su página con todas las noticias de la banda. Si no existe, se crea al guardar."
+            class="mt-4 block"
+          />
 
-          <app-multi-select
-            inputId="tagIds"
+          <app-name-list-input
+            inputId="tagNames"
             label="Etiquetas"
-            [options]="tags()"
-            formControlName="tagIds"
-            placeholder="Selecciona etiquetas"
-            hint="Puedes elegir varias. Son independientes de la categoría."
+            formControlName="tagNames"
+            placeholder="Escribe una etiqueta y pulsa Enter"
+            hint="Se crean o reutilizan al guardar. La sección Noticias usa la etiqueta «noticias»."
             class="mt-4 block"
           />
         </div>

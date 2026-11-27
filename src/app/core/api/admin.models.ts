@@ -90,8 +90,8 @@ export interface ArticleWriteRequest {
   excerpt: string;
   bodyMd: string;
   categoryId: number;
-  bandIds?: number[];
-  tagIds?: number[];
+  bandNames?: string[];
+  tagNames?: string[];
   seoTitle?: string | null;
   seoDescription?: string | null;
   canonicalUrl?: string | null;
